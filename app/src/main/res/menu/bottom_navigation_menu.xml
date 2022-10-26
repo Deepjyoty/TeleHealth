@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/newsfeed"
+        android:enabled="true"
+        android:icon="@drawable/icon_newsfeed"
+        android:title="News Feed"/>
+    <item
+        android:id="@+id/survey"
+        android:enabled="true"
+        android:icon="@drawable/icon_survey"
+        android:title="Survey"/>
+</menu>
