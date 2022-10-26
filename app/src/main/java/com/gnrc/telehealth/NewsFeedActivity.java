@@ -6,8 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.gnrc.telehealth.Fragments.NewsFeedFragment;
 import com.gnrc.telehealth.Fragments.SurveyFragment;
@@ -22,7 +25,9 @@ public class NewsFeedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_news_feed);
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         navigationView.setOnItemSelectedListener(selectedListener);
+        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));*/
 
         // When we open the application first
         // time the fragment should be shown to the user

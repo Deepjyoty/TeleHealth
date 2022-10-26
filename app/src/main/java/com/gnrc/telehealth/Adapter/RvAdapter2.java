@@ -67,8 +67,6 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
                 dataModelArrayList.get(holder.getAdapterPosition()).setCurrentcount(dataModelArrayList.get(holder.getAdapterPosition()).getCurrentcount()+1);
                 //Toast.makeText(inflater.getContext(), ""+c, Toast.LENGTH_SHORT).show();
                 userclicklistener.selecteduser(dataModel);
-
-
             }
 
         });
@@ -91,10 +89,10 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            //brand = (TextView) itemView.findViewById(R.id.country);
-            name = (TextView) itemView.findViewById(R.id.name);
-            price = (TextView) itemView.findViewById(R.id.city);
-            iv = (ImageView) itemView.findViewById(R.id.iv);
+            brand = (TextView) itemView.findViewById(R.id.newsauthor);
+            name = (TextView) itemView.findViewById(R.id.newstitle);
+            price = (TextView) itemView.findViewById(R.id.newsdate);
+            iv = (ImageView) itemView.findViewById(R.id.newsimage);
         }
 
     }

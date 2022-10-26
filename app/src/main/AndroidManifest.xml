@@ -28,14 +28,15 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".NewsFeedActivity"
-            android:exported="false">
+            android:exported="false"
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/Theme.Design.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.Design.Light.NoActionBar" />
         <activity
             android:name=".ChoiceActivity"
             android:exported="true"
@@ -73,7 +74,7 @@
             android:icon="@drawable/ic_launcher"
             android:label="@string/this_app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/ZMTheme.MainWindow"></activity>
+            android:theme="@style/ZMTheme.MainWindow" />
         <activity
             android:name=".otherfeatures.MyWaitJoinActivity"
             android:icon="@drawable/ic_launcher"
