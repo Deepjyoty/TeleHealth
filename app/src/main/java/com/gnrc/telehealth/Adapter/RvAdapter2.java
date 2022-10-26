@@ -129,8 +129,6 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
     private void thisWasClicked(int position) {
             aCount++;
             dataModelArrayList.get(position).setCurrentcount(aCount);
-
-
         //aCount++;
         //dataModelArrayList.get(position).setCurrentcount(aCount);
         //Toast.makeText(inflater.getContext(), ""+dataModelArrayList.get(position).getCurrentcount(), Toast.LENGTH_SHORT).show();
