@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/zm_black"
@@ -9,7 +10,8 @@
     <us.zoom.sdksample.inmeetingfunction.customizedmeetingui.rawdata.RawDataRender
         android:id="@+id/big_video"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="MissingClass">
 
     </us.zoom.sdksample.inmeetingfunction.customizedmeetingui.rawdata.RawDataRender>
 
@@ -127,7 +129,7 @@
                 android:src="@drawable/icon_switch_camera" />
 
             <TextView
-                android:id="@+id/text_video"
+                android:id="@+id/text_video2"
                 style="@style/ZMTextView.ToolbarBtnLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -9,8 +9,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.0.1">
+    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.0.2">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/Room_Recycler_view_DataAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/RoomModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/AppDatabase.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/Converters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/DatabaseClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/RoomDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/Roomdata.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Family_List_Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Family_List_Activity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/DataModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/DataModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_rawdata.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_rawdata.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,9 +38,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="resourceFile" />
         <option value="layoutResourceFile" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -82,10 +94,16 @@
       <recent name="D:\Productview\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\menu" />
       <recent name="D:\Productview\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\layout" />
     </key>
+    <key name="android.template.711370710">
+      <recent name="com.gnrc.telehealth" />
+    </key>
     <key name="android.template.-828308684">
       <recent name="com.gnrc.telehealth" />
     </key>
     <key name="android.template.623209979">
+      <recent name="com.gnrc.telehealth" />
+    </key>
+    <key name="android.template.1899819044">
       <recent name="com.gnrc.telehealth" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -241,7 +259,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666785129927</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="commit 1.0.2">
+      <created>1666787153535</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1666787153535</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -261,9 +286,9 @@
     <MESSAGE value="First Commit new" />
     <MESSAGE value="second commit" />
     <MESSAGE value="third commit" />
-    <MESSAGE value="commit 1.0.2" />
     <MESSAGE value="commit 1.0.0" />
     <MESSAGE value="commit 1.0.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit 1.0.1" />
+    <MESSAGE value="commit 1.0.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit 1.0.2" />
   </component>
 </project>

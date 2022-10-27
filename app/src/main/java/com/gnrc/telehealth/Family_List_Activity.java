@@ -40,11 +40,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.gnrc.telehealth.Adapter.Room_Recycler_view_DataAdapter;
 import com.gnrc.telehealth.Adapter.RvAdapter;
 import com.gnrc.telehealth.Fragments.NewsFeedFragment;
 import com.gnrc.telehealth.Fragments.SurveyFragment;
 import com.gnrc.telehealth.Model.DataModel;
+import com.gnrc.telehealth.Model.RoomModel;
 import com.gnrc.telehealth.Model.StateDataModel;
+import com.gnrc.telehealth.Room.DatabaseClient;
+import com.gnrc.telehealth.Room.Roomdata;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -55,6 +59,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Family_List_Activity extends AppCompatActivity implements  RvAdapter.userclicklistener{
@@ -66,6 +71,9 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     ArrayList<DataModel> dataModelArrayList;
     ArrayList<StateDataModel> stateDataModelArrayList;
     ArrayList<StateDataModel> districtDataModelArrayList;
+    private ArrayList<RoomModel> arrayList;
+    private Room_Recycler_view_DataAdapter room_recycler_view_dataAdapter;
+
     private RvAdapter rvAdapter;
     private RecyclerView recyclerView;
     TextInputLayout familyhead, phone, house, address, city, pin;
@@ -154,6 +162,38 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
             }
         });
         return true;
+    }
+    private void fetchfromRoom() {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+
+                List<Roomdata> recipeList = DatabaseClient.getInstance(Family_List_Activity.this).getAppDatabase().recipeDao().getAll();
+                arrayList.clear();
+                for (Roomdata recipe: recipeList) {
+                    RoomModel repo = new RoomModel(recipe.getId(),recipe.getFamilyhead(),
+                            recipe.getPhone(),
+                            recipe.getHouse(),
+                            recipe.getAddress(),
+                            recipe.getCity(),
+                            recipe.getDist(),recipe.getState(),recipe.getPin(),recipe.getGaon_panchayat(),
+                            recipe.getBlock_code());
+                    arrayList.add(repo);
+                }
+                // refreshing recycler view
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        room_recycler_view_dataAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+        thread.start();
+
+
     }
     public void showAlertDialogButtonClicked(View view)
     {

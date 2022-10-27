@@ -1,4 +1,4 @@
- package com.gnrc.telehealth.Model;
+package com.gnrc.telehealth.Model;
 
 import java.io.Serializable;
 
