@@ -26,20 +26,25 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.RvAdapter2;
+import com.gnrc.telehealth.DataDetails;
 import com.gnrc.telehealth.Model.DataModel2;
+import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.gnrc.telehealth.R;
+import com.gnrc.telehealth.VideoPlayerActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class NewsFeedFragment extends Fragment {
-    private String URLstring = "https://dummyjson.com/products";
+    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
     private static ProgressDialog mProgressDialog;
-    ArrayList<DataModel2> dataModelArrayList;
+    ArrayList<Model_newsfeed> dataModelArrayList;
     private RvAdapter2 rvAdapter2;
     private RecyclerView recyclerView;
     View view;
@@ -49,6 +54,7 @@ public class NewsFeedFragment extends Fragment {
     public NewsFeedFragment() {
         // Required empty public constructor
     }
+
 
     public static NewsFeedFragment newInstance(String param1, String param2) {
         NewsFeedFragment fragment = new NewsFeedFragment();
@@ -72,14 +78,14 @@ public class NewsFeedFragment extends Fragment {
         // Add the following lines to create RecyclerView
         recyclerView = view.findViewById(R.id.newsrecycler);
 
-        fetchingJSON();
+        //fetchingJSON();
         return view;
     }
     private void fetchingJSON() {
 
         showSimpleProgressDialog(getContext(), "Loading...","Fetching Json",false);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLstring,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -90,24 +96,33 @@ public class NewsFeedFragment extends Fragment {
 
                             removeSimpleProgressDialog();
 
-                            JSONObject obj = new JSONObject(response);
+                            JSONArray obj = new JSONArray(response);
                             dataModelArrayList = new ArrayList<>();
-                            JSONArray dataArray  = obj.getJSONArray("products");
+                            //JSONArray dataArray  = obj.getJSONArray("products");
 
-                            for (int i = 0; i < dataArray.length(); i++) {
-                                DataModel2 playerModel = new DataModel2();
-                                JSONObject dataobj = dataArray.getJSONObject(i);
-                                playerModel.setId(dataobj.getInt("id"));
-                                playerModel.setTitle(dataobj.getString("title"));
-                                playerModel.setBrand(dataobj.getString("brand"));
-                                playerModel.setPrice(dataobj.getInt("price"));
-                                playerModel.setThumbnail(dataobj.getString("thumbnail"));
-                                playerModel.setDescription(dataobj.getString("description"));
+                            for (int i = 0; i < obj.length(); i++) {
+
+                                JSONObject dataobj = obj.getJSONObject(i);
+                                String title = dataobj.getString("title");
+                                String author = dataobj.getString("author");
+                                String date = dataobj.getString("date");
+                                String content_desc = dataobj.getString("content_desc");
+                                String video_url = dataobj.getString("video_url");
+                                String thumbnail_url = dataobj.getString("thumbnail_url");
+                                String content_type = dataobj.getString("content_type");
+                                Model_newsfeed playerModel = new Model_newsfeed(title,author,date,content_desc,video_url,thumbnail_url,content_type);
+                                playerModel.setTitle(title);
+                                playerModel.setAuthor(author);
+                                playerModel.setDate(date);
+                                playerModel.setContent_desc(content_desc);
+                                playerModel.setVideo_url(video_url);
+                                playerModel.setThumbnail_url(thumbnail_url);
+                                playerModel.setContent_type(content_type);
 
                                 dataModelArrayList.add(playerModel);
 
                             }
-                            Log.d("deep", "" + dataModelArrayList);
+                            Log.d("deep1", "" + dataModelArrayList);
                             setupRecycler();
                             // }
 
@@ -122,7 +137,16 @@ public class NewsFeedFragment extends Fragment {
                         //displaying the error in toast if occurrs
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                });
+                })
+        {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String,String> params = new HashMap<>();
+                params.put("req_type","get-news-feed");
+                Log.d("deep", "getParams: " + params);
+                return params;
+            }
+        };
 
         // request queue
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
@@ -203,8 +227,11 @@ public class NewsFeedFragment extends Fragment {
             }
         });
     }
-    public void selecteduser(DataModel2 dataModel) {
+    public void selecteduser(Model_newsfeed dataModel) {
+
         //dataModel.getid();
-       // startActivity(new Intent(this,DataDetails.class).putExtra("data",dataModel));
+        startActivity(new Intent(getActivity(), VideoPlayerActivity.class).putExtra("data",dataModel));
+
+
     }
 }

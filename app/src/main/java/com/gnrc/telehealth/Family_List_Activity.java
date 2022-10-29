@@ -1,6 +1,5 @@
 package com.gnrc.telehealth;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,22 +16,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -42,15 +36,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.Room_Recycler_view_DataAdapter;
 import com.gnrc.telehealth.Adapter.RvAdapter;
-import com.gnrc.telehealth.Fragments.NewsFeedFragment;
-import com.gnrc.telehealth.Fragments.SurveyFragment;
 import com.gnrc.telehealth.Model.DataModel;
 import com.gnrc.telehealth.Model.RoomModel;
 import com.gnrc.telehealth.Model.StateDataModel;
-import com.gnrc.telehealth.Room.DatabaseClient;
-import com.gnrc.telehealth.Room.Roomdata;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -59,7 +47,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Family_List_Activity extends AppCompatActivity implements  RvAdapter.userclicklistener{
@@ -75,6 +62,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     private Room_Recycler_view_DataAdapter room_recycler_view_dataAdapter;
 
     private RvAdapter rvAdapter;
+    private Room_Recycler_view_DataAdapter rvAdapter2;
     private RecyclerView recyclerView;
     TextInputLayout familyhead, phone, house, address, city, pin;
     Spinner dist, state;
@@ -98,6 +86,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_family_list);
+
         addfamily = (Button) findViewById(R.id.addfamily);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
@@ -106,7 +95,21 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         preferencesEditor = mPreferences.edit();
         userid = mPreferences.getString("user_id","");
         Toast.makeText(this, ""+ userid, Toast.LENGTH_SHORT).show();
-
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting() && arrayList != null) {
+            // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                // connected to wifi
+                fethingJSON();
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to mobile data
+                fethingJSON();
+            }
+        } else {
+            /*fetchfromRoom();*/
+            // not connected to the internet
+        }
 
         // pass the Open and Close toggle for the drawer layout listener
         // to toggle the button
@@ -114,7 +117,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         actionBarDrawerToggle.syncState();
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        fethingJSON();
+
         addfamily.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -163,38 +166,37 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         });
         return true;
     }
-    private void fetchfromRoom() {
+ /*   private void fetchfromRoom() {
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
 
 
-                List<Roomdata> recipeList = DatabaseClient.getInstance(Family_List_Activity.this).getAppDatabase().recipeDao().getAll();
-                arrayList.clear();
-                for (Roomdata recipe: recipeList) {
-                    RoomModel repo = new RoomModel(recipe.getId(),recipe.getFamilyhead(),
-                            recipe.getPhone(),
-                            recipe.getHouse(),
-                            recipe.getAddress(),
-                            recipe.getCity(),
-                            recipe.getDist(),recipe.getState(),recipe.getPin(),recipe.getGaon_panchayat(),
-                            recipe.getBlock_code());
-                    arrayList.add(repo);
-                }
-                // refreshing recycler view
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        room_recycler_view_dataAdapter.notifyDataSetChanged();
+                    List<Roomdata> recipeList = DatabaseClient.getInstance(Family_List_Activity.this).getAppDatabase().recipeDao().getAll();
+                    //arrayList.clear();
+                    for (Roomdata recipe: recipeList) {
+                        RoomModel repo = new RoomModel(recipe.getId(), recipe.getFamilyhead(),
+                                recipe.getPhone(),
+                                recipe.getHouse(),
+                                recipe.getAddress(),
+                                recipe.getCity(),
+                                recipe.getDist(), recipe.getState(), recipe.getPin(), recipe.getGaon_panchayat(),
+                                recipe.getBlock_code());
+                        arrayList.add(repo);
                     }
-                });
-            }
-        });
-        thread.start();
 
-
-    }
+                    // refreshing recycler view
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            room_recycler_view_dataAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            });
+            thread.start();
+        }*/
     public void showAlertDialogButtonClicked(View view)
     {
 
@@ -581,6 +583,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         rvAdapter = new RvAdapter(this,dataModelArrayList,this::selecteduser);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(rvAdapter);
+
     }
 
     public static void removeSimpleProgressDialog() {

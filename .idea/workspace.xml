@@ -9,20 +9,40 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.0.2">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/Room_Recycler_view_DataAdapter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/RoomModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/AppDatabase.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/Converters.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/DatabaseClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/RoomDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/Roomdata.java" afterDir="false" />
+    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.0.3">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/DataDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/VideoPlayerActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/background_img.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/bottom_gradient.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/news.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/newsfd.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/survey1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/survey_icon_fragment.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/surveyfd.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/wallet.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/white_round.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_data_details.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_video_player.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/item_list.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/Room_Recycler_view_DataAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/Room_Recycler_view_DataAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/RvAdapter2.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/RvAdapter2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Family_List_Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Family_List_Activity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/DataModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/DataModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_rawdata.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_rawdata.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/NewsFeedFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/NewsFeedFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/SurveyFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/SurveyFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/Model_newsfeed.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Model/Model_newsfeed.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/AppDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/AppDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/DatabaseClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/DatabaseClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/RoomDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Room/RecipeDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_news_feed.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_news_feed.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_news_feed.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_news_feed.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_survey.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_survey.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/bottom_navigation_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/menu/bottom_navigation_menu.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,13 +55,30 @@
       <ProjectState />
     </projectState>
   </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="TeleHealth" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="resourceFile" />
-        <option value="layoutResourceFile" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="layoutResourceFile" />
+        <option value="resourceFile" />
       </list>
     </option>
   </component>
@@ -74,10 +111,12 @@
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android-custom-viewC:/Users/gnrc/.gradle/caches/modules-2/files-2.1/androidx.recyclerview/recyclerview/1.2.1/f0f93e67af3f7417bdd560d5142f6dec4fe629c3/recyclerview-1.2.1-sources.jar!/androidx/recyclerview/widget/RecyclerView.java_SELECTED" value="RecyclerView" />
+    <property name="android-custom-viewC:/Users/gnrc/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.4.0/51035a8f6342c20d4d8f242d100e6f25e0c271ac/material-1.4.0-sources.jar!/com/google/android/material/bottomnavigation/BottomNavigationView.java_SELECTED" value="BottomNavigationView" />
     <property name="android-custom-viewC:/Users/gnrc/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.4.0/51035a8f6342c20d4d8f242d100e6f25e0c271ac/material-1.4.0-sources.jar!/com/google/android/material/textfield/TextInputEditText.java_SELECTED" value="TextInputEditText" />
+    <property name="android-custom-viewC:/Users/gnrc/AppData/Local/Android/Sdk/sources/android-33/android/view/View.java_SELECTED" value="View" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../productview" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/res/drawable" />
     <property name="project.structure.last.edited" value="Suggestions" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -88,17 +127,23 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Development\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\drawable" />
+      <recent name="D:\Development\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\layout" />
+      <recent name="D:\Development\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\java\com\gnrc\telehealth\Roomtest" />
       <recent name="D:\Development\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\java\com\gnrc\telehealth\Model" />
       <recent name="D:\Development\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\java\com\gnrc\telehealth\Adapter" />
-      <recent name="D:\Productview\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\drawable" />
-      <recent name="D:\Productview\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\menu" />
-      <recent name="D:\Productview\TELEHEALTH-STABLE-VERSION-4001\TeleHealth\app\src\main\res\layout" />
+    </key>
+    <key name="android.template.-1555151924">
+      <recent name="com.gnrc.telehealth" />
     </key>
     <key name="android.template.711370710">
       <recent name="com.gnrc.telehealth" />
     </key>
     <key name="android.template.-828308684">
       <recent name="com.gnrc.telehealth" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.gnrc.telehealth.Room" />
     </key>
     <key name="android.template.623209979">
       <recent name="com.gnrc.telehealth" />
@@ -266,7 +311,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666787153535</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="commit 1.0.3">
+      <created>1666853638642</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1666853638642</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -289,6 +341,7 @@
     <MESSAGE value="commit 1.0.0" />
     <MESSAGE value="commit 1.0.1" />
     <MESSAGE value="commit 1.0.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit 1.0.2" />
+    <MESSAGE value="commit 1.0.3" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit 1.0.3" />
   </component>
 </project>

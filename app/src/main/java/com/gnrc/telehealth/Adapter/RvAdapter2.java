@@ -1,6 +1,8 @@
 package com.gnrc.telehealth.Adapter;
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gnrc.telehealth.DataDetails;
 import com.gnrc.telehealth.Model.DataModel2;
+import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.gnrc.telehealth.R;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
@@ -19,19 +23,19 @@ import java.util.Collections;
 public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> implements Filterable {
 
     private LayoutInflater inflater;
-    private ArrayList<DataModel2> dataModelArrayList;
-    private ArrayList<DataModel2> filteredlist;
-    private ArrayList<DataModel2> count;
-    private DataModel2 dataModel;
+    private ArrayList<Model_newsfeed> dataModelArrayList;
+    private ArrayList<Model_newsfeed> filteredlist;
+    private ArrayList<Model_newsfeed> count;
+    private Model_newsfeed dataModel;
     public userclicklistener userclicklistener;
 
     private int aCount = 0;
 
 
     public interface userclicklistener{
-        void selecteduser(DataModel2 dataModel);
+        void selecteduser(Model_newsfeed dataModel);
     }
-    public RvAdapter2(Context ctx, ArrayList<DataModel2> dataModelArrayList, userclicklistener userclicklistener){
+    public RvAdapter2(Context ctx, ArrayList<Model_newsfeed> dataModelArrayList, userclicklistener userclicklistener){
 
         inflater = LayoutInflater.from(ctx);
         this.dataModelArrayList = dataModelArrayList;
@@ -50,12 +54,12 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        dataModel = dataModelArrayList.get(position);
-        Picasso.get().load(dataModelArrayList.get(position).getThumbnail()).into(holder.iv);
+        Model_newsfeed dataModel = dataModelArrayList.get(position);
+        Picasso.get().load(dataModelArrayList.get(position).getThumbnail_url()).into(holder.iv);
         holder.name.setText(dataModelArrayList.get(position).getTitle());
-        holder.brand.setText(dataModelArrayList.get(position).getBrand());
-        holder.price.setText("$ "+String.valueOf(dataModelArrayList.get(position).getPrice()));
-        dataModelArrayList.get(position).getDescription();
+        holder.brand.setText(dataModelArrayList.get(position).getAuthor());
+        holder.price.setText(String.valueOf(dataModelArrayList.get(position).getDate()));
+        dataModelArrayList.get(position).getContent_desc();
 
 
 
@@ -63,10 +67,17 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
             int count = 0;
             @Override
             public void onClick(View v) {
-                int c = count++;
-                dataModelArrayList.get(holder.getAdapterPosition()).setCurrentcount(dataModelArrayList.get(holder.getAdapterPosition()).getCurrentcount()+1);
-                //Toast.makeText(inflater.getContext(), ""+c, Toast.LENGTH_SHORT).show();
+                //int c = count++;
+/*                dataModelArrayList.get(holder.getAdapterPosition()).setCurrentcount(dataModelArrayList.get(holder.getAdapterPosition()).getCurrentcount()+1);
+                //Toast.makeText(inflater.getContext(), ""+c, Toast.LENGTH_SHORT).show();*/
+                /*if (dataModelArrayList.get(holder.getAdapterPosition()).getContent_type() == "video"){
+                    v.getContext().startActivity(new Intent(v.getContext(), DataDetails.class).putExtra("data",dataModel));
+                    userclicklistener.selecteduser(dataModel);
+                }else{
+                    userclicklistener.selecteduser(dataModel);
+                }*/
                 userclicklistener.selecteduser(dataModel);
+
             }
 
         });
@@ -103,12 +114,12 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
     private Filter datafilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            ArrayList<DataModel2> filtered = new ArrayList<>();
+            ArrayList<Model_newsfeed> filtered = new ArrayList<>();
             if (constraint == null || constraint.length() == 0){
                 filtered.addAll(filteredlist);
             }else {
                 String filterpattern = constraint.toString().toLowerCase().trim();
-                for (DataModel2 item:filteredlist ){
+                for (Model_newsfeed item:filteredlist ){
                     if (item.getTitle().toLowerCase().contains(filterpattern)){
                         filtered.add(item);
                     }
@@ -128,7 +139,7 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
     };
     private void thisWasClicked(int position) {
             aCount++;
-            dataModelArrayList.get(position).setCurrentcount(aCount);
+           // dataModelArrayList.get(position).setCurrentcount(aCount);
         //aCount++;
         //dataModelArrayList.get(position).setCurrentcount(aCount);
         //Toast.makeText(inflater.getContext(), ""+dataModelArrayList.get(position).getCurrentcount(), Toast.LENGTH_SHORT).show();

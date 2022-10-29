@@ -9,16 +9,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gnrc.telehealth.Model.DataModel;
 import com.gnrc.telehealth.Model.RoomModel;
 import com.gnrc.telehealth.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Room_Recycler_view_DataAdapter extends RecyclerView.Adapter<Room_Recycler_view_DataAdapter.ViewHolder>{
     Context context;
-    ArrayList<RoomModel> dataModelArrayList;
+    List<DataModel> dataModelArrayList;
 
-    public Room_Recycler_view_DataAdapter(Context context, ArrayList<RoomModel> arrayList) {
+    public Room_Recycler_view_DataAdapter(Context context, ArrayList<DataModel> arrayList) {
         this.context = context;
         this.dataModelArrayList = arrayList;
     }
@@ -33,7 +35,7 @@ public class Room_Recycler_view_DataAdapter extends RecyclerView.Adapter<Room_Re
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        RoomModel repo = dataModelArrayList.get(position);
+        DataModel repo = dataModelArrayList.get(position);
 
         holder.name.setText(repo.getFamilyhead());
         holder.phone.setText(repo.getPhone());
