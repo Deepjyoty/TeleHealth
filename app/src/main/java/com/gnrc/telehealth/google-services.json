@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "760896169852",
+    "project_id": "telehealth-2cfb4",
+    "storage_bucket": "telehealth-2cfb4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760896169852:android:086b0e66890a037eff66f9",
+        "android_client_info": {
+          "package_name": "com.gnrc.telehealth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760896169852-h7k12ejrjehakjkhpifg75rvrva3afa0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCFYTCjAtHfC7dvx6cE-g6IU6sQC9Kxqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760896169852-h7k12ejrjehakjkhpifg75rvrva3afa0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -78,7 +78,7 @@ public class NewsFeedFragment extends Fragment {
         // Add the following lines to create RecyclerView
         recyclerView = view.findViewById(R.id.newsrecycler);
 
-        //fetchingJSON();
+        fetchingJSON();
         return view;
     }
     private void fetchingJSON() {
