@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -34,10 +35,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gnrc.telehealth.Adapter.Room_Recycler_view_DataAdapter;
 import com.gnrc.telehealth.Adapter.RvAdapter;
+import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.DataModel;
-import com.gnrc.telehealth.Model.RoomModel;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -53,16 +53,15 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Button addfamily;
+    private DBhandler dBhandler;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
     private static ProgressDialog mProgressDialog;
     ArrayList<DataModel> dataModelArrayList;
     ArrayList<StateDataModel> stateDataModelArrayList;
     ArrayList<StateDataModel> districtDataModelArrayList;
-    private ArrayList<RoomModel> arrayList;
-    private Room_Recycler_view_DataAdapter room_recycler_view_dataAdapter;
+
 
     private RvAdapter rvAdapter;
-    private Room_Recycler_view_DataAdapter rvAdapter2;
     private RecyclerView recyclerView;
     TextInputLayout familyhead, phone, house, address, city, pin;
     Spinner dist, state;
@@ -87,17 +86,21 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_family_list);
 
-        addfamily = (Button) findViewById(R.id.addfamily);
+        addfamily = findViewById(R.id.addfamily);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         recyclerView = findViewById(R.id.recycler);
         mPreferences=getSharedPreferences(sharedprofFile,MODE_PRIVATE);
         preferencesEditor = mPreferences.edit();
         userid = mPreferences.getString("user_id","");
-        Toast.makeText(this, ""+ userid, Toast.LENGTH_SHORT).show();
+
+
+
+        fethingJSON();
+        viewAll();
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting() && arrayList != null) {
+        /*if (activeNetwork != null && activeNetwork.isConnectedOrConnecting() && arrayList != null) {
             // connected to the internet
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 // connected to wifi
@@ -107,9 +110,9 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                 fethingJSON();
             }
         } else {
-            /*fetchfromRoom();*/
+            //fetchfromRoom();
             // not connected to the internet
-        }
+        }*/
 
         // pass the Open and Close toggle for the drawer layout listener
         // to toggle the button
@@ -118,12 +121,13 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        addfamily.setOnClickListener(new View.OnClickListener() {
+/*        addfamily.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAlertDialogButtonClicked(view);
+                //showAlertDialogButtonClicked(view);
+                //viewAll();
             }
-        });
+        });*/
 
     }
 
@@ -166,16 +170,16 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         });
         return true;
     }
- /*   private void fetchfromRoom() {
+/*    private void fetchfromRoom() {
 
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
 
 
-                    List<Roomdata> recipeList = DatabaseClient.getInstance(Family_List_Activity.this).getAppDatabase().recipeDao().getAll();
+                    List<Recipe> recipeList = DatabaseClient.getInstance(Family_List_Activity.this).getAppDatabase().recipeDao().getAll();
                     //arrayList.clear();
-                    for (Roomdata recipe: recipeList) {
+                    for (Recipe recipe: recipeList) {
                         RoomModel repo = new RoomModel(recipe.getId(), recipe.getFamilyhead(),
                                 recipe.getPhone(),
                                 recipe.getHouse(),
@@ -418,6 +422,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                 Map<String,String> params = new HashMap<String,String>();
                 params.put("req_type","get-state-list");
                 return params;
+
             }
         };
         // request queue
@@ -425,7 +430,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         requestQueue.add(stringRequest);
 
     }
-    private void fethingJSON() {
+    public void fethingJSON() {
 
         showSimpleProgressDialog(this, "Loading...","Fetching Json",false);
 
@@ -436,6 +441,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                     public void onResponse(String response) {
                         Log.d("strrrrr", ">>" + response);
                         try {
+
                             removeSimpleProgressDialog();
 
                             JSONArray obj = new JSONArray(response);
@@ -456,11 +462,22 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 playerModel.setDist(dataobj.getString("SSFM_DIST_CODE"));
                                 playerModel.setState(dataobj.getString("SSFM_STATE_CODE"));
                                 playerModel.setPin(dataobj.getString("SSFM_PIN"));
-                                playerModel.setState(dataobj.getString("SSFM_STATE_CODE"));
                                 playerModel.setViewtext("View");
                                 playerModel.setEdittext("EditFamily");
 
                                 dataModelArrayList.add(playerModel);
+                                dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addnewprod(dataobj.getString("SSFM_ID"),
+                                        dataobj.getString("SSFM_HEAD_NAME"),
+                                        dataobj.getString("SSFM_CONTACT_NO"),
+                                        dataobj.getString("SSFM_HOUSE_NO"),
+                                        dataobj.getString("SSFM_ADDR"),
+                                        dataobj.getString("SSFM_GAON_PNCHYT"),
+                                        dataobj.getString("SSFM_BLOCK_CODE"),
+                                        dataobj.getString("SSFM_CITY_CODE"),
+                                        dataobj.getString("SSFM_DIST_CODE"),
+                                        dataobj.getString("SSFM_STATE_CODE"),
+                                        dataobj.getString("SSFM_PIN"));
                             }
 
                             setupRecycler();
@@ -632,4 +649,49 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         //dataModel.getid();
         //startActivity(new Intent(this,DataDetails.class).putExtra("data",dataModel));
     }
+    public void viewAll() {
+
+        addfamily.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dBhandler = new DBhandler(getApplicationContext());
+                        Cursor res = dBhandler.getAllData();
+                        if(res.getCount() == 0) {
+                            // show message
+                            showMessage("Error","Nothing found");
+                            return;
+                        }
+
+                        StringBuffer buffer = new StringBuffer();
+                        while (res.moveToNext()) {
+                            buffer.append("Id :"+ res.getString(0)+"\n");
+                            buffer.append("Family Head :"+ res.getString(1)+"\n");
+                            buffer.append("Phone :"+ res.getString(2)+"\n");
+                            buffer.append("House :"+ res.getString(3)+"\n");
+                            buffer.append("Address :"+ res.getString(4)+"\n");
+                            buffer.append("GaonPanchayat :"+ res.getString(5)+"\n");
+                            buffer.append("BlockCode :"+ res.getString(6)+"\n");
+                            buffer.append("City :"+ res.getString(7)+"\n");
+                            buffer.append("District :"+ res.getString(8)+"\n");
+                            buffer.append("State :"+ res.getString(9)+"\n");
+                            buffer.append("Pin :"+ res.getString(10)+"\n");
+
+                        }
+
+                        // Show all data
+                        showMessage("Data",buffer.toString());
+                    }
+                }
+        );
+    }
+
+    public void showMessage(String title,String Message){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(Message);
+        builder.show();
+    }
+
 }

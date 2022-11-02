@@ -22,12 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gnrc.telehealth.Family_List_Activity;
 import com.gnrc.telehealth.Model.DataModel;
+import com.gnrc.telehealth.Model.RoomModel;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.gnrc.telehealth.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RvAdapter extends RecyclerView.Adapter<RvAdapter.MyViewHolder> implements Filterable {
 

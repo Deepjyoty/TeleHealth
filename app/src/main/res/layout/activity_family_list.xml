@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="10dp"
-            android:layout_below="@+id/bottom_navigation"
             android:layout_above="@id/addfamily"
             android:layout_marginTop="15dp"/>
 
