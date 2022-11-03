@@ -23,7 +23,8 @@ public class DBhandler extends SQLiteOpenHelper {
 
     // below variable is for our table name.
     private static final String TABLE_NAME = "family";
-    private static final String TABLE_NAME2 = "spinner";
+    private static final String TABLE_NAME2 = "spinnerstate";
+    private static final String TABLE_NAME3 = "spinnerdist";
 
     // below variable is for our id column.
     private static final String ID_COL = "SSFM_ID";
@@ -37,6 +38,8 @@ public class DBhandler extends SQLiteOpenHelper {
     private static final String Dist = "SSFM_DIST_CODE";
     private static final String State = "SSFM_STATE_CODE";
     private static final String Pin = "SSFM_PIN";
+    private static final String Pinid = "id";
+    private static final String Pinvalue = "value";
 
 
     // creating a constructor for our database handler.
@@ -52,10 +55,15 @@ public class DBhandler extends SQLiteOpenHelper {
         // setting our column names
         // along with their data types.
         String query = "CREATE TABLE " + TABLE_NAME + " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String, SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
+        String query2 = "CREATE TABLE " + TABLE_NAME2 + " (id String primary key, value String) ";
+        String query3 = "CREATE TABLE " + TABLE_NAME3 + " (id String primary key, value String) ";
+
 
         // at last we are calling a exec sql
         // method to execute above sql query
         db.execSQL(query);
+        db.execSQL(query2);
+        db.execSQL(query3);
 
     }
 
@@ -91,6 +99,26 @@ public class DBhandler extends SQLiteOpenHelper {
         db.close();
         Log.d("strrrrr", "Inserted Successfully" + values );
     }
+    public void addspinner(String id, String value) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Pinid, id);
+        values.put(Pinvalue, value);
+        db.insert(TABLE_NAME2, null, values);
+        db.close();
+        Log.d("strrrrr", "Inserted Successfully" + values );
+    }
+    public void addspinnerdist(String id, String value) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Pinid, id);
+        values.put(Pinvalue, value);
+        db.insert(TABLE_NAME3, null, values);
+        db.close();
+        Log.d("strrrrr", "Inserted Successfully" + values );
+    }
     public void update(DataModel dataModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -119,6 +147,21 @@ public class DBhandler extends SQLiteOpenHelper {
     public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+TABLE_NAME,null);
+
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getspinnerdata() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+TABLE_NAME2,null);
+
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getspinnerdatadist() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+TABLE_NAME3,null);
+
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }

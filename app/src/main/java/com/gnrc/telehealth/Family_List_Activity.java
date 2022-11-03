@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -73,8 +74,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     SharedPreferences.Editor preferencesEditor;
     DataModel playerModel;
     StateDataModel stateModel;
-    private ArrayList<String> states = new ArrayList<String>();
-    private ArrayList<String> district = new ArrayList<String>();
+    private ArrayList<String> states;
+    private ArrayList<String> district ;
     ArrayAdapter<String> spinnerArrayAdapter;
     int spinnerPosition;
     AlertDialog dialog;
@@ -212,8 +213,24 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         // the alert dialog
         dialog = builder.create();
         dialog.show();
-        fetchingspinnerdistrict();
-        fetchingspinnerstate();
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                // connected to wifi
+                fetchingspinnerdistrict();
+                fetchingspinnerstate();
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to mobile data
+                fetchingspinnerdistrict();
+                fetchingspinnerstate();
+            }
+        } else {
+            setupspinner();
+            setupspinnerdist();
+            // not connected to the internet
+        }
     }
 
     // Do something with the data
@@ -251,33 +268,12 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 stateModel = new StateDataModel();
                                 JSONObject dataobj = obj.getJSONObject(i);
 
-                                stateModel.setId(dataobj.getString("id"));
-                                stateModel.setDistrict(dataobj.getString("value"));
+                                dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addspinnerdist(dataobj.getString("id"),
+                                        dataobj.getString("value"));
 
-                                districtDataModelArrayList.add(stateModel);
-
-                                spinnerArrayAdapter = new ArrayAdapter<String>(Family_List_Activity.this, android.R.layout.simple_spinner_item, district);
-                            }
-                            for (int i = 0; i < districtDataModelArrayList.size(); i++){
-                                district.add(districtDataModelArrayList.get(i).getId().toString());
-                                spinnerPosition = spinnerArrayAdapter.getPosition(districtDataModelArrayList.get(i).getId());
-                            }
-
-                            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
-                            dist.setAdapter(spinnerArrayAdapter);
-                            dist.setSelection(spinnerPosition);
-                            dist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                                    value = adapterView.getItemAtPosition(position).toString();
-
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                                }
-                            });
+                            };
+                            setupspinnerdist();
                             removeSimpleProgressDialog();
                             // }
 
@@ -333,38 +329,19 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
 
                             JSONArray obj = new JSONArray(response);
                             stateDataModelArrayList = new ArrayList<>();
-
+                            states = new ArrayList<String>();
                             for (int i = 0; i < obj.length(); i++) {
                                 stateModel = new StateDataModel();
                                 JSONObject dataobj = obj.getJSONObject(i);
 
-                                stateModel.setId(dataobj.getString("id"));
-                                stateModel.setState(dataobj.getString("value"));
+                                /*stateModel.setId(dataobj.getString("id"));
+                                stateModel.setState(dataobj.getString("value"));*/
+                                dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addspinner(dataobj.getString("id"),
+                                        dataobj.getString("value"));
 
-                                stateDataModelArrayList.add(stateModel);
-
-                            spinnerArrayAdapter = new ArrayAdapter<String>(Family_List_Activity.this, android.R.layout.simple_spinner_item, states);
-                            }
-                            for (int i = 0; i < stateDataModelArrayList.size(); i++){
-                                states.add(stateDataModelArrayList.get(i).getId());
-                                spinnerPosition = spinnerArrayAdapter.getPosition(stateDataModelArrayList.get(i).getId());
-                            }
-
-                            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
-                            state.setAdapter(spinnerArrayAdapter);
-                            state.setSelection(spinnerPosition);
-                            state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                                    value2= adapterView.getItemAtPosition(position).toString();
-
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                                }
-                            });
+                            };
+                            setupspinner();
                             removeSimpleProgressDialog();
                             // }
 
@@ -565,6 +542,78 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         requestQueue.add(stringRequest);
     }
 
+    private void setupspinner(){
+        state = (Spinner) dialog.findViewById(R.id.spfamilyheadstate);
+        dBhandler = new DBhandler(getApplicationContext());
+        Cursor cursor = dBhandler.getspinnerdata();
+        states = new ArrayList<String>();
+        stateDataModelArrayList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                stateModel = new StateDataModel();
+                stateModel.setId(cursor.getString(0));
+                stateModel.setState(cursor.getString(1));
+                stateDataModelArrayList.add(stateModel);
+
+            } while (cursor.moveToNext());
+            spinnerArrayAdapter = new ArrayAdapter<String>(Family_List_Activity.this, android.R.layout.simple_spinner_item, states);
+            for (int i = 0; i < stateDataModelArrayList.size(); i++) {
+                states.add(stateDataModelArrayList.get(i).getState());
+                spinnerPosition = spinnerArrayAdapter.getPosition(stateDataModelArrayList.get(i).getState());
+            }
+            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+            state.setAdapter(spinnerArrayAdapter);
+            state.setSelection(spinnerPosition);
+            state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                    value2 = adapterView.getItemAtPosition(position).toString();
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+        }
+    }
+    private void setupspinnerdist(){
+        dist = (Spinner) dialog.findViewById(R.id.spfamilyheaddistrict);
+        dBhandler = new DBhandler(getApplicationContext());
+        Cursor cursor = dBhandler.getspinnerdatadist();
+        district = new ArrayList<String>();
+        districtDataModelArrayList = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                stateModel = new StateDataModel();
+                stateModel.setId(cursor.getString(0));
+                stateModel.setDistrict(cursor.getString(1));
+                districtDataModelArrayList.add(stateModel);
+
+            } while (cursor.moveToNext());
+            spinnerArrayAdapter = new ArrayAdapter<String>(Family_List_Activity.this, android.R.layout.simple_spinner_item, district);
+            for (int i = 0; i < districtDataModelArrayList.size(); i++) {
+                district.add(districtDataModelArrayList.get(i).getDistrict());
+                spinnerPosition = spinnerArrayAdapter.getPosition(districtDataModelArrayList.get(i).getDistrict());
+            }
+            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+            dist.setAdapter(spinnerArrayAdapter);
+            dist.setSelection(spinnerPosition);
+            dist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                    value = adapterView.getItemAtPosition(position).toString();
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+        }
+    }
     private void setupRecycler(){
         dataModelArrayList = new ArrayList<>();
         dBhandler = new DBhandler(getApplicationContext());
