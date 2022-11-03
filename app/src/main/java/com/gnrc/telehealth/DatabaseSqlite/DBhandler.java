@@ -23,6 +23,7 @@ public class DBhandler extends SQLiteOpenHelper {
 
     // below variable is for our table name.
     private static final String TABLE_NAME = "family";
+    private static final String TABLE_NAME2 = "spinner";
 
     // below variable is for our id column.
     private static final String ID_COL = "SSFM_ID";

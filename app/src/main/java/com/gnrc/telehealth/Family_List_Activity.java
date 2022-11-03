@@ -61,6 +61,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     ArrayList<StateDataModel> districtDataModelArrayList;
 
 
+
+
     private RvAdapter rvAdapter;
     private RecyclerView recyclerView;
     TextInputLayout familyhead, phone, house, address, city, pin;
@@ -95,24 +97,26 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         userid = mPreferences.getString("user_id","");
 
 
-
-        fethingJSON();
-        viewAll();
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        /*if (activeNetwork != null && activeNetwork.isConnectedOrConnecting() && arrayList != null) {
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
             // connected to the internet
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 // connected to wifi
                 fethingJSON();
+                viewAll();
+                //setupRecycler();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to mobile data
                 fethingJSON();
+                viewAll();
+
             }
         } else {
-            //fetchfromRoom();
+            setupRecycler();
+            viewAll();
             // not connected to the internet
-        }*/
+        }
 
         // pass the Open and Close toggle for the drawer layout listener
         // to toggle the button
@@ -121,13 +125,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-/*        addfamily.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //showAlertDialogButtonClicked(view);
-                //viewAll();
-            }
-        });*/
+
 
     }
 
@@ -170,37 +168,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         });
         return true;
     }
-/*    private void fetchfromRoom() {
 
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-
-                    List<Recipe> recipeList = DatabaseClient.getInstance(Family_List_Activity.this).getAppDatabase().recipeDao().getAll();
-                    //arrayList.clear();
-                    for (Recipe recipe: recipeList) {
-                        RoomModel repo = new RoomModel(recipe.getId(), recipe.getFamilyhead(),
-                                recipe.getPhone(),
-                                recipe.getHouse(),
-                                recipe.getAddress(),
-                                recipe.getCity(),
-                                recipe.getDist(), recipe.getState(), recipe.getPin(), recipe.getGaon_panchayat(),
-                                recipe.getBlock_code());
-                        arrayList.add(repo);
-                    }
-
-                    // refreshing recycler view
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            room_recycler_view_dataAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-            });
-            thread.start();
-        }*/
     public void showAlertDialogButtonClicked(View view)
     {
 
@@ -451,7 +419,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 playerModel = new DataModel();
                                 JSONObject dataobj = obj.getJSONObject(i);
 
-                                playerModel.setId(dataobj.getString("SSFM_ID"));
+                                /*playerModel.setId(dataobj.getString("SSFM_ID"));
                                 playerModel.setFamilyhead(dataobj.getString("SSFM_HEAD_NAME"));
                                 playerModel.setPhone(dataobj.getString("SSFM_CONTACT_NO"));
                                 playerModel.setHouse(dataobj.getString("SSFM_HOUSE_NO"));
@@ -465,7 +433,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 playerModel.setViewtext("View");
                                 playerModel.setEdittext("EditFamily");
 
-                                dataModelArrayList.add(playerModel);
+                                dataModelArrayList.add(playerModel);*/
                                 dBhandler = new DBhandler(getApplicationContext());
                                 dBhandler.addnewprod(dataobj.getString("SSFM_ID"),
                                         dataobj.getString("SSFM_HEAD_NAME"),
@@ -478,6 +446,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                         dataobj.getString("SSFM_DIST_CODE"),
                                         dataobj.getString("SSFM_STATE_CODE"),
                                         dataobj.getString("SSFM_PIN"));
+                                playerModel.setViewtext("View");
+                                playerModel.setEdittext("EditFamily");
                             }
 
                             setupRecycler();
@@ -596,10 +566,34 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     }
 
     private void setupRecycler(){
+        dataModelArrayList = new ArrayList<>();
+        dBhandler = new DBhandler(getApplicationContext());
+        Cursor cursor = dBhandler.getAllData();
+        //DataModel dmodel = new DataModel();
 
-        rvAdapter = new RvAdapter(this,dataModelArrayList,this::selecteduser);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-        recyclerView.setAdapter(rvAdapter);
+        if (cursor.moveToFirst()) {
+            do {
+                playerModel = new DataModel();
+                playerModel.setId(cursor.getString(0));
+                playerModel.setFamilyhead(cursor.getString(1));
+                playerModel.setPhone(cursor.getString(2));
+                playerModel.setHouse(cursor.getString(3));
+                playerModel.setAddress(cursor.getString(4));
+                playerModel.setGaon_panchayat(cursor.getString(5));
+                playerModel.setBlock_code(cursor.getString(6));
+                playerModel.setCity(cursor.getString(7));
+                playerModel.setDist(cursor.getString(8));
+                playerModel.setState(cursor.getString(9));
+                playerModel.setPin(cursor.getString(10));
+                dataModelArrayList.add(playerModel);
+                playerModel.setViewtext("View");
+                playerModel.setEdittext("EditFamily");
+            }while (cursor.moveToNext());
+            rvAdapter = new RvAdapter(this,dataModelArrayList,this::selecteduser);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+            recyclerView.setAdapter(rvAdapter);
+
+        }
 
     }
 
@@ -655,7 +649,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dBhandler = new DBhandler(getApplicationContext());
+                        showAlertDialogButtonClicked(v);
+/*                        dBhandler = new DBhandler(getApplicationContext());
                         Cursor res = dBhandler.getAllData();
                         if(res.getCount() == 0) {
                             // show message
@@ -680,7 +675,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                         }
 
                         // Show all data
-                        showMessage("Data",buffer.toString());
+                        showMessage("Data",buffer.toString());*/
                     }
                 }
         );
