@@ -5,11 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 
 import com.gnrc.telehealth.Adapter.RvAdapter;
-import com.gnrc.telehealth.Model.DataModel;
 
 public class DBhandler extends SQLiteOpenHelper {
     private RvAdapter adapter;
@@ -22,9 +20,9 @@ public class DBhandler extends SQLiteOpenHelper {
     private static final int DB_VERSION = 4;
 
     // below variable is for our table name.
-    private static final String TABLE_NAME = "family";
-    private static final String TABLE_NAME2 = "spinnerstate";
-    private static final String TABLE_NAME3 = "spinnerdist";
+    private static final String TBL_STATE_MASTER = "tbl_state_master";
+    private static final String TBL_DISTRICT_MASTER = "tbl_district_master";
+    private static final String TBL_FAMILY_MASTER = "tbl_family_master";
 
     // below variable is for our id column.
     private static final String ID_COL = "SSFM_ID";
@@ -54,16 +52,19 @@ public class DBhandler extends SQLiteOpenHelper {
         // an sqlite query and we are
         // setting our column names
         // along with their data types.
-        String query = "CREATE TABLE " + TABLE_NAME + " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String, SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
-        String query2 = "CREATE TABLE " + TABLE_NAME2 + " (id String primary key, value String) ";
-        String query3 = "CREATE TABLE " + TABLE_NAME3 + " (id String primary key, value String) ";
+        //String query = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String, SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
+        String q_create_state_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_STATE_MASTER + " (id String primary key, value String) ";
+        String q_create_dist_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_DISTRICT_MASTER + " (id String primary key, value String) ";
+        String q_create_family_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_FAMILY_MASTER + " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String, SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
+
 
 
         // at last we are calling a exec sql
         // method to execute above sql query
-        db.execSQL(query);
-        db.execSQL(query2);
-        db.execSQL(query3);
+        //db.execSQL(query);
+        db.execSQL(q_create_state_tbl);
+        db.execSQL(q_create_dist_tbl);
+        db.execSQL(q_create_family_tbl);
 
     }
 
@@ -95,31 +96,70 @@ public class DBhandler extends SQLiteOpenHelper {
 
         // after adding all values we are passing
         // content values to our table.
-        db.insert(TABLE_NAME, null, values);
+        //db.insert(TABLE_NAME, null, values);
         db.close();
         Log.d("strrrrr", "Inserted Successfully" + values );
     }
-    public void addspinner(String id, String value) {
+    public void addFamily_db(String id, String familyHead, String phone, String house, String address,
+                             String gaonp, String block_code, String city, String dist, String state, String pin) {
+
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        ContentValues values2 = new ContentValues();
+
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put(ID_COL, id);
+        values.put(FamilyHead, familyHead);
+        values.put(Phone, phone);
+        values.put(House, house);
+        values.put(Address, address);
+        values.put(Gaonp, gaonp);
+        values.put(Block_code, block_code);
+        values.put(City, city);
+        values.put(Dist, dist);
+        values.put(State, state);
+        values.put(Pin, pin);
+/*        values.put(Pinid, id2);
+        values.put(Pinvalue, value);*/
+
+        // after adding all values we are passing
+        // content values to our table.
+        /*db.replace(TABLE_NAME4,null,values2);*/
+        /*String queryreplace = "INSERT OR REPLACE INTO " + TABLE_NAME4 + " (SSFM_STATE_CODE , SSFM_DIST_CODE) VALUES ( " + Dist + " , " + dist + " ) ";
+        db.execSQL(queryreplace);*/
+        db.insert(TBL_FAMILY_MASTER, null, values);
+        db.close();
+        Log.d("strrrrr", "Inserted Successfully" + values );
+    }
+    //Inserting State data to Sqlite table
+    public void setStateDb(String id, String value) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(Pinid, id);
         values.put(Pinvalue, value);
-        db.insert(TABLE_NAME2, null, values);
+        db.insert(TBL_STATE_MASTER, null, values);
         db.close();
         Log.d("strrrrr", "Inserted Successfully" + values );
     }
-    public void addspinnerdist(String id, String value) {
+    //Inserting District data to sqlite table
+    public void setDistDb(String id, String value) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(Pinid, id);
         values.put(Pinvalue, value);
-        db.insert(TABLE_NAME3, null, values);
+        db.insert(TBL_DISTRICT_MASTER, null, values);
         db.close();
         Log.d("strrrrr", "Inserted Successfully" + values );
     }
-    public void update(DataModel dataModel) {
+/*    public void update(DataModel dataModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ID_COL, dataModel.getId());
@@ -136,32 +176,38 @@ public class DBhandler extends SQLiteOpenHelper {
         db.update(TABLE_NAME, values, ID_COL + " = ?", new String[]{String.valueOf(dataModel.getId())});
         //String sql = "UPDATE " + TABLE_NAME + " SET count = ? WHERE id = ?;";
         //db.execSQL(sql);
-    }
+    }*/
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // this method is called to check if the table exists already.
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
-    public Cursor getAllData() {
+/*    public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+TABLE_NAME,null);
-
+        //Cursor res = db.rawQuery("select * from "+TABLE_NAME,null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }*/
+    //Fetching data from State table
+    public Cursor getStateDbData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_STATE_MASTER,null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
-    public Cursor getspinnerdata() {
+    //Fetching data from District table
+    public Cursor getDistDbData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+TABLE_NAME2,null);
-
+        Cursor res = db.rawQuery("select * from "+ TBL_DISTRICT_MASTER,null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
-    public Cursor getspinnerdatadist() {
+    //Fetching data from Family table
+    public Cursor getFamilyDbData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+TABLE_NAME3,null);
-
+        Cursor res = db.rawQuery("select * from "+ TBL_FAMILY_MASTER,null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }

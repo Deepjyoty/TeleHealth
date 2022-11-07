@@ -14,12 +14,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 
 import com.gnrc.telehealth.Fragments.NewsFeedFragment;
 import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 public class VideoPlayerActivity extends AppCompatActivity {
     Intent intent;
@@ -55,11 +58,14 @@ public class VideoPlayerActivity extends AppCompatActivity {
         MediaController mediaController = new MediaController(this);
         if (intent!=null){
             dataModel = (Model_newsfeed) intent.getSerializableExtra("data");
-            videoUrl = dataModel.getVideo_url();
+            if (Objects.equals(dataModel.getContent_type(), "video")){
+                Toast.makeText(this, "Its a video", Toast.LENGTH_SHORT).show();
+            }
+/*            videoUrl = dataModel.getVideo_url();
             Uri uri = Uri.parse(videoUrl);
             videoView.setVideoURI(uri);
             String dat = dataModel.getContent_desc();
-            Log.d("deep2", "onCreate: " + dat);
+            Log.d("deep2", "onCreate: " + dat);*/
 
 
             mediaController.setAnchorView(videoView);

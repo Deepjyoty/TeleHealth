@@ -230,8 +230,10 @@ public class NewsFeedFragment extends Fragment {
     public void selecteduser(Model_newsfeed dataModel) {
 
         //dataModel.getid();
-        startActivity(new Intent(getActivity(), VideoPlayerActivity.class).putExtra("data",dataModel));
 
+        if (dataModel.getContent_type().equals("video")){
+            startActivity(new Intent(getActivity(), VideoPlayerActivity.class).putExtra("data",dataModel));
+        }
 
     }
 }

@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -46,8 +45,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Family_List_Activity extends AppCompatActivity implements  RvAdapter.userclicklistener{
@@ -60,14 +62,13 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     ArrayList<DataModel> dataModelArrayList;
     ArrayList<StateDataModel> stateDataModelArrayList;
     ArrayList<StateDataModel> districtDataModelArrayList;
-
-
-
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss", Locale.CHINESE);
+    String format;
 
     private RvAdapter rvAdapter;
     private RecyclerView recyclerView;
-    TextInputLayout familyhead, phone, house, address, city, pin;
-    Spinner dist, state;
+    private TextInputLayout familyhead, phone, house, address, city, pin;
+    private Spinner dist, state;
     String userid="";
     SharedPreferences mPreferences;
     String sharedprofFile="com.gnrc.telehealth";
@@ -80,9 +81,6 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     int spinnerPosition;
     AlertDialog dialog;
     String value,value2;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,17 +102,19 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
             // connected to the internet
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 // connected to wifi
-                fethingJSON();
+                //fethingJSON();
+
                 viewAll();
-                //setupRecycler();
+                setupRecyclerFrom_DB();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to mobile data
-                fethingJSON();
+                //fethingJSON();
                 viewAll();
+                setupRecyclerFrom_DB();
 
             }
         } else {
-            setupRecycler();
+            setupRecyclerFrom_DB();
             viewAll();
             // not connected to the internet
         }
@@ -201,12 +201,14 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 //state = (Spinner) customLayout.findViewById(R.id.spfamilyheadstate);
                                 pin = customLayout.findViewById(R.id.etfamilyheadpin);
 
-                                storingJSON();
+                                adddatatodatabase();
 
+                                setupRecyclerFrom_DB();
 
-                                Intent i = new Intent(Family_List_Activity.this,Family_List_Activity.class);
+                                rvAdapter.notifyDataSetChanged();
+                                /*Intent i = new Intent(Family_List_Activity.this,Family_List_Activity.class);
                                 startActivity(i);
-                                finish();
+                                finish();*/
                             }
                         });
         // create and show
@@ -219,12 +221,12 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
             // connected to the internet
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                 // connected to wifi
-                fetchingspinnerdistrict();
-                fetchingspinnerstate();
+                setupspinner();
+                setupspinnerdist();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to mobile data
-                fetchingspinnerdistrict();
-                fetchingspinnerstate();
+                setupspinner();
+                setupspinnerdist();
             }
         } else {
             setupspinner();
@@ -239,7 +241,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     {
         Toast.makeText(this,data,Toast.LENGTH_SHORT).show();
     }
-    private void fetchingspinnerdistrict() {
+/*    private void fetchingspinnerdistrict() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Family Details");
 
@@ -305,8 +307,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
 
-    }
-    private void fetchingspinnerstate() {
+    }*/
+/*    private void fetchingspinnerstate() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Family Details");
 
@@ -334,8 +336,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 stateModel = new StateDataModel();
                                 JSONObject dataobj = obj.getJSONObject(i);
 
-                                /*stateModel.setId(dataobj.getString("id"));
-                                stateModel.setState(dataobj.getString("value"));*/
+                                *//*stateModel.setId(dataobj.getString("id"));
+                                stateModel.setState(dataobj.getString("value"));*//*
                                 dBhandler = new DBhandler(getApplicationContext());
                                 dBhandler.addspinner(dataobj.getString("id"),
                                         dataobj.getString("value"));
@@ -374,7 +376,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
 
-    }
+    }*/
     public void fethingJSON() {
 
         showSimpleProgressDialog(this, "Loading...","Fetching Json",false);
@@ -423,11 +425,11 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                         dataobj.getString("SSFM_DIST_CODE"),
                                         dataobj.getString("SSFM_STATE_CODE"),
                                         dataobj.getString("SSFM_PIN"));
-                                playerModel.setViewtext("View");
+                                playerModel.setViewtext("Survey");
                                 playerModel.setEdittext("EditFamily");
                             }
 
-                            setupRecycler();
+                            setupRecyclerFrom_DB();
 
                             // }
 
@@ -498,7 +500,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
 
                             }
 
-                            setupRecycler();
+                            setupRecyclerFrom_DB();
                             // }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -518,20 +520,23 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         {
             @Override
             protected Map<String, String> getParams() {
+                dBhandler = new DBhandler(getApplicationContext());
+                Cursor cursor = dBhandler.getFamilyDbData();
+                //DataModel dmodel = new DataModel();
                 Map<String,String> params = new HashMap<String,String>();
                 params.put("req_type","create-family");
                 params.put("family-id","0");
-                params.put("family-head-name", familyhead.getEditText().getText().toString());
-                params.put("contact-no", phone.getEditText().getText().toString());
-                params.put("house-no", house.getEditText().getText().toString());
-                params.put("address", address.getEditText().getText().toString());
-                params.put("gaon-panchayat-code", "10002");
-                params.put("block-code", "3");
-                params.put("city-code", city.getEditText().getText().toString());
-                params.put("dist-code",value);
-                params.put("state-code",value2);
-                params.put("pin-code", pin.getEditText().getText().toString());
-                params.put("user-id", userid);
+                params.put("family-head-name", cursor.getString(10));
+                params.put("contact-no", cursor.getString(2));
+                params.put("house-no", cursor.getString(3));
+                params.put("address", cursor.getString(4));
+                params.put("gaon-panchayat-code", cursor.getString(5));
+                params.put("block-code", cursor.getString(6));
+                params.put("city-code", cursor.getString(7));
+                params.put("dist-code",cursor.getString(8));
+                params.put("state-code",cursor.getString(9));
+                params.put("pin-code", cursor.getString(10));
+                params.put("user-id", cursor.getString(0));
                 Log.d("deep", "getParams: "+params);
                 return params;
 
@@ -541,11 +546,25 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
-
+    private void adddatatodatabase(){
+        format = simpleDateFormat.format(new Date());
+        dBhandler = new DBhandler(getApplicationContext());
+        dBhandler.addFamily_db("AM" + phone.getEditText().getText().toString()+format,
+                familyhead.getEditText().getText().toString(),
+                phone.getEditText().getText().toString(),
+                house.getEditText().getText().toString(),
+                address.getEditText().getText().toString(),
+                "10002",
+                "3",
+                city.getEditText().getText().toString(),
+                value,
+                value2,
+                pin.getEditText().getText().toString());
+    }
     private void setupspinner(){
         state = (Spinner) dialog.findViewById(R.id.spfamilyheadstate);
         dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getspinnerdata();
+        Cursor cursor = dBhandler.getStateDbData();
         states = new ArrayList<String>();
         stateDataModelArrayList = new ArrayList<>();
         if (cursor.moveToFirst()) {
@@ -581,7 +600,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     private void setupspinnerdist(){
         dist = (Spinner) dialog.findViewById(R.id.spfamilyheaddistrict);
         dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getspinnerdatadist();
+        Cursor cursor = dBhandler.getDistDbData();
         district = new ArrayList<String>();
         districtDataModelArrayList = new ArrayList<>();
         if (cursor.moveToFirst()) {
@@ -614,16 +633,16 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
             });
         }
     }
-    private void setupRecycler(){
+    private void setupRecyclerFrom_DB(){
         dataModelArrayList = new ArrayList<>();
         dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getAllData();
+        Cursor cursor = dBhandler.getFamilyDbData();
         //DataModel dmodel = new DataModel();
-
+        format = simpleDateFormat.format(new Date());
         if (cursor.moveToFirst()) {
             do {
                 playerModel = new DataModel();
-                playerModel.setId(cursor.getString(0));
+                playerModel.setId("AM"+cursor.getString(2)+ format);
                 playerModel.setFamilyhead(cursor.getString(1));
                 playerModel.setPhone(cursor.getString(2));
                 playerModel.setHouse(cursor.getString(3));
@@ -635,7 +654,8 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                 playerModel.setState(cursor.getString(9));
                 playerModel.setPin(cursor.getString(10));
                 dataModelArrayList.add(playerModel);
-                playerModel.setViewtext("View");
+                Log.d("val", "setupRecycler: "+playerModel);
+                playerModel.setViewtext("Survey");
                 playerModel.setEdittext("EditFamily");
             }while (cursor.moveToNext());
             rvAdapter = new RvAdapter(this,dataModelArrayList,this::selecteduser);
