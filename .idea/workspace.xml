@@ -13,23 +13,23 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.0.8">
+    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.0.9">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/SurveyActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_survey.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/covid_facts.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/general_habits.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/health_card_information.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/test_findings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/DatabaseSqlite/DBhandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/DatabaseSqlite/DBhandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Family_List_Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Family_List_Activity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/NewsFeedFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/NewsFeedFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Login.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/VideoPlayerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/VideoPlayerActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_family_list.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_family_list.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/cardview_item_design.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/cardview_item_design.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[RF8N21545XA]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\gnrc\.android\avd\Pixel_6_Pro_API_33.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -134,6 +134,9 @@
       <recent name="com.gnrc.telehealth" />
     </key>
     <key name="android.template.711370710">
+      <recent name="com.gnrc.telehealth" />
+    </key>
+    <key name="android.template.-1791853779">
       <recent name="com.gnrc.telehealth" />
     </key>
     <key name="android.template.-828308684">
@@ -403,7 +406,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667476065949</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="commit 1.0.9">
+      <created>1667817664905</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1667817664905</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -432,6 +442,7 @@
     <MESSAGE value="commit 1.0.6" />
     <MESSAGE value="commit 1.0.7" />
     <MESSAGE value="commit 1.0.8" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit 1.0.8" />
+    <MESSAGE value="commit 1.0.9" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit 1.0.9" />
   </component>
 </project>

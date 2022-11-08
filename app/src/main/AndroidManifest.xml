@@ -27,10 +27,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SurveyActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".VideoPlayerActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
-            >
+            android:screenOrientation="landscape">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -75,11 +81,13 @@
             </intent-filter>
             -->
         </activity>
-       <!-- <service android:name=".FirebaseMessageReceiver">
+        <!--
+ <service android:name=".FirebaseMessageReceiver">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>-->
+        </service>
+        -->
         <activity
             android:name=".Login"
             android:exported="true"
@@ -131,8 +139,8 @@
             android:hardwareAccelerated="false"
             android:theme="@style/ZMTheme.SubWindow" />
 
-
-        <service android:name=".FirebaseMessageReceiver"
+        <service
+            android:name=".FirebaseMessageReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
