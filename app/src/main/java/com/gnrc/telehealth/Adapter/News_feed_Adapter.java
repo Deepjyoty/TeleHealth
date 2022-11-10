@@ -2,7 +2,6 @@ package com.gnrc.telehealth.Adapter;
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +9,13 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gnrc.telehealth.DataDetails;
-import com.gnrc.telehealth.Model.DataModel2;
 import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.gnrc.telehealth.R;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
-import java.util.Collections;
 
-public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> implements Filterable {
+public class News_feed_Adapter extends RecyclerView.Adapter<News_feed_Adapter.MyViewHolder> implements Filterable {
 
     private LayoutInflater inflater;
     private ArrayList<Model_newsfeed> dataModelArrayList;
@@ -35,7 +30,7 @@ public class RvAdapter2 extends RecyclerView.Adapter<RvAdapter2.MyViewHolder> im
     public interface userclicklistener{
         void selecteduser(Model_newsfeed dataModel);
     }
-    public RvAdapter2(Context ctx, ArrayList<Model_newsfeed> dataModelArrayList, userclicklistener userclicklistener){
+    public News_feed_Adapter(Context ctx, ArrayList<Model_newsfeed> dataModelArrayList, userclicklistener userclicklistener){
 
         inflater = LayoutInflater.from(ctx);
         this.dataModelArrayList = dataModelArrayList;

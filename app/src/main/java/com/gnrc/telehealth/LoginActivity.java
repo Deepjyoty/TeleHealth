@@ -45,7 +45,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private AppUpdateManager appUpdateManager;
     private static final int IMMEDIATE_APP_UPDATE_REQ_CODE = 124;
     ProgressDialog pdDialog;
@@ -78,15 +78,15 @@ public class Login extends AppCompatActivity {
         {
             fetchingspinnerstate();
             getDistrictListApi();
-            Intent i = new Intent(Login.this,NewsFeedActivity.class);
+            Intent i = new Intent(LoginActivity.this,NewsFeedActivity.class);
             startActivity(i);
 
         }
-        pdDialog= new ProgressDialog(Login.this);
-        pdDialog.setTitle("Login please wait...");
+        pdDialog= new ProgressDialog(LoginActivity.this);
+        pdDialog.setTitle("LoginActivity please wait...");
         pdDialog.setCancelable(false);
-        mPreferences=getSharedPreferences(sharedprofFile,MODE_PRIVATE);
-        preferencesEditor = mPreferences.edit();
+/*        mPreferences=getSharedPreferences(sharedprofFile,MODE_PRIVATE);
+        preferencesEditor = mPreferences.edit();*/
         loginButton = (Button) findViewById(R.id.loginbtn);
         username = (TextInputLayout) findViewById(R.id.usernameinp);
         password = (TextInputLayout) findViewById(R.id.passwordinp);
@@ -107,11 +107,11 @@ public class Login extends AppCompatActivity {
                         lpass=password.getEditText().getText().toString().trim();
                         if(luser.isEmpty()||lpass.isEmpty())
                         {
-                            Toast.makeText(Login.this,"please enter valid data",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this,"please enter valid data",Toast.LENGTH_SHORT).show();
                         }else {
                             Loginrequest();
                         }
-                        Toast.makeText(Login.this, "logged in", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "logged in", Toast.LENGTH_SHORT).show();
 
                     } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                         // connected to mobile data
@@ -119,11 +119,11 @@ public class Login extends AppCompatActivity {
                         lpass=password.getEditText().getText().toString().trim();
                         if(luser.isEmpty()||lpass.isEmpty())
                         {
-                            Toast.makeText(Login.this,"please enter valid data",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this,"please enter valid data",Toast.LENGTH_SHORT).show();
                         }else {
                             Loginrequest();
                         }
-                        Toast.makeText(Login.this, "logged in", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "logged in", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Check your Internet connection", Toast.LENGTH_SHORT).show();
@@ -160,7 +160,7 @@ public class Login extends AppCompatActivity {
     //method to set the update type for app updates. Here it is set as IMMEDIATE
     private void startUpdateFlow(AppUpdateInfo appUpdateInfo) {
         try {
-            appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, this, Login.IMMEDIATE_APP_UPDATE_REQ_CODE);
+            appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.IMMEDIATE, this, LoginActivity.IMMEDIATE_APP_UPDATE_REQ_CODE);
         } catch (IntentSender.SendIntentException e) {
             e.printStackTrace();
         }
@@ -207,7 +207,7 @@ public class Login extends AppCompatActivity {
                                 preferencesEditor.putString("message",message);
                                 preferencesEditor.putString("user_id",user_id);
                                 preferencesEditor.apply();
-                                Intent i = new Intent(Login.this,NewsFeedActivity.class);
+                                Intent i = new Intent(LoginActivity.this,NewsFeedActivity.class);
                                 startActivity(i);
                                 finish();
                             }
@@ -224,7 +224,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 pdDialog.dismiss();
-                Toast.makeText(getApplicationContext(),"Login Error !2"+error,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"LoginActivity Error !2"+error,Toast.LENGTH_LONG).show();
             }
         })
         {

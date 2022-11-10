@@ -89,7 +89,7 @@
         </service>
         -->
         <activity
-            android:name=".Login"
+            android:name=".LoginActivity"
             android:exported="true"
             android:label="@string/title_activity_login"
             android:noHistory="true" />

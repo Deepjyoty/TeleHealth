@@ -7,11 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gnrc.telehealth.Model.DataModel;
 import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.squareup.picasso.Picasso;
 

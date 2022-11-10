@@ -183,12 +183,12 @@ public class SSOUserLoginActivity extends Activity implements UserLoginCallback.
 	@Override
 	public void onZoomSDKLoginResult(long result) {
 		if(result == ZoomAuthenticationError.ZOOM_AUTH_ERROR_SUCCESS) {
-			Toast.makeText(this, "Login successfully", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "LoginActivity successfully", Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(this, LoginUserStartJoinMeetingActivity.class);
 			startActivity(intent);
 			finish();
 		} else {
-			Toast.makeText(this, "Login failed result code = " + result, Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "LoginActivity failed result code = " + result, Toast.LENGTH_SHORT).show();
 		}
 		onLoginFinish();
 	}

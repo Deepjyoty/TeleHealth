@@ -20,11 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="10dp"
-            android:layout_above="@id/addfamily"
+            android:layout_above="@id/add_family_head"
             android:layout_marginTop="15dp"/>
 
         <Button
-            android:id="@+id/addfamily"
+            android:id="@+id/add_family_head"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -34,7 +34,7 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/roundedbutton"
             android:contentDescription="@string/add_family"
-            android:text="Add Family Member"
+            android:text="Add Family Head"
             android:textColor="@color/white"
             android:textSize="18sp" />
 

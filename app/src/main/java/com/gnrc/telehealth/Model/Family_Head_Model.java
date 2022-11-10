@@ -2,7 +2,7 @@ package com.gnrc.telehealth.Model;
 
 import java.io.Serializable;
 
-public class DataModel implements Serializable {
+public class Family_Head_Model implements Serializable {
 
     private String id, familyhead, phone, house, address,city,dist,state,pin, gaon_panchayat,block_code,viewtext,edittext;
     private int currentcount;

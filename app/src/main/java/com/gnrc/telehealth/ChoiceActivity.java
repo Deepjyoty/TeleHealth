@@ -27,7 +27,7 @@ public class ChoiceActivity extends AppCompatActivity {
         survey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ChoiceActivity.this,Login.class);
+                Intent i = new Intent(ChoiceActivity.this, LoginActivity.class);
                 startActivity(i);
                 finish();
             }

@@ -35,9 +35,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gnrc.telehealth.Adapter.RvAdapter;
+import com.gnrc.telehealth.Adapter.Family_Head_Adapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
-import com.gnrc.telehealth.Model.DataModel;
+import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -52,20 +52,19 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class Family_List_Activity extends AppCompatActivity implements  RvAdapter.userclicklistener{
+public class Family_List_Activity extends AppCompatActivity implements  Family_Head_Adapter.userclicklistener{
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
-    Button addfamily;
+    Button addfamilymember;
     private DBhandler dBhandler;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
     private static ProgressDialog mProgressDialog;
-    ArrayList<DataModel> dataModelArrayList;
+    ArrayList<Family_Head_Model> familyHeadModelArrayList;
     ArrayList<StateDataModel> stateDataModelArrayList;
     ArrayList<StateDataModel> districtDataModelArrayList;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss", Locale.CHINESE);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyyhhmmss", Locale.CHINESE);
     String format;
-
-    private RvAdapter rvAdapter;
+    private Family_Head_Adapter familyHeadAdapter;
     private RecyclerView recyclerView;
     private TextInputLayout familyhead, phone, house, address, city, pin;
     private Spinner dist, state;
@@ -73,7 +72,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     SharedPreferences mPreferences;
     String sharedprofFile="com.gnrc.telehealth";
     SharedPreferences.Editor preferencesEditor;
-    DataModel playerModel;
+    Family_Head_Model playerModel;
     StateDataModel stateModel;
     private ArrayList<String> states;
     private ArrayList<String> district ;
@@ -87,14 +86,13 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_family_list);
 
-        addfamily = findViewById(R.id.addfamily);
+        addfamilymember = findViewById(R.id.add_family_head);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         recyclerView = findViewById(R.id.recycler);
         mPreferences=getSharedPreferences(sharedprofFile,MODE_PRIVATE);
         preferencesEditor = mPreferences.edit();
         userid = mPreferences.getString("user_id","");
-
 
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -162,7 +160,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                rvAdapter.getFilter().filter(newText);
+                familyHeadAdapter.getFilter().filter(newText);
                 spinnerArrayAdapter.getFilter().filter(newText);
                 return false;
             }
@@ -205,7 +203,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
 
                                 setupRecyclerFrom_DB();
 
-                                rvAdapter.notifyDataSetChanged();
+                                familyHeadAdapter.notifyDataSetChanged();
                                 /*Intent i = new Intent(Family_List_Activity.this,Family_List_Activity.class);
                                 startActivity(i);
                                 finish();*/
@@ -392,10 +390,10 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                             removeSimpleProgressDialog();
 
                             JSONArray obj = new JSONArray(response);
-                            dataModelArrayList = new ArrayList<>();
+                            familyHeadModelArrayList = new ArrayList<>();
 
                             for (int i = 0; i < obj.length(); i++) {
-                                playerModel = new DataModel();
+                                playerModel = new Family_Head_Model();
                                 JSONObject dataobj = obj.getJSONObject(i);
 
                                 /*playerModel.setId(dataobj.getString("SSFM_ID"));
@@ -412,7 +410,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 playerModel.setViewtext("View");
                                 playerModel.setEdittext("EditFamily");
 
-                                dataModelArrayList.add(playerModel);*/
+                                familyHeadModelArrayList.add(playerModel);*/
                                 dBhandler = new DBhandler(getApplicationContext());
                                 dBhandler.addnewprod(dataobj.getString("SSFM_ID"),
                                         dataobj.getString("SSFM_HEAD_NAME"),
@@ -482,11 +480,11 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
 
                             String message = obj.getString("message");
                             Toast.makeText(Family_List_Activity.this, ""+ message, Toast.LENGTH_SHORT).show();
-                            dataModelArrayList = new ArrayList<>();
+                            familyHeadModelArrayList = new ArrayList<>();
                             JSONArray dataArray  = obj.getJSONArray("products");
 
                             for (int i = 0; i < dataArray.length(); i++) {
-                                DataModel playerModel = new DataModel();
+                                Family_Head_Model playerModel = new Family_Head_Model();
                                 JSONObject dataobj = dataArray.getJSONObject(i);
 
                                 /*playerModel.setId(dataobj.getInt("id"));
@@ -496,7 +494,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                                 playerModel.setThumbnail(dataobj.getString("thumbnail"));
                                 playerModel.setDescription(dataobj.getString("description"));*/
 
-                                dataModelArrayList.add(playerModel);
+                                familyHeadModelArrayList.add(playerModel);
 
                             }
 
@@ -522,7 +520,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
             protected Map<String, String> getParams() {
                 dBhandler = new DBhandler(getApplicationContext());
                 Cursor cursor = dBhandler.getFamilyDbData();
-                //DataModel dmodel = new DataModel();
+                //Family_Head_Model dmodel = new Family_Head_Model();
                 Map<String,String> params = new HashMap<String,String>();
                 params.put("req_type","create-family");
                 params.put("family-id","0");
@@ -549,7 +547,7 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
     private void adddatatodatabase(){
         format = simpleDateFormat.format(new Date());
         dBhandler = new DBhandler(getApplicationContext());
-        dBhandler.addFamily_db("AM" + phone.getEditText().getText().toString()+format,
+        dBhandler.addFamily_head_db("FH" + phone.getEditText().getText().toString()+format,
                 familyhead.getEditText().getText().toString(),
                 phone.getEditText().getText().toString(),
                 house.getEditText().getText().toString(),
@@ -633,16 +631,17 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
             });
         }
     }
+
     private void setupRecyclerFrom_DB(){
-        dataModelArrayList = new ArrayList<>();
+        familyHeadModelArrayList = new ArrayList<>();
         dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getFamilyDbData();
-        //DataModel dmodel = new DataModel();
+        //Family_Head_Model dmodel = new Family_Head_Model();
         format = simpleDateFormat.format(new Date());
         if (cursor.moveToFirst()) {
             do {
-                playerModel = new DataModel();
-                playerModel.setId("AM"+cursor.getString(2)+ format);
+                playerModel = new Family_Head_Model();
+                playerModel.setId("FH"+cursor.getString(2)+ format);
                 playerModel.setFamilyhead(cursor.getString(1));
                 playerModel.setPhone(cursor.getString(2));
                 playerModel.setHouse(cursor.getString(3));
@@ -653,14 +652,14 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
                 playerModel.setDist(cursor.getString(8));
                 playerModel.setState(cursor.getString(9));
                 playerModel.setPin(cursor.getString(10));
-                dataModelArrayList.add(playerModel);
+                familyHeadModelArrayList.add(playerModel);
                 Log.d("val", "setupRecycler: "+playerModel);
                 playerModel.setViewtext("Survey");
                 playerModel.setEdittext("EditFamily");
             }while (cursor.moveToNext());
-            rvAdapter = new RvAdapter(this,dataModelArrayList,this::selecteduser);
+            familyHeadAdapter = new Family_Head_Adapter(this, familyHeadModelArrayList,this::selecteduser);
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-            recyclerView.setAdapter(rvAdapter);
+            recyclerView.setAdapter(familyHeadAdapter);
 
         }
 
@@ -708,13 +707,13 @@ public class Family_List_Activity extends AppCompatActivity implements  RvAdapte
 
 
     @Override
-    public void selecteduser(DataModel dataModel) {
-        //dataModel.getid();
-        //startActivity(new Intent(this,DataDetails.class).putExtra("data",dataModel));
+    public void selecteduser(Family_Head_Model familyHeadModel) {
+        //familyHeadModel.getid();
+        //startActivity(new Intent(this,DataDetails.class).putExtra("data",familyHeadModel));
     }
     public void viewAll() {
 
-        addfamily.setOnClickListener(
+        addfamilymember.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -25,9 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gnrc.telehealth.Adapter.RvAdapter2;
-import com.gnrc.telehealth.DataDetails;
-import com.gnrc.telehealth.Model.DataModel2;
+import com.gnrc.telehealth.Adapter.News_feed_Adapter;
 import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.gnrc.telehealth.R;
 import com.gnrc.telehealth.VideoPlayerActivity;
@@ -45,7 +43,7 @@ public class NewsFeedFragment extends Fragment {
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
     private static ProgressDialog mProgressDialog;
     ArrayList<Model_newsfeed> dataModelArrayList;
-    private RvAdapter2 rvAdapter2;
+    private News_feed_Adapter newsfeedAdapter;
     private RecyclerView recyclerView;
     View view;
 
@@ -157,9 +155,9 @@ public class NewsFeedFragment extends Fragment {
     }
     private void setupRecycler(){
         recyclerView.setHasFixedSize(true);
-        rvAdapter2 = new RvAdapter2(getContext(),dataModelArrayList,this::selecteduser);
+        newsfeedAdapter = new News_feed_Adapter(getContext(),dataModelArrayList,this::selecteduser);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(rvAdapter2);
+        recyclerView.setAdapter(newsfeedAdapter);
         /*rvAdapter2 = new RvAdapter2(getContext(),dataModelArrayList,this::selecteduser);
         recyclerView.setAdapter(rvAdapter2);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));*/
@@ -222,7 +220,7 @@ public class NewsFeedFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                rvAdapter2.getFilter().filter(newText);
+                newsfeedAdapter.getFilter().filter(newText);
                 return false;
             }
         });
