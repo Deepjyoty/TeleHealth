@@ -423,8 +423,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                                         dataobj.getString("SSFM_DIST_CODE"),
                                         dataobj.getString("SSFM_STATE_CODE"),
                                         dataobj.getString("SSFM_PIN"));
-                                playerModel.setViewtext("Survey");
-                                playerModel.setEdittext("EditFamily");
+
                             }
 
                             setupRecyclerFrom_DB();
@@ -654,8 +653,8 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                 playerModel.setPin(cursor.getString(10));
                 familyHeadModelArrayList.add(playerModel);
                 Log.d("val", "setupRecycler: "+playerModel);
-                playerModel.setViewtext("Survey");
-                playerModel.setEdittext("EditFamily");
+                playerModel.setViewtext("Add Member");
+
             }while (cursor.moveToNext());
             familyHeadAdapter = new Family_Head_Adapter(this, familyHeadModelArrayList,this::selecteduser);
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));

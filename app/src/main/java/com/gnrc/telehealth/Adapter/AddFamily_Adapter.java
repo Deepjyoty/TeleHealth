@@ -1,6 +1,7 @@
 package com.gnrc.telehealth.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +10,12 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gnrc.telehealth.AddMemberActivity;
 import com.gnrc.telehealth.Model.AddFamilyModel;
 
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.R;
+import com.gnrc.telehealth.SurveyActivity;
 
 import java.util.ArrayList;
 
@@ -44,7 +47,13 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
         //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
 
         //familyHeadModelArrayList.get(position).getDescription();
-
+        holder.survey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(inflater.getContext(), SurveyActivity.class);
+                inflater.getContext().startActivity(i);
+            }
+        });
 
     }
     @Override
@@ -55,7 +64,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView name, gender ,age;
+        TextView name, gender ,age,survey;
         ImageView iv;
 
         public MyViewHolder(View itemView) {
@@ -65,7 +74,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
             name = (TextView) itemView.findViewById(R.id.amName);
             gender = (TextView) itemView.findViewById(R.id.amGender);
             age = (TextView) itemView.findViewById(R.id.amAge);
-            //edit = (TextView) itemView.findViewById(R.id.tveditfamily);
+            survey = (TextView) itemView.findViewById(R.id.amView);
 
             //iv = (ImageView) itemView.findViewById(R.id.iv);
         }

@@ -5,22 +5,18 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import static android.R.layout.simple_spinner_item;
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.gnrc.telehealth.R;
-import com.gnrc.telehealth.SurveyActivity;
+import com.gnrc.telehealth.AddMemberActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -91,7 +87,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
             @Override
             public void onClick(View view) {
 
-                Intent i = new Intent(inflater.getContext(),SurveyActivity.class);
+                Intent i = new Intent(inflater.getContext(), AddMemberActivity.class);
                 i.putExtra("address",familyHeadModelArrayList.get(holder.getAdapterPosition()).getAddress());
                 i.putExtra("gaon",familyHeadModelArrayList.get(holder.getAdapterPosition()).getGaon_panchayat());
                 i.putExtra("block",familyHeadModelArrayList.get(holder.getAdapterPosition()).getBlock_code());
