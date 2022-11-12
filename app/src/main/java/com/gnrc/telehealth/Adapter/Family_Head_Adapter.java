@@ -2,6 +2,7 @@ package com.gnrc.telehealth.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
                 i.putExtra("block",familyHeadModelArrayList.get(holder.getAdapterPosition()).getBlock_code());
                 i.putExtra("dist",familyHeadModelArrayList.get(holder.getAdapterPosition()).getDist());
                 i.putExtra("id",familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
+                Log.d("deep", "onClick: "+ familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
                 inflater.getContext().startActivity(i);
 /*                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("Family Details");

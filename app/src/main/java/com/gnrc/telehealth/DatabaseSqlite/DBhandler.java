@@ -287,9 +287,10 @@ public class DBhandler extends SQLiteOpenHelper {
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
-    public Cursor getAddFamilyData() {
+    public Cursor getFamilyMemberList(String familyId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+ TBL_ADDFAMILY_MASTER,null);
+        Cursor res = db.rawQuery("select * from "+ TBL_ADDFAMILY_MASTER + " where family_id = '" + familyId +"'",null);
+        Log.d("val1", "getFamilyMemberList: " + familyId);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }

@@ -38,11 +38,45 @@
                         android:text="GENERAL HABITS"
                         android:textColor="#F5F5F5"
                         android:textSize="16sp" />
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerGeneralH"
+
+                    <ScrollView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp"/>
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:id="@+id/ll_generalH"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal" >
+                            <LinearLayout
+                                android:id="@+id/ll_smokingDisplay"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:gravity="center"
+                                    android:textColor="@color/black"
+                                    android:layout_height="wrap_content"
+                                    android:text="Smoking"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/ll_alcoholDisplay"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:gravity="center"
+                                    android:textColor="@color/black"
+                                    android:layout_height="wrap_content"
+                                    android:text="Alcohol"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </ScrollView>
+
                     <TextView
                         android:id="@+id/tvTf"
                         android:layout_width="match_parent"

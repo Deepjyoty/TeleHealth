@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +15,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -50,7 +48,7 @@ public class AddMemberActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addmember);
-
+        setTitle("Family Members");
         recyclerView = (RecyclerView) findViewById(R.id.am_recycler);
         addfamilymember = (Button) findViewById(R.id.add_family_member);
 
@@ -107,31 +105,13 @@ public class AddMemberActivity extends AppCompatActivity {
                         addDataToDatabase();
                         setupRecyclerAm_DB();
                         addFamily_adapter.notifyDataSetChanged();
-                        // send data from the
-                        // AlertDialog to the Activity
 
-                        //dist = (Spinner) customLayout.findViewById(R.id.spfamilyheaddistrict);
-                        //state = (Spinner) customLayout.findViewById(R.id.spfamilyheadstate);
-                        //pin = customLayout.findViewById(R.id.etfamilyheadpin);
-
-                        /*adddatatodatabase();
-                        setupRecyclerFrom_DB();
-                        familyHeadAdapter.notifyDataSetChanged();*/
-                                /*Intent i = new Intent(Family_List_Activity.this,Family_List_Activity.class);
-                                startActivity(i);
-                                finish();*/
                     }
                 });
         // create and show
         // the alert dialog
         dialog = builder.create();
         dialog.show();
-        /*dob.getEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                datepicker();
-            }
-        });*/
 
     }
     /*public void datepicker(){
@@ -217,7 +197,7 @@ public class AddMemberActivity extends AppCompatActivity {
         ArrayList<AddFamilyModel> addFamilyArrayList = new ArrayList<>();
         AddFamilyModel familyModel;
         dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getAddFamilyData();
+        Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("id"));
         //Family_Head_Model dmodel = new Family_Head_Model();
 
         if (cursor.moveToFirst()) {

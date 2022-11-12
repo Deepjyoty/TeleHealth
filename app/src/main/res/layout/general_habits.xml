@@ -51,7 +51,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/icon_newsfeed" />
+                            app:srcCompat="@drawable/smoking" />
 
                         <LinearLayout
                             android:id="@+id/llSmoking"
@@ -67,12 +67,12 @@
                                 android:textColor="@color/black"
                                 android:text="Smoking?"/>
 
-                            <CheckBox
-                                android:id="@+id/radioButtonSmoking"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:minHeight="48dp"
-                                android:text="Yes" />
+<!--                            <CheckBox-->
+<!--                                android:id="@+id/radioButtonSmoking"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:minHeight="48dp"-->
+<!--                                android:text="Yes" />-->
 
 
                         </LinearLayout>
@@ -90,13 +90,13 @@
                                 android:textColor="@color/black"
                                 android:text="Cons. Alcohol?"/>
 
-                            <CheckBox
+                          <!--  <CheckBox
                                 android:id="@+id/radioButtonAlcohol"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="48dp"
                                 android:text="Yes" />
-
+-->
 
                         </LinearLayout>
                     </LinearLayout>

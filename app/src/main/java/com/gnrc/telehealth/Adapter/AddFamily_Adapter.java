@@ -51,6 +51,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(inflater.getContext(), SurveyActivity.class);
+                i.putExtra("familyId", addFamilyModelArrayList.get(holder.getAdapterPosition()).getF_id());
                 inflater.getContext().startActivity(i);
             }
         });

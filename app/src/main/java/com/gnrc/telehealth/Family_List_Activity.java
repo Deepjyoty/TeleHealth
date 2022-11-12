@@ -85,6 +85,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_family_list);
+        setTitle("Family Head");
 
         addfamilymember = findViewById(R.id.add_family_head);
         drawerLayout = findViewById(R.id.my_drawer_layout);
@@ -640,7 +641,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
         if (cursor.moveToFirst()) {
             do {
                 playerModel = new Family_Head_Model();
-                playerModel.setId("FH"+cursor.getString(2)+ format);
+                playerModel.setId(cursor.getString(0));
                 playerModel.setFamilyhead(cursor.getString(1));
                 playerModel.setPhone(cursor.getString(2));
                 playerModel.setHouse(cursor.getString(3));
