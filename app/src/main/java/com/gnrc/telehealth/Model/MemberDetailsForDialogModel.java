@@ -3,7 +3,39 @@ package com.gnrc.telehealth.Model;
 import java.io.Serializable;
 
 public class MemberDetailsForDialogModel implements Serializable {
-    private String member_id,  memberName, editTextValueSys,editTextValueDia,editTextValueValue;
+    private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue, covidStatus, doseStatus,noVaccineReason;
+
+    public String getCovidStatus() {
+        return covidStatus;
+    }
+
+    public void setCovidStatus(String covidStatus) {
+        this.covidStatus = covidStatus;
+    }
+
+    public String getDoseStatus() {
+        return doseStatus;
+    }
+
+    public void setDoseStatus(String doseStatus) {
+        this.doseStatus = doseStatus;
+    }
+
+    public String getNoVaccineReason() {
+        return noVaccineReason;
+    }
+
+    public void setNoVaccineReason(String noVaccineReason) {
+        this.noVaccineReason = noVaccineReason;
+    }
+
+    public String getTypeSpinner() {
+        return typeSpinner;
+    }
+
+    public void setTypeSpinner(String typeSpinner) {
+        this.typeSpinner = typeSpinner;
+    }
 
     public String getEditTextValueSys() {
         return editTextValueSys;

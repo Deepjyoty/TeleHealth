@@ -3,73 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".AddMemberActivity">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="COVID FACTS AND INFORMATION"
-                android:textColor="#F5F5F5"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#4383bf"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Symptoms of Covid 19"
-                android:textColor="#F5F5F5"
-                android:textSize="14dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/fever_cough_body_ache_diarrhea_breathing_difficulty"
-                android:textColor="@color/black" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#4383bf"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="Covid Appropriate Behaviours"
-                android:textColor="#F5F5F5"
-                android:textSize="14dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/covidbehave"
-                android:textColor="@color/black" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -81,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView2"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
@@ -110,6 +46,22 @@
                     android:layout_weight="0.7"
                     android:orientation="vertical">
 
+                    <LinearLayout
+                        android:id="@+id/ll_covidMemberName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvCovidMememberName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:text="MemberNa"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -119,14 +71,31 @@
                         android:textColor="@color/black" />
 
                     <LinearLayout
+                        android:id="@+id/ll_covidSymptom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
                         android:orientation="horizontal">
 
-                        <CheckBox
+
+                        <RadioGroup
+                            android:id="@+id/covidMemberName"
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:text="Member Name"/>
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Yes" />
+
+                            <RadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="No" />
+                        </RadioGroup>
                     </LinearLayout>
 
                     <TextView
@@ -138,42 +107,40 @@
                         android:textColor="@color/black" />
 
                     <LinearLayout
+                        android:id="@+id/ll_vaccineDoses"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.4"
-                            android:gravity="center"
-                            android:text="Member Name"
-                            android:textColor="@color/black"/>
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-                            <CheckBox
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical">
+
+                        <RadioGroup
+                            android:id="@+id/covidDoseRadioGroup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <RadioButton
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
+                                android:layout_height="wrap_content"
                                 android:text="First Dose" />
 
-                            <CheckBox
+                            <RadioButton
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
+                                android:layout_height="wrap_content"
                                 android:text="Second Dose" />
-                            <CheckBox
+
+                            <RadioButton
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
                                 android:text="Booster Dose" />
-                            <CheckBox
+
+                            <RadioButton
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
                                 android:text="None" />
-                        </LinearLayout>
+
+                        </RadioGroup>
                     </LinearLayout>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -183,36 +150,32 @@
                         android:textColor="@color/black" />
 
                     <LinearLayout
+                        android:id="@+id/ll_vaccineNotTaken"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.4"
-                            android:gravity="center"
-                            android:text="Member Name"
-                            android:textColor="@color/black"/>
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-                            <CheckBox
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:text="Vaccine not available" />
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical">
 
-                            <CheckBox
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:text="Fear of taking vaccine" />
-                            <CheckBox
+                        <RadioGroup
+                            android:id="@+id/covidReasonRadioGroup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <RadioButton
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
+                                android:text="Vaccine not available" />
+
+                            <RadioButton
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Fear of taking vaccine" />
+
+                            <RadioButton
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:text="Don't want to take vaccine due to some misconception" />
-                        </LinearLayout>
+                        </RadioGroup>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

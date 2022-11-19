@@ -156,6 +156,7 @@
                                         android:gravity="center"/>
 
                                     <Spinner
+                                        android:id="@+id/tFSpinner"
                                         android:layout_width="match_parent"
                                         android:layout_height="48dp"
                                         android:textColorHint="#757575" />

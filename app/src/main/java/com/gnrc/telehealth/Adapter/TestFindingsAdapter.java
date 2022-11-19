@@ -7,8 +7,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +28,7 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
     private LayoutInflater inflater;
     public static ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList;
     private MemberDetailsForDialogModel memberDetailsForDialogModel;
+    ArrayAdapter<String> spinnerArrayAdapter;
 
 
     public TestFindingsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList){
@@ -47,6 +52,14 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
         holder.sys.getEditText().setText(addMemberDialogArrayList.get(position).getEditTextValueSys());
         holder.dia.getEditText().setText(addMemberDialogArrayList.get(position).getEditTextValueDia());
         holder.value.getEditText().setText((addMemberDialogArrayList.get(position).getEditTextValueValue()));
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("<--SELECT-->");
+        list.add("PP");
+        list.add("RANDOM");
+        list.add("FASTING");
+        spinnerArrayAdapter = new ArrayAdapter<>(inflater.getContext(), android.R.layout.simple_spinner_dropdown_item, list);
+        holder.spinner.setAdapter(spinnerArrayAdapter);
+        holder.spinner.setSelection(spinnerArrayAdapter.getPosition(addMemberDialogArrayList.get(position).getTypeSpinner()));
         //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
 
         //familyHeadModelArrayList.get(position).getDescription();
@@ -63,6 +76,7 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
 
         TextView member;
         TextInputLayout sys,dia,value;
+        Spinner spinner;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -72,7 +86,21 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
             sys = (TextInputLayout) itemView.findViewById(R.id.sys);
             dia = (TextInputLayout) itemView.findViewById(R.id.dia);
             value = (TextInputLayout) itemView.findViewById(R.id.typeValue);
-
+            spinner = (Spinner) itemView.findViewById(R.id.tFSpinner);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0){
+                        Toast.makeText(inflater.getContext(), "Please select appropriate option!", Toast.LENGTH_SHORT).show();
+                    }else {
+                        addMemberDialogArrayList.get(getAdapterPosition()).setTypeSpinner(parent.getItemAtPosition(position).toString());
+                    }
+                    //String tutorialsName = parent.getItemAtPosition(position).toString();
+                }
+                @Override
+                public void onNothingSelected(AdapterView <?> parent) {
+                }
+            });
             sys.getEditText().addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -81,7 +109,8 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    addMemberDialogArrayList.get(getAdapterPosition()).setEditTextValueSys(sys.getEditText().getText().toString());
+                    addMemberDialogArrayList.get(
+                            getAdapterPosition()).setEditTextValueSys(sys.getEditText().getText().toString());
                 }
 
                 @Override
@@ -97,7 +126,8 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    addMemberDialogArrayList.get(getAdapterPosition()).setEditTextValueDia(dia.getEditText().getText().toString());
+                    addMemberDialogArrayList.get(
+                            getAdapterPosition()).setEditTextValueDia(dia.getEditText().getText().toString());
 
                 }
 
@@ -114,7 +144,8 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    addMemberDialogArrayList.get(getAdapterPosition()).setEditTextValueValue(value.getEditText().getText().toString());
+                    addMemberDialogArrayList.get(
+                            getAdapterPosition()).setEditTextValueValue(value.getEditText().getText().toString());
 
                 }
 

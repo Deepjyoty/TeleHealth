@@ -30,6 +30,11 @@ public class DBhandler extends SQLiteOpenHelper {
     private static final String TBL_GENERAL_HABITS_ALCOHOL = "tbl_general_habits_alcohol";
     private static final String TBL_GENERAL_HABITS_SMOKING = "tbl_general_habits_smoking";
     private static final String TBL_TEST_FINDINGS = "tbl_test_findings";
+    private static final String TBL_HCI_ATAL_AMRIT = "tbl_hci_atal_amrit";
+    private static final String TBL_HCI_AYUSHMAN_BHARAT = "tbl_hci_ayushman_bharat";
+    private static final String TBL_COVID_FACTS = "tbl_covid_facts";
+    private static final String TBL_SYMPTOMS_MASTER = "tbl_symptoms_master";
+
 
     // below variable is for our id column.
     private static final String ID_COL = "SSFM_ID";
@@ -62,16 +67,39 @@ public class DBhandler extends SQLiteOpenHelper {
         // setting our column names
         // along with their data types.
         //String query = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String, SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
-        String q_create_state_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_STATE_MASTER + " (id String primary key, value String) ";
-        String q_create_dist_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_DISTRICT_MASTER + " (id String primary key, value String) ";
-        String q_create_family_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_FAMILY_MASTER + " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String, SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
-        String q_create_addfamily_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_ADDFAMILY_MASTER + " (SSR_REGN_NUM String primary key, " +
-                "SSR_REGN_DATE String,SSR_REGN_STATUS String, SSR_PATIENT_NAME String, SSR_GENDER String, SSR_DOB String, SSR_AGE_YR String, SSR_AGE_MN String," +
-                "SSR_AGE_DY String, SSR_CONTACT_NO String, SSR_AREA_LOCALITY String, SSR_DISTRICT_CD String, SSR_BLOCK_NAME String, SSR_PANCHAYAT_NAME String," +
-                "SSR_VILLAGE_NAME String, SSR_CRT_DT String, SSR_CRT_USER_ID String, SSR_LST_UPD_DT String, family_id String) ";
-        String q_create_gHabits_alcohol_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_GENERAL_HABITS_ALCOHOL + " (member_id String primary key, family_id String, value String) ";
-        String q_create_gHabits_smoking_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_GENERAL_HABITS_SMOKING + " (member_id String primary key, family_id String, value String) ";
-        String q_create_test_findings_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_TEST_FINDINGS + " (member_id String primary key, family_id String, memberName String, sys String, dia String, type String, value String) ";
+        String q_create_state_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_STATE_MASTER +
+                " (id String primary key, value String) ";
+        String q_create_dist_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_DISTRICT_MASTER +
+                " (id String primary key, value String) ";
+        String q_create_family_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_FAMILY_MASTER +
+                " (SSFM_ID String primary key, SSFM_HEAD_NAME String, SSFM_CONTACT_NO String, " +
+                "SSFM_HOUSE_NO String, SSFM_ADDR String, SSFM_GAON_PNCHYT String, SSFM_BLOCK_CODE String," +
+                " SSFM_CITY_CODE String, SSFM_DIST_CODE String, SSFM_STATE_CODE String, SSFM_PIN String) ";
+        String q_create_addfamily_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_ADDFAMILY_MASTER +
+                " (SSR_REGN_NUM String primary key, " +
+                "SSR_REGN_DATE String,SSR_REGN_STATUS String, SSR_PATIENT_NAME String, SSR_GENDER String, " +
+                "SSR_DOB String, SSR_AGE_YR String, SSR_AGE_MN String," +
+                "SSR_AGE_DY String, SSR_CONTACT_NO String, SSR_AREA_LOCALITY String, " +
+                "SSR_DISTRICT_CD String, SSR_BLOCK_NAME String, SSR_PANCHAYAT_NAME String," +
+                "SSR_VILLAGE_NAME String, SSR_CRT_DT String, SSR_CRT_USER_ID String, " +
+                "SSR_LST_UPD_DT String, family_id String) ";
+        String q_create_gHabits_alcohol_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_GENERAL_HABITS_ALCOHOL +
+                " (member_id String primary key, family_id String, value String) ";
+        String q_create_gHabits_smoking_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_GENERAL_HABITS_SMOKING +
+                " (member_id String primary key, family_id String, value String) ";
+        String q_create_test_findings_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_TEST_FINDINGS +
+                " (member_id String primary key, family_id String, memberName String, sys String," +
+                " dia String, type String, value String) ";
+        String q_create_hci_atalAmrit_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_HCI_ATAL_AMRIT +
+                " (member_id String primary key, family_id String, value String) ";
+        String q_create_hci_ayushmanBharat_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_HCI_AYUSHMAN_BHARAT +
+                " (member_id String primary key, family_id String, value String) ";
+        String q_create_covid_facts_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_COVID_FACTS +
+                " (member_id String primary key, family_id String, name String, covid String, dose String, reason String) ";
+        String q_create_symptoms_master_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_SYMPTOMS_MASTER +
+                " (ATR_CODE String primary key, PRT_CODE String, PRT_DESC String," +
+                " PRT_DESC_ALT String, PRT_DESC_BENG String, PRT_SLNO String, " +
+                "ATR_DESC String, ATR_DESC_ALT String, ATR_DESC_BENG String,ATR_SLNO String) ";
 
 
 
@@ -86,10 +114,95 @@ public class DBhandler extends SQLiteOpenHelper {
         db.execSQL(q_create_gHabits_alcohol_tbl);
         db.execSQL(q_create_gHabits_smoking_tbl);
         db.execSQL(q_create_test_findings_tbl);
+        db.execSQL(q_create_hci_atalAmrit_tbl);
+        db.execSQL(q_create_hci_ayushmanBharat_tbl);
+        db.execSQL(q_create_covid_facts_tbl);
+        db.execSQL(q_create_symptoms_master_tbl);
+
 
 
     }
-    public void addTestFindings(String id, String f_id, String memberName, String sys, String dia, String value){
+    public void addSymptomsMaster(String ATR_CODE, String PRT_CODE, String PRT_DESC, String PRT_DESC_ALT,
+                                  String PRT_DESC_BENG, String PRT_SLNO, String ATR_DESC, String ATR_DESC_ALT,
+                                  String ATR_DESC_BENG, String ATR_SLNO){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("ATR_CODE", ATR_CODE);
+        values.put("PRT_CODE", PRT_CODE);
+        values.put("PRT_DESC", PRT_DESC);
+        values.put("PRT_DESC_ALT", PRT_DESC_ALT);
+        values.put("PRT_DESC_BENG", PRT_DESC_BENG);
+        values.put("PRT_SLNO", PRT_SLNO);
+        values.put("ATR_DESC", ATR_DESC);
+        values.put("ATR_DESC_ALT", ATR_DESC_ALT);
+        values.put("ATR_DESC_BENG", ATR_DESC_BENG);
+        values.put("ATR_SLNO", ATR_SLNO);
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_SYMPTOMS_MASTER, null, values);
+        db.close();
+    }
+    public void addCovidFacts(String id, String f_id, String name, String covid, String dose, String reason){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("member_id", id);
+        values.put("family_id", f_id);
+        values.put("name", name);
+        values.put("covid", covid);
+        values.put("dose", dose);
+        values.put("reason", reason);
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_COVID_FACTS, null, values);
+        db.close();
+    }
+    public void addHCIAtalAmrit(String id, String f_id, String value){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("member_id", id);
+        values.put("family_id", f_id);
+        values.put("value", value);
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_HCI_ATAL_AMRIT, null, values);
+        db.close();
+    }
+    public void addHCIAyushmanBharat(String id, String f_id, String value){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("member_id", id);
+        values.put("family_id", f_id);
+        values.put("value", value);
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_HCI_AYUSHMAN_BHARAT, null, values);
+        db.close();
+    }
+    public void addTestFindings(String id, String f_id, String memberName, String sys, String dia, String typeSpinner, String value){
         // on below line we are creating a variable for
         // our sqlite database and calling writable method
         // as we are writing data in our database.
@@ -104,6 +217,7 @@ public class DBhandler extends SQLiteOpenHelper {
         values.put("memberName",memberName);
         values.put("sys",sys);
         values.put("dia",dia);
+        values.put("type",typeSpinner);
         values.put("value", value);
         //  db.delete(TBL_GENERAL_HABITS_ALCOHOL,null,null);
         db.insert(TBL_TEST_FINDINGS, null, values);
@@ -346,6 +460,30 @@ public class DBhandler extends SQLiteOpenHelper {
     public Cursor getTestFindings(String familyId) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TBL_TEST_FINDINGS + " where family_id = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getHCIAtalAmrit(String familyId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_HCI_ATAL_AMRIT + " where family_id = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getHCIAyushmanBharat(String familyId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_HCI_AYUSHMAN_BHARAT + " where family_id = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getCovidFacts(String familyId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_COVID_FACTS + " where family_id = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getSymptomsMaster(String prt_code) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_SYMPTOMS_MASTER + " where PRT_CODE = '" + prt_code +"'",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
