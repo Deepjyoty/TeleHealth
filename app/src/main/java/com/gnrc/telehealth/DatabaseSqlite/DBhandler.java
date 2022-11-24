@@ -34,6 +34,7 @@ public class DBhandler extends SQLiteOpenHelper {
     private static final String TBL_HCI_AYUSHMAN_BHARAT = "tbl_hci_ayushman_bharat";
     private static final String TBL_COVID_FACTS = "tbl_covid_facts";
     private static final String TBL_SYMPTOMS_MASTER = "tbl_symptoms_master";
+    private static final String TBL_SYMPTOMS_MEMBER = "tbl_symptoms_member";
 
 
     // below variable is for our id column.
@@ -99,7 +100,10 @@ public class DBhandler extends SQLiteOpenHelper {
         String q_create_symptoms_master_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_SYMPTOMS_MASTER +
                 " (ATR_CODE String primary key, PRT_CODE String, PRT_DESC String," +
                 " PRT_DESC_ALT String, PRT_DESC_BENG String, PRT_SLNO String, " +
-                "ATR_DESC String, ATR_DESC_ALT String, ATR_DESC_BENG String,ATR_SLNO String) ";
+                "ATR_DESC String, ATR_DESC_ALT String, ATR_DESC_BENG String,ATR_SLNO String,Image_URL String) ";
+        String q_create_symptoms_member_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_SYMPTOMS_MEMBER +
+                " (ATR_CODE String, member_id String, family_id String, name String, PRT_DESC String," +
+                "ATR_DESC String, checkState String) ";
 
 
 
@@ -118,13 +122,35 @@ public class DBhandler extends SQLiteOpenHelper {
         db.execSQL(q_create_hci_ayushmanBharat_tbl);
         db.execSQL(q_create_covid_facts_tbl);
         db.execSQL(q_create_symptoms_master_tbl);
+        db.execSQL(q_create_symptoms_member_tbl);
 
+    }
+    public void addSymptomsMember( String ATR_CODE, String member_id, String family_id, String name,
+                                   String PRT_DESC, String ATR_DESC, String checkState){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("ATR_CODE", ATR_CODE);
+        values.put("member_id", member_id);
+        values.put("family_id", family_id);
+        values.put("name", name);
+        values.put("PRT_DESC", PRT_DESC);
+        values.put("ATR_DESC", ATR_DESC);
+        values.put("checkState", checkState);
 
-
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_SYMPTOMS_MEMBER, null, values);
+        db.close();
     }
     public void addSymptomsMaster(String ATR_CODE, String PRT_CODE, String PRT_DESC, String PRT_DESC_ALT,
                                   String PRT_DESC_BENG, String PRT_SLNO, String ATR_DESC, String ATR_DESC_ALT,
-                                  String ATR_DESC_BENG, String ATR_SLNO){
+                                  String ATR_DESC_BENG, String ATR_SLNO, String ImageUrl){
         // on below line we are creating a variable for
         // our sqlite database and calling writable method
         // as we are writing data in our database.
@@ -144,6 +170,7 @@ public class DBhandler extends SQLiteOpenHelper {
         values.put("ATR_DESC_ALT", ATR_DESC_ALT);
         values.put("ATR_DESC_BENG", ATR_DESC_BENG);
         values.put("ATR_SLNO", ATR_SLNO);
+        values.put("Image_URL", ImageUrl);
         //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
         db.insert(TBL_SYMPTOMS_MASTER, null, values);
         db.close();
@@ -484,6 +511,12 @@ public class DBhandler extends SQLiteOpenHelper {
     public Cursor getSymptomsMaster(String prt_code) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TBL_SYMPTOMS_MASTER + " where PRT_CODE = '" + prt_code +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getSymptomsMember(String memberId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_SYMPTOMS_MEMBER + " where member_id = '" + memberId +"'",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }

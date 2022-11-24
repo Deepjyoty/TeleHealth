@@ -104,7 +104,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
                 dialog.show();
                 familyhead = customLayout.findViewById(R.id.etfamilyhead);
                 phone = customLayout.findViewById(R.id.etfamilyheadphone);
-                house = customLayout.findViewById(R.id.etfamilyheadhouseno);
+                house = customLayout.findViewBy    Id(R.id.etfamilyheadhouseno);
                 address = customLayout.findViewById(R.id.etfamilyheadaddress);
                 city = customLayout.findViewById(R.id.etfamilyheadcity);
                 dist = customLayout.findViewById(R.id.spfamilyheaddistrict);

@@ -4,6 +4,24 @@ import java.io.Serializable;
 
 public class MemberDetailsForDialogModel implements Serializable {
     private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue, covidStatus, doseStatus,noVaccineReason;
+    private Boolean checkedStatus;
+    private int checkedId;
+
+    public int getCheckedId() {
+        return checkedId;
+    }
+
+    public void setCheckedId(int checkedId) {
+        this.checkedId = checkedId;
+    }
+
+    public Boolean getCheckedStatus() {
+        return checkedStatus;
+    }
+
+    public void setCheckedStatus(Boolean checkedStatus) {
+        this.checkedStatus = checkedStatus;
+    }
 
     public String getCovidStatus() {
         return covidStatus;

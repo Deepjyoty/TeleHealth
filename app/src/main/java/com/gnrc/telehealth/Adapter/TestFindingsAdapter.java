@@ -1,7 +1,10 @@
 package com.gnrc.telehealth.Adapter;
 
+import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
+
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.AddFamilyModel;
 import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 import com.gnrc.telehealth.R;
@@ -29,12 +33,14 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
     public static ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList;
     private MemberDetailsForDialogModel memberDetailsForDialogModel;
     ArrayAdapter<String> spinnerArrayAdapter;
-
-
-    public TestFindingsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList){
+    String familyId;
+    private ArrayList<String> names = new ArrayList<String>();
+    ArrayList<MemberDetailsForDialogModel> member1;
+    public TestFindingsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList,String familyId){
 
         inflater = LayoutInflater.from(ctx);
         this.addMemberDialogArrayList = addMemberDialogArrayList;
+        this.familyId = familyId;
 
     }
     @Override
@@ -60,9 +66,6 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
         spinnerArrayAdapter = new ArrayAdapter<>(inflater.getContext(), android.R.layout.simple_spinner_dropdown_item, list);
         holder.spinner.setAdapter(spinnerArrayAdapter);
         holder.spinner.setSelection(spinnerArrayAdapter.getPosition(addMemberDialogArrayList.get(position).getTypeSpinner()));
-        //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
-
-        //familyHeadModelArrayList.get(position).getDescription();
 
 
     }
@@ -77,10 +80,10 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
         TextView member;
         TextInputLayout sys,dia,value;
         Spinner spinner;
+        Cursor cursor1;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-
 
             member = (TextView) itemView.findViewById(R.id.testFindingsMemberName);
             sys = (TextInputLayout) itemView.findViewById(R.id.sys);

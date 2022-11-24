@@ -85,16 +85,19 @@
                             android:orientation="horizontal">
 
                             <RadioButton
+                                android:id="@+id/yesCovSymp"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="Yes" />
 
                             <RadioButton
+                                android:id="@+id/noCovSymp"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="No" />
+                                android:text="No"
+                                />
                         </RadioGroup>
                     </LinearLayout>
 
@@ -119,21 +122,25 @@
                             android:layout_height="wrap_content">
 
                             <RadioButton
+                                android:id="@+id/firstDose"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="First Dose" />
 
                             <RadioButton
+                                android:id="@+id/secondDose"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Second Dose" />
 
                             <RadioButton
+                                android:id="@+id/boosterDose"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Booster Dose" />
 
                             <RadioButton
+                                android:id="@+id/noneCovVacc"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="None" />
@@ -162,16 +169,19 @@
                             android:layout_height="wrap_content">
 
                             <RadioButton
+                                android:id="@+id/vacNotAvai"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Vaccine not available" />
 
                             <RadioButton
+                                android:id="@+id/fearOfTakVac"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Fear of taking vaccine" />
 
                             <RadioButton
+                                android:id="@+id/dontWant"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Don't want to take vaccine due to some misconception" />
