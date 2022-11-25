@@ -277,9 +277,72 @@
                         android:orientation="vertical">
 
                     </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvOtherInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="OTHER INFO"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:layout_marginTop="15dp"
+                        android:textColor="#F5F5F5"
+                        android:textSize="16sp"/>
+                    <LinearLayout
+                        android:id="@+id/ll_OtherInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Telemedicine Booked"
+                            android:layout_marginRight="1dp"
+                            android:background="@color/colorAccent"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+                        <LinearLayout
+                            android:id="@+id/ll_OtherInfoTele"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="OPD Booked"
+                            android:layout_marginRight="1dp"
+                            android:background="@color/colorAccent"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+                        <LinearLayout
+                            android:id="@+id/ll_OtherInfoOpd"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Ambulance Booked"
+                            android:layout_marginRight="1dp"
+                            android:background="@color/colorAccent"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+                        <LinearLayout
+                            android:id="@+id/ll_OtherInfoAmbulance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                        </LinearLayout>
+
+                    </LinearLayout>
                 </LinearLayout>
-
-
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>

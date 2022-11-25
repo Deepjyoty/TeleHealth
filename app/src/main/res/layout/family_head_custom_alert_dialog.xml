@@ -22,92 +22,101 @@
                 android:id="@+id/etfamilyhead"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="Head Name"
+                app:startIconDrawable="@drawable/person"
+                app:helperText="Required*"
+                app:helperTextTextColor="@color/zm_red"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/zm_width_50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/roundedtext"
-                    android:ems="10"
-                    android:hint="Head Name"
+                    android:layout_height="wrap_content"
                     android:inputType="textPersonName"
-                    android:paddingLeft="10dp" />
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etfamilyheadphone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="Phone Number"
+                app:startIconDrawable="@drawable/phone1"
+                app:helperText="Required*"
+                app:helperTextTextColor="@color/zm_red"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/zm_width_50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/roundedtext"
-                    android:ems="10"
-                    android:hint="Phone Number"
-                    android:inputType="phone"
-                    android:paddingLeft="10dp" />
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"  />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etfamilyheadhouseno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="House No."
+                app:startIconDrawable="@drawable/house"
+                app:helperText="Required*"
+                app:helperTextTextColor="@color/zm_red"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/zm_width_50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/roundedtext"
-                    android:ems="10"
-                    android:hint="House No."
-                    android:inputType="number"
-                    android:paddingLeft="10dp"
-                    android:textColorHint="#616161"
-                    tools:ignore="TextContrastCheck" />
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etfamilyheadaddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="Address"
+                app:startIconDrawable="@drawable/address"
+                app:helperText="Required*"
+                app:helperTextTextColor="@color/zm_red"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/zm_width_50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/roundedtext"
-                    android:ems="10"
-                    android:hint="Address"
-                    android:inputType="textMultiLine"
-                    android:paddingLeft="10dp" />
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etfamilyheadcity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="City"
+                app:startIconDrawable="@drawable/city"
+                app:helperText="Required*"
+                app:helperTextTextColor="@color/zm_red"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/zm_width_50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/roundedtext"
-                    android:ems="10"
-                    android:hint="City"
-                    android:inputType="text"
-                    android:paddingLeft="10dp" />
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Spinner
@@ -133,18 +142,20 @@
                 android:id="@+id/etfamilyheadpin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:hint="Pin"
+                app:startIconDrawable="@drawable/pincode"
+                app:helperText="Required*"
+                app:helperTextTextColor="@color/zm_red"
                 app:errorEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/zm_width_50dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/roundedtext"
-                    android:ems="10"
-                    android:hint="Pin"
-                    android:inputType="number"
-                    android:paddingLeft="10dp" />
+                    android:layout_height="wrap_content"
+                    android:inputType="number"/>
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>

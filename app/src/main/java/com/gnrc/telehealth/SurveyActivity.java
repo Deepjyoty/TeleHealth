@@ -58,11 +58,11 @@ import java.util.TreeMap;
 
 public class SurveyActivity extends AppCompatActivity {
     RecyclerView generalHabits, testFindings,healthCardInfo,covidFactsInfo,recyclerViewDialog,covidRecycler,signsSymptomsRecycler;
-    TextView genHab, testFin, heaCaIn, covFacIn, signsSymptoms;
+    TextView genHab, testFin, heaCaIn, covFacIn, signsSymptoms, otherinfo;
     AlertDialog dialog;
     SharedPreferences mPreferences;
     SharedPreferences.Editor preferencesEditor;
-    CheckBox cb,cb1;
+    CheckBox cb,cb1,cb2;
     ArrayList<MemberDetailsForDialogModel> member;
     ArrayList<MemberDetailsForDialogModel> list2;
     MemberDetailsForDialogModel memberDetailsForDialogModel;
@@ -93,7 +93,9 @@ public class SurveyActivity extends AppCompatActivity {
         heaCaIn = findViewById(R.id.tvHci);
         covFacIn = findViewById(R.id.tvCfi);
         signsSymptoms = findViewById(R.id.tvSaS);
+        otherinfo = findViewById(R.id.tvOtherInfo);
         editButton = findViewById(R.id.editBu);
+
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +134,13 @@ public class SurveyActivity extends AppCompatActivity {
                 showSymptoms(v);
             }
         });
+        otherinfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showOtherInfoDialog(v);
+            }
+        });
+
 
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
@@ -168,7 +177,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         builder.setView(customLayout);
 
-
+        DBhandler dBhandler = new DBhandler(getApplicationContext());
         LinearLayout smokingLayout = customLayout.findViewById(R.id.llSmoking);
         LinearLayout alcoholLayout = customLayout.findViewById(R.id.llAlcohol);
 
@@ -189,7 +198,26 @@ public class SurveyActivity extends AppCompatActivity {
             cb1.setTag(member.get(i).getMember_id());
             alcoholLayout.addView(cb1);
             checkBoxesAlcohol.add(cb1);
+            Cursor cursor1 = dBhandler.getGeneralHabitsAlcohol(getIntent().getStringExtra("familyId"));
+            if (cursor1.moveToFirst()){
+                do {
+                    if (cursor1.getString(0).equals(cb1.getTag())){
+                        cb1.setChecked(true);
+
+                    }
+                }while (cursor1.moveToNext());
+            }
+            Cursor cursor2 = dBhandler.getGeneralHabitsSmoking(getIntent().getStringExtra("familyId"));
+            if (cursor2.moveToFirst()){
+                do {
+                    if (cursor2.getString(0).equals(cb.getTag())){
+                        cb.setChecked(true);
+
+                    }
+                }while (cursor2.moveToNext());
+            }
         }
+
 
         // add a button
         builder.setPositiveButton(
@@ -210,6 +238,7 @@ public class SurveyActivity extends AppCompatActivity {
                                         String.valueOf(checkBoxesAlcohol.get(i).getTag()),
                                         getIntent().getStringExtra("familyId"),
                                         String.valueOf(checkBoxesAlcohol.get(i).getText()));
+                                checkBoxesAlcohol.get(i).setChecked(true);
                                 showGeneralHabitsAlcohol();
                             }
                         }
@@ -221,6 +250,7 @@ public class SurveyActivity extends AppCompatActivity {
                                         String.valueOf(checkBoxesSmoking.get(i).getTag()),
                                         getIntent().getStringExtra("familyId"),
                                         String.valueOf(checkBoxesSmoking.get(i).getText()));
+                                checkBoxesSmoking.get(i).setChecked(true);
                                 showGeneralHabitsSmoking();
                             }
                         }
@@ -459,6 +489,131 @@ public class SurveyActivity extends AppCompatActivity {
 
 
     }
+    public void showOtherInfoDialog(View view)    {
+        // Create an alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Other Info");
+        // set the custom layout
+        final View customLayout = getLayoutInflater().inflate(R.layout.other_info_dialog,null);
+
+        builder.setView(customLayout);
+
+        DBhandler dBhandler = new DBhandler(getApplicationContext());
+        LinearLayout teleMed = customLayout.findViewById(R.id.llTeleMedicine);
+        LinearLayout opd = customLayout.findViewById(R.id.llOpd);
+        LinearLayout ambBook = customLayout.findViewById(R.id.llAmbulance);
+
+
+
+        ArrayList<CheckBox> checkBoxesTeleMed = new ArrayList<>();
+        ArrayList<CheckBox> checkBoxesOpd= new ArrayList<>();
+        ArrayList<CheckBox> checkBoxesAmbulsnce= new ArrayList<>();
+
+
+        for (int i = 0; i < member.size(); i++){
+            cb = new CheckBox(SurveyActivity.this);
+            cb1 = new CheckBox(SurveyActivity.this);
+            cb2 = new CheckBox(SurveyActivity.this);
+            cb.setText(member.get(i).getMemberName());
+            cb.setTag(member.get(i).getMember_id());
+            teleMed.addView(cb);
+            checkBoxesTeleMed.add(cb);
+            cb1.setText(member.get(i).getMemberName());
+            cb1.setTag(member.get(i).getMember_id());
+            opd.addView(cb1);
+            checkBoxesOpd.add(cb1);
+            cb2.setText(member.get(i).getMemberName());
+            cb2.setTag(member.get(i).getMember_id());
+            ambBook.addView(cb2);
+            checkBoxesAmbulsnce.add(cb2);
+            Cursor cursor1 = dBhandler.getOtherInfoTelemed(getIntent().getStringExtra("familyId"));
+            if (cursor1.moveToFirst()){
+                do {
+                    if (cursor1.getString(0).equals(cb.getTag())){
+                        cb.setChecked(true);
+
+                    }
+                }while (cursor1.moveToNext());
+            }
+            Cursor cursor2 = dBhandler.getOtherInfoOpd(getIntent().getStringExtra("familyId"));
+            if (cursor2.moveToFirst()){
+                do {
+                    if (cursor2.getString(0).equals(cb1.getTag())){
+                        cb1.setChecked(true);
+
+                    }
+                }while (cursor2.moveToNext());
+            }
+            Cursor cursor3 = dBhandler.getOtherInfoAmbulance(getIntent().getStringExtra("familyId"));
+            if (cursor3.moveToFirst()){
+                do {
+                    if (cursor3.getString(0).equals(cb2.getTag())){
+                        cb2.setChecked(true);
+
+                    }
+                }while (cursor3.moveToNext());
+            }
+        }
+
+        // add a button
+        builder.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    DBhandler dBhandler;
+                    @Override
+                    public void onClick(DialogInterface dialog,int which)
+                    {
+                        dBhandler = new DBhandler(getApplicationContext());
+                        SQLiteDatabase db = dBhandler.getWritableDatabase();
+                        db.delete("tbl_other_info_telemed", null,null);
+                        db.delete("tbl_other_info_opd",null,null);
+                        db.delete("tbl_other_info_ambulance",null,null);
+
+                        for (int i = 0; i<checkBoxesTeleMed.size();i++){
+                            if (checkBoxesTeleMed.get(i).isChecked()) {
+                                dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addOtherInfoTelemed(
+                                        String.valueOf(checkBoxesTeleMed.get(i).getTag()),
+                                        getIntent().getStringExtra("familyId"),
+                                        String.valueOf(checkBoxesTeleMed.get(i).getText()));
+                                checkBoxesTeleMed.get(i).setChecked(true);
+                                showOiTelemed();
+                            }
+                        }
+                        //
+                        for (int i = 0; i<checkBoxesOpd.size();i++){
+                            if (checkBoxesOpd.get(i).isChecked()) {
+                                dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addOtherInfoOpd(
+                                        String.valueOf(checkBoxesOpd.get(i).getTag()),
+                                        getIntent().getStringExtra("familyId"),
+                                        String.valueOf(checkBoxesOpd.get(i).getText()));
+                                checkBoxesOpd.get(i).setChecked(true);
+                                showOiOpd();
+                            }
+                        }
+                        for (int i = 0; i<checkBoxesAmbulsnce.size();i++){
+                            if (checkBoxesAmbulsnce.get(i).isChecked()) {
+                                dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addOtherInfoAmbulance(
+                                        String.valueOf(checkBoxesAmbulsnce.get(i).getTag()),
+                                        getIntent().getStringExtra("familyId"),
+                                        String.valueOf(checkBoxesAmbulsnce.get(i).getText()));
+                                checkBoxesAmbulsnce.get(i).setChecked(true);
+                                showOiAmbulance();
+                            }
+                        }
+                    }
+
+                });
+        // create and show
+        // the alert dialog
+        /**/
+        dialog = builder.create();
+        dialog.show();
+
+    }
+
     public void setupTestFindingsDialogRecycler(){
         /*DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
@@ -598,6 +753,58 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+    public void showOiTelemed(){
+        DBhandler dBhandler = new DBhandler(getApplicationContext());
+        Cursor cursor = dBhandler.getOtherInfoTelemed(getIntent().getStringExtra("familyId"));
+        TextView tvTeleMedicine;
+        LinearLayout displayTelemed = findViewById(R.id.ll_OtherInfoTele);
+        displayTelemed.removeAllViews();
+        if (cursor.moveToFirst()) {
+            do {
+                tvTeleMedicine = new TextView(SurveyActivity.this);
+                tvTeleMedicine.setPadding(10,10,10,10);
+                tvTeleMedicine.setTextColor(Color.parseColor("#000000"));
+                tvTeleMedicine.setGravity(Gravity.CENTER);
+                tvTeleMedicine.setText(cursor.getString(2));
+                displayTelemed.addView(tvTeleMedicine);
+            } while (cursor.moveToNext());
+        }
+    }
+    public void showOiOpd(){
+        DBhandler dBhandler = new DBhandler(getApplicationContext());
+        Cursor cursor = dBhandler.getOtherInfoOpd(getIntent().getStringExtra("familyId"));
+        TextView tvOpd;
+        LinearLayout displayOpd = findViewById(R.id.ll_OtherInfoOpd);
+        displayOpd.removeAllViews();
+        if (cursor.moveToFirst()) {
+            do {
+                tvOpd = new TextView(SurveyActivity.this);
+                tvOpd.setPadding(10,10,10,10);
+                tvOpd.setTextColor(Color.parseColor("#000000"));
+                tvOpd.setGravity(Gravity.CENTER);
+                tvOpd.setText(cursor.getString(2));
+                displayOpd.addView(tvOpd);
+            } while (cursor.moveToNext());
+        }
+    }
+    public void showOiAmbulance(){
+        DBhandler dBhandler = new DBhandler(getApplicationContext());
+        Cursor cursor = dBhandler.getOtherInfoAmbulance(getIntent().getStringExtra("familyId"));
+        TextView tvAmbulance;
+        LinearLayout displayAmbulance = findViewById(R.id.ll_OtherInfoAmbulance);
+        displayAmbulance.removeAllViews();
+        if (cursor.moveToFirst()) {
+            do {
+                tvAmbulance = new TextView(SurveyActivity.this);
+                tvAmbulance.setPadding(10,10,10,10);
+                tvAmbulance.setTextColor(Color.parseColor("#000000"));
+                tvAmbulance.setGravity(Gravity.CENTER);
+                tvAmbulance.setText(cursor.getString(2));
+                displayAmbulance.addView(tvAmbulance);
+            } while (cursor.moveToNext());
+        }
+    }
+
     public void showCovidFactsInfo(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getCovidFacts(getIntent().getStringExtra("familyId"));

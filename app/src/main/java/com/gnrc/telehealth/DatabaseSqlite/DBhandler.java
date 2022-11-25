@@ -35,6 +35,9 @@ public class DBhandler extends SQLiteOpenHelper {
     private static final String TBL_COVID_FACTS = "tbl_covid_facts";
     private static final String TBL_SYMPTOMS_MASTER = "tbl_symptoms_master";
     private static final String TBL_SYMPTOMS_MEMBER = "tbl_symptoms_member";
+    private static final String TBL_OTHER_INFO_TELEMED = "tbl_other_info_telemed";
+    private static final String TBL_OTHER_INFO_OPD = "tbl_other_info_opd";
+    private static final String TBL_OTHER_INFO_AMBULANCE = "tbl_other_info_ambulance";
 
 
     // below variable is for our id column.
@@ -104,6 +107,12 @@ public class DBhandler extends SQLiteOpenHelper {
         String q_create_symptoms_member_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_SYMPTOMS_MEMBER +
                 " (ATR_CODE String, member_id String, family_id String, name String, PRT_DESC String," +
                 "ATR_DESC String, checkState String) ";
+        String q_create_other_info_telemed_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_OTHER_INFO_TELEMED +
+                " (member_id String primary key, family_id String, value String) ";
+        String q_create_other_info_opd_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_OTHER_INFO_OPD +
+                " (member_id String primary key, family_id String, value String) ";
+        String q_create_other_info_ambulance_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_OTHER_INFO_AMBULANCE +
+                " (member_id String primary key, family_id String, value String) ";
 
 
 
@@ -123,7 +132,64 @@ public class DBhandler extends SQLiteOpenHelper {
         db.execSQL(q_create_covid_facts_tbl);
         db.execSQL(q_create_symptoms_master_tbl);
         db.execSQL(q_create_symptoms_member_tbl);
+        db.execSQL(q_create_other_info_telemed_tbl);
+        db.execSQL(q_create_other_info_opd_tbl);
+        db.execSQL(q_create_other_info_ambulance_tbl);
 
+    }
+    public void addOtherInfoTelemed(String member_id, String family_id, String name){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("member_id", member_id);
+        values.put("family_id", family_id);
+        values.put("value", name);
+
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_OTHER_INFO_TELEMED, null, values);
+        db.close();
+    }
+    public void addOtherInfoOpd(String member_id, String family_id, String name){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("member_id", member_id);
+        values.put("family_id", family_id);
+        values.put("value", name);
+
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_OTHER_INFO_OPD, null, values);
+        db.close();
+    }
+    public void addOtherInfoAmbulance(String member_id, String family_id, String name){
+        // on below line we are creating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        // on below line we are creating a
+        // variable for content values.
+        ContentValues values = new ContentValues();
+        // on below line we are passing all values
+        // along with its key and value pair.
+        values.put("member_id", member_id);
+        values.put("family_id", family_id);
+        values.put("value", name);
+
+        //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
+        db.insert(TBL_OTHER_INFO_AMBULANCE, null, values);
+        db.close();
     }
     public void addSymptomsMember( String ATR_CODE, String member_id, String family_id, String name,
                                    String PRT_DESC, String ATR_DESC, String checkState){
@@ -514,9 +580,28 @@ public class DBhandler extends SQLiteOpenHelper {
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
+
     public Cursor getSymptomsMember(String memberId) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TBL_SYMPTOMS_MEMBER + " where member_id = '" + memberId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getOtherInfoTelemed(String familyId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_OTHER_INFO_TELEMED + " where family_id = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getOtherInfoOpd(String familyId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_OTHER_INFO_OPD + " where family_id = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getOtherInfoAmbulance(String familyId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TBL_OTHER_INFO_AMBULANCE + " where family_id = '" + familyId +"'",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
