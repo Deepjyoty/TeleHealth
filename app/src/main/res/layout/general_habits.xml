@@ -41,17 +41,24 @@
                         android:text="GENERAL HABITS"
                         android:textColor="#F5F5F5"
                         android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/tvMemberName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:text="Member Name"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <ImageView
+                        <!--<ImageView
                             android:id="@+id/imageView4"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            app:srcCompat="@drawable/smoking" />
+                            app:srcCompat="@drawable/smoking" />-->
 
                         <LinearLayout
                             android:id="@+id/llSmoking"
@@ -66,13 +73,28 @@
                                 android:padding="5dp"
                                 android:textColor="@color/black"
                                 android:text="Smoking?"/>
+                            <RadioGroup
+                                android:id="@+id/rgSmoking"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <RadioButton
+                                    android:id="@+id/smokYes"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yes"/>
+                                <RadioButton
+                                    android:id="@+id/smokNo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="No"/>
+                            </RadioGroup>
 
-<!--                            <CheckBox-->
-<!--                                android:id="@+id/radioButtonSmoking"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:minHeight="48dp"-->
-<!--                                android:text="Yes" />-->
+                            <!--<CheckBox
+                                android:id="@+id/radioButtonSmoking"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="48dp"
+                                android:text="None" />-->
 
 
                         </LinearLayout>
@@ -89,14 +111,27 @@
                                 android:padding="5dp"
                                 android:textColor="@color/black"
                                 android:text="Cons. Alcohol?"/>
-
-                          <!--  <CheckBox
+                            <RadioGroup
+                                android:id="@+id/rgAlcohol"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <RadioButton
+                                    android:id="@+id/alcoYes"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yes"/>
+                                <RadioButton
+                                    android:id="@+id/alcoNo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="No"/>
+                            </RadioGroup>
+                            <!--<CheckBox
                                 android:id="@+id/radioButtonAlcohol"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="48dp"
-                                android:text="Yes" />
--->
+                                android:text="None" />-->
 
                         </LinearLayout>
                     </LinearLayout>

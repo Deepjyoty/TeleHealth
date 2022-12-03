@@ -3,9 +3,67 @@ package com.gnrc.telehealth.Model;
 import java.io.Serializable;
 
 public class MemberDetailsForDialogModel implements Serializable {
-    private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue, covidStatus, doseStatus,noVaccineReason;
+    private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue,
+            covidStatus, doseStatus,noVaccineReason, smokingStatus,alcoholStatus, atalAmritStatus, ayushmanStatus;
     private Boolean checkedStatus;
     private int checkedId;
+
+    //))))))))))))))))))))))))))))))))
+
+    private boolean isSmoker,isAtal;
+    private boolean isAlcoholic,isAyush;
+
+    //))))))))))))))))))))))))))))))))
+
+
+    public boolean isAtal() {
+        return isAtal;
+    }
+
+    public void setAtal(boolean atal) {
+        isAtal = atal;
+    }
+
+    public boolean isAyush() {
+        return isAyush;
+    }
+
+    public void setAyush(boolean ayush) {
+        isAyush = ayush;
+    }
+
+
+    public String getSmokingStatus() {
+        return smokingStatus;
+    }
+
+    public String getAtalAmritStatus() {
+        return atalAmritStatus;
+    }
+
+    public void setAtalAmritStatus(String atalAmritStatus) {
+        this.atalAmritStatus = atalAmritStatus;
+    }
+
+    public String getAyushmanStatus() {
+        return ayushmanStatus;
+    }
+
+    public void setAyushmanStatus(String ayushmanStatus) {
+        this.ayushmanStatus = ayushmanStatus;
+    }
+
+    public void setSmokingStatus(String smokingStatus) {
+        this.smokingStatus = smokingStatus;
+    }
+
+    public String getAlcoholStatus() {
+        return alcoholStatus;
+    }
+
+    public void setAlcoholStatus(String alcoholStatus) {
+        this.alcoholStatus = alcoholStatus;
+    }
 
     public int getCheckedId() {
         return checkedId;
@@ -94,4 +152,25 @@ public class MemberDetailsForDialogModel implements Serializable {
     public void setMemberName(String memberName) {
         this.memberName = memberName;
     }
+
+
+    //((((((((((((((((((((((((((((((((((((((((((((((
+
+    public boolean isSmoker() {
+        return isSmoker;
+    }
+
+    public void setSmoker(boolean smoker) {
+        isSmoker = smoker;
+    }
+
+    public boolean isAlcoholic() {
+        return isAlcoholic;
+    }
+
+    public void setAlcoholic(boolean alcoholic) {
+        isAlcoholic = alcoholic;
+    }
+
+    //((((((((((((((((((((((((((((((((((((((((((((((
 }

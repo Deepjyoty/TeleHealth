@@ -14,10 +14,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gnrc.telehealth.Model.AddFamilyModel;
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.gnrc.telehealth.R;
 import com.gnrc.telehealth.AddMemberActivity;
+import com.gnrc.telehealth.ShowSurveyActivity;
+import com.gnrc.telehealth.SurveyActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -30,6 +33,8 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
     private ArrayList<Family_Head_Model> filteredlist;
     private ArrayList<Family_Head_Model> count;
     private Family_Head_Model familyHeadModel;
+    private ArrayList<AddFamilyModel> addFamilyModelArrayList;
+
     private StateDataModel stateDataModel;
     public userclicklistener userclicklistener;
     //private DBhandler dbHandler;
@@ -43,11 +48,12 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
         void selecteduser(Family_Head_Model familyHeadModel);
     }
 
-    public Family_Head_Adapter(Context ctx, ArrayList<Family_Head_Model> familyHeadModelArrayList, userclicklistener userclicklistener){
+    public Family_Head_Adapter(Context ctx, ArrayList<Family_Head_Model> familyHeadModelArrayList,userclicklistener userclicklistener){
 
         inflater = LayoutInflater.from(ctx);
         this.familyHeadModelArrayList = familyHeadModelArrayList;
         this.statedataModelArrayList = statedataModelArrayList;
+        this.addFamilyModelArrayList = addFamilyModelArrayList;
         filteredlist = new ArrayList<>(familyHeadModelArrayList);
         this.userclicklistener = userclicklistener;
     }
@@ -69,10 +75,22 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
         holder.phone.setText(familyHeadModelArrayList.get(position).getPhone());
         holder.city.setText(familyHeadModelArrayList.get(position).getAddress());
         holder.view.setText(familyHeadModelArrayList.get(position).getViewtext());
+        holder.survey.setText(familyHeadModelArrayList.get(position).getEdittext());
+        holder.counter.setText(String.valueOf(++position));
         //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
 
         //familyHeadModelArrayList.get(position).getDescription();
+        holder.survey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(inflater.getContext(), ShowSurveyActivity.class);
+                i.putExtra("familyId",familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
+                i.putExtra("headPhoneNo",familyHeadModelArrayList.get(holder.getAbsoluteAdapterPosition())
+                        .getPhone());
 
+                inflater.getContext().startActivity(i);
+            }
+        });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             int count = 0;
             @Override
@@ -149,8 +167,8 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView phone, name, city,view,edit;
-        ImageView iv;
+        TextView phone, name, city,view,survey,counter;
+        int cnt = 0;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -159,7 +177,8 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
             name = (TextView) itemView.findViewById(R.id.name);
             city = (TextView) itemView.findViewById(R.id.city);
             view = (TextView) itemView.findViewById(R.id.tvview);
-            //edit = (TextView) itemView.findViewById(R.id.tveditfamily);
+            survey = (TextView) itemView.findViewById(R.id.tveditfamily);
+            counter = (TextView) itemView.findViewById(R.id.tvCounter);
 
             //iv = (ImageView) itemView.findViewById(R.id.iv);
         }

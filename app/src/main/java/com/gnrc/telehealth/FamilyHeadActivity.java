@@ -52,7 +52,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class Family_List_Activity extends AppCompatActivity implements  Family_Head_Adapter.userclicklistener{
+public class FamilyHeadActivity extends AppCompatActivity implements  Family_Head_Adapter.userclicklistener{
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Button addfamilymember;
@@ -141,7 +141,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(Family_List_Activity.this,ChoiceActivity.class);
+        Intent i = new Intent(FamilyHeadActivity.this,ChoiceActivity.class);
         startActivity(i);
     }
 
@@ -205,7 +205,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                                 setupRecyclerFrom_DB();
 
                                 familyHeadAdapter.notifyDataSetChanged();
-                                /*Intent i = new Intent(Family_List_Activity.this,Family_List_Activity.class);
+                                /*Intent i = new Intent(FamilyHeadActivity.this,FamilyHeadActivity.class);
                                 startActivity(i);
                                 finish();*/
                             }
@@ -479,7 +479,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                             Log.d("deep", ">>" + response);
 
                             String message = obj.getString("message");
-                            Toast.makeText(Family_List_Activity.this, ""+ message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(FamilyHeadActivity.this, ""+ message, Toast.LENGTH_SHORT).show();
                             familyHeadModelArrayList = new ArrayList<>();
                             JSONArray dataArray  = obj.getJSONArray("products");
 
@@ -573,7 +573,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                 stateDataModelArrayList.add(stateModel);
 
             } while (cursor.moveToNext());
-            spinnerArrayAdapter = new ArrayAdapter<String>(Family_List_Activity.this, android.R.layout.simple_spinner_item, states);
+            spinnerArrayAdapter = new ArrayAdapter<String>(FamilyHeadActivity.this, android.R.layout.simple_spinner_item, states);
             for (int i = 0; i < stateDataModelArrayList.size(); i++) {
                 states.add(stateDataModelArrayList.get(i).getState());
                 spinnerPosition = spinnerArrayAdapter.getPosition(stateDataModelArrayList.get(i).getState());
@@ -609,7 +609,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                 districtDataModelArrayList.add(stateModel);
 
             } while (cursor.moveToNext());
-            spinnerArrayAdapter = new ArrayAdapter<String>(Family_List_Activity.this, android.R.layout.simple_spinner_item, district);
+            spinnerArrayAdapter = new ArrayAdapter<String>(FamilyHeadActivity.this, android.R.layout.simple_spinner_item, district);
             for (int i = 0; i < districtDataModelArrayList.size(); i++) {
                 district.add(districtDataModelArrayList.get(i).getDistrict());
                 spinnerPosition = spinnerArrayAdapter.getPosition(districtDataModelArrayList.get(i).getDistrict());
@@ -655,6 +655,7 @@ public class Family_List_Activity extends AppCompatActivity implements  Family_H
                 familyHeadModelArrayList.add(playerModel);
                 Log.d("val", "setupRecycler: "+playerModel);
                 playerModel.setViewtext("Add Member");
+                playerModel.setEdittext("Survey");
 
             }while (cursor.moveToNext());
             familyHeadAdapter = new Family_Head_Adapter(this, familyHeadModelArrayList,this::selecteduser);

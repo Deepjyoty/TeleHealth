@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".AddMemberActivity">
 
 
@@ -39,6 +39,15 @@
                     android:text="HEALTH CARD INFORMATION"
                     android:textColor="#F5F5F5"
                     android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tvHciMemberName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:text="Member Name"
+                    android:textColor="#F5F5F5"
+                    android:textSize="16sp" />
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -52,7 +61,24 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="vertical">
-
+                        <RadioGroup
+                            android:id="@+id/rgAtal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <RadioButton
+                                android:id="@+id/rbAtalYes"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Yes"/>
+                            <RadioButton
+                                android:id="@+id/rbAtalNo"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="No"/>
+                        </RadioGroup>
                     </LinearLayout>
                         <TextView
                             android:layout_width="match_parent"
@@ -67,7 +93,24 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:orientation="vertical">
-
+                        <RadioGroup
+                            android:id="@+id/rgAyushman"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <RadioButton
+                                android:id="@+id/rbAyushYes"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Yes"/>
+                            <RadioButton
+                                android:id="@+id/rbAyushNo"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="No"/>
+                        </RadioGroup>
                     </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

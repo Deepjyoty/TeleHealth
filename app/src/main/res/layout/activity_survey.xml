@@ -48,7 +48,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal" >
-                            <LinearLayout
+                            <!--<LinearLayout
 
                                 android:layout_width="0dp"
                                 android:layout_weight="1"
@@ -71,14 +71,14 @@
                                     android:orientation="vertical">
 
                                 </LinearLayout>
-                            </LinearLayout>
+                            </LinearLayout>-->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_weight="1"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
-                                <TextView
+                                <!--<TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
@@ -86,12 +86,22 @@
                                     android:text="Alcohol"
                                     android:background="@color/colorAccent"
                                     android:textColor="@color/white"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold" />-->
                                 <LinearLayout
                                     android:id="@+id/ll_alcoholDisplay"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/txt_general_habits"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:layout_marginStart="14dp"
+                                        android:layout_marginEnd="14dp"/>
+
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
@@ -201,7 +211,7 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
-                                <TextView
+                                <!--<TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
@@ -209,16 +219,23 @@
                                     android:layout_marginRight="1dp"
                                     android:background="@color/colorAccent"
                                     android:textColor="@color/white"
-                                    android:textStyle="bold" />
+                                    android:textStyle="bold" />-->
                                 <LinearLayout
                                     android:id="@+id/ll_AtlAmrDisplay"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical">
-
+                                    <TextView
+                                        android:id="@+id/tvHciInfo"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text=""
+                                        android:textColor="@color/black"
+                                        android:layout_marginStart="14dp"
+                                        android:layout_marginEnd="14dp"/>
                                 </LinearLayout>
                             </LinearLayout>
-                            <LinearLayout
+                            <!--<LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_weight="1"
                                 android:layout_height="wrap_content"
@@ -239,10 +256,10 @@
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical">
                                 </LinearLayout>
-                            </LinearLayout>
+                            </LinearLayout>-->
                         </LinearLayout>
                     </ScrollView>
-                    <TextView
+                    <!--<TextView
                         android:id="@+id/tvCfi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -258,7 +275,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
-                    </LinearLayout>
+                    </LinearLayout>-->
                     <TextView
                         android:id="@+id/tvSaS"
                         android:layout_width="match_parent"
@@ -344,6 +361,12 @@
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+            <Button
+                android:id="@+id/btnSaveSurvey"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:text="Save Survey"/>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

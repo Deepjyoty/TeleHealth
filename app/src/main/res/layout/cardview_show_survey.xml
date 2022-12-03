@@ -11,14 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-<!--            <ImageView
-                android:id="@+id/iv"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:scaleType="fitXY" />-->
+        <!--            <ImageView
+                        android:id="@+id/iv"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:scaleType="fitXY" />-->
 
         <LinearLayout
             android:id="@+id/linearLayout4"
@@ -90,11 +90,11 @@
             app:layout_constraintTop_toBottomOf="@+id/phone"
             app:layout_constraintVertical_bias="0.0" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/tvview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Member"
+            android:text="Edit Survey"
             android:textColor="#791ecb"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -111,19 +111,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tveditfamily"
             app:layout_constraintStart_toEndOf="@+id/tvview"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />-->
 
         <TextView
             android:id="@+id/tveditfamily"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Survey"
+            android:layout_marginEnd="24dp"
+            android:text="Sync Survey"
             android:textColor="#791ecb"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.619"
-            app:layout_constraintStart_toEndOf="@+id/tvview"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/phone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.523" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

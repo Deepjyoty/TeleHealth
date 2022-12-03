@@ -1,7 +1,7 @@
 package com.gnrc.telehealth;
 
-import static com.gnrc.telehealth.Family_List_Activity.removeSimpleProgressDialog;
-import static com.gnrc.telehealth.Family_List_Activity.showSimpleProgressDialog;
+import static com.gnrc.telehealth.FamilyHeadActivity.removeSimpleProgressDialog;
+import static com.gnrc.telehealth.FamilyHeadActivity.showSimpleProgressDialog;
 
 import android.app.ProgressDialog;
 import android.content.Context;

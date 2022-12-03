@@ -1,22 +1,33 @@
 package com.gnrc.telehealth;
 
-import static com.gnrc.telehealth.Family_List_Activity.removeSimpleProgressDialog;
-import static com.gnrc.telehealth.Family_List_Activity.showSimpleProgressDialog;
+import static com.gnrc.telehealth.FamilyHeadActivity.removeSimpleProgressDialog;
 
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,7 +46,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gnrc.telehealth.Adapter.CovidFIAdapter;
+import com.gnrc.telehealth.Adapter.GeneralHabitsAdapter;
+import com.gnrc.telehealth.Adapter.HealthCardAdapter;
 import com.gnrc.telehealth.Adapter.TestFindingsAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
@@ -50,52 +62,174 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class SurveyActivity extends AppCompatActivity {
-    RecyclerView generalHabits, testFindings,healthCardInfo,covidFactsInfo,recyclerViewDialog,covidRecycler,signsSymptomsRecycler;
+public class SurveyActivity extends AppCompatActivity implements GeneralHabitsAdapter.GeneralHabits, HealthCardAdapter.HealthCard {
+
+    RecyclerView  recyclerViewDialog, covidRecycler,generalRecycler, healthCardRecycler;
     TextView genHab, testFin, heaCaIn, covFacIn, signsSymptoms, otherinfo;
+    String latitude, longitude,list1,familyid;
+    CheckBox cb, cb1, cb2;
     AlertDialog dialog;
-    SharedPreferences mPreferences;
+    int num = 1000;
+    int finalCount;
+
+    SharedPreferences mPreferences,mPreferences1,mPreferences2;
     SharedPreferences.Editor preferencesEditor;
-    CheckBox cb,cb1,cb2;
+    private static final int REQUEST_LOCATION = 1;
+
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.CHINESE);
+    SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("dd-MM-yyyy_hh:mm:ss", Locale.CHINESE);
+    String format, format2;
+
+    ArrayList<CheckBox> checkBoxesSymptoms;
+    ArrayList<String> mapObject;
+    ArrayList<String> memberSurveyIdArrayList;
+    ArrayList<MemberDetailsForDialogModel> list;
     ArrayList<MemberDetailsForDialogModel> member;
+    ArrayList<MemberDetailsForDialogModel> member1;
     ArrayList<MemberDetailsForDialogModel> list2;
-    MemberDetailsForDialogModel memberDetailsForDialogModel;
+
     MemberDetailsForDialogModel editModel;
     MemberDetailsForDialogModel editModel2;
     SignsAndSymptomsModel signsAndSymptomsModel;
-    ArrayList<String> mapObject;
-    Button editButton;
-    String list1;
-    TreeMap<String,ArrayList<String>> multiMap;
-    String memberName;
-    int num = 1000;
-    ArrayList<CheckBox> checkBoxesSymptoms;
+
+    Button editButton, saveSurvey;
+    TreeMap<String, ArrayList<String>> multiMap;
     SignsAndSymptomsModel ssModel;
     AttenderVideoAdapter.ItemClickListener itemClickListener;
+
     private boolean myBoolean = false;
     public static ArrayList<Boolean> ssModelArraylist;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
+    private TextView txtGeneralHabits,txtHealthCard;
+    private String CallingTypeLoad = "LOAD", CallingTypeUpdate = "UPDATE";
+    private static int CAMERA_PERMISSION_CODE = 100;
+    private static int VIDEO_RECORD_CODE = 101;
+    private Uri videoPath;
+    private String familySurveyId, memberSurveyId;
+
+    DBhandler dBhandler;
+    LocationManager locationManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
-        mPreferences=getSharedPreferences("smokingAlcohol",MODE_PRIVATE);
+        mPreferences = getSharedPreferences("smokingAlcohol", MODE_PRIVATE);
 
+        member = new ArrayList<>();
+        memberSurveyIdArrayList = new ArrayList<String>();
+        initView();
 
+        initListener();
+
+        format2 = simpleDateFormat2.format(new Date());
+
+        familyid = getIntent().getStringExtra("familyId");
+
+        dBhandler = new DBhandler(getApplicationContext());
+
+        mPreferences1=getSharedPreferences(familySurveyId,MODE_PRIVATE);
+
+        familySurveyId = "F_SRV_" + familyid + format2;
+
+        format = simpleDateFormat.format(new Date());
+
+        //showGeneralHabitsSmoking();
+        showGeneralHabitsAlcohol(CallingTypeLoad);
+        showTestFindingsBP();
+        showTestFindingsBS();
+        showHCIAtalAmrit(CallingTypeLoad);
+        //showHCIAyushmanBharat();
+        //showCovidFactsInfo();
+        fetchingSymptoms();
+        showSymptomsMembers();
+        showOiAmbulance();
+        showOiOpd();
+        showOiTelemed();
+        locationPermission();
+
+        //setupTestFindingsDialogRecycler();
+    }
+
+    private void initView(){
         genHab = findViewById(R.id.tvGh);
         testFin = findViewById(R.id.tvTf);
         heaCaIn = findViewById(R.id.tvHci);
-        covFacIn = findViewById(R.id.tvCfi);
+        //covFacIn = findViewById(R.id.tvCfi);
         signsSymptoms = findViewById(R.id.tvSaS);
         otherinfo = findViewById(R.id.tvOtherInfo);
         editButton = findViewById(R.id.editBu);
+        saveSurvey = findViewById(R.id.btnSaveSurvey);
 
+        txtGeneralHabits = findViewById(R.id.txt_general_habits);
+        txtHealthCard = findViewById(R.id.tvHciInfo);
+    }
+
+    private void initListener(){
+        saveSurvey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Cursor cursor1 = dBhandler.getGeneralHabitsAlcohol(familyid);
+                Cursor cursor2 = dBhandler.getTestFindings(familyid);
+                Cursor cursor3 = dBhandler.getHCIAtalAmrit(familyid);
+                Cursor cursor4 = dBhandler.getSymptomsMemberByFamilyId(familyid);
+                Cursor cursor5 = dBhandler.getOtherInfoOpd(familyid);
+                Cursor cursor6 = dBhandler.getOtherInfoAmbulance(familyid);
+                Cursor cursor7 = dBhandler.getOtherInfoTelemed(familyid);
+
+                if (cursor1.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete General Habits Survey",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (cursor2.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete Test Findings Survey",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (cursor3.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete Health Card Information Survey",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (cursor4.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete Signs and Symptoms Survey",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (cursor5.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete OPD Survey",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (cursor6.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete Ambulance Survey",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (cursor7.getCount() == 0){
+                    Toast.makeText(SurveyActivity.this, "Please Complete Tele Medicine Survey",
+                            Toast.LENGTH_SHORT).show();
+                }else {
+                    if (isCameraPresentInPhone()){
+                        getCameraPermission();
+                        recordVideo();
+                    }else {
+
+                    }
+                }
+
+
+
+               /* Intent i = new Intent(SurveyActivity.this,FamilyHeadActivity.class);
+                startActivity(i);
+                Toast.makeText(SurveyActivity.this, "Data Saved Successfully", Toast.LENGTH_SHORT).show();*/
+            }
+        });
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,163 +241,112 @@ public class SurveyActivity extends AppCompatActivity {
         genHab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                gpsTracker();
                 showGeneralHabitDialog(v);
             }
         });
+
         testFin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showTestFindingDialog(v);
             }
         });
+
         heaCaIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showHealthCardInfoDialog(v);
             }
         });
-        covFacIn.setOnClickListener(new View.OnClickListener() {
+
+        /*covFacIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCovidFIDialog(v);
             }
-        });
+        });*/
+
         signsSymptoms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showSymptoms(v);
             }
         });
+
         otherinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showOtherInfoDialog(v);
             }
         });
-
-
-        DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
-
-        member = new ArrayList<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                memberDetailsForDialogModel = new MemberDetailsForDialogModel();
-                memberDetailsForDialogModel.setMemberName(cursor.getString(3));
-                memberDetailsForDialogModel.setMember_id(cursor.getString(0));
-                member.add(memberDetailsForDialogModel);
-            } while (cursor.moveToNext());
-        }
-
-
-        showGeneralHabitsSmoking();
-        showGeneralHabitsAlcohol();
-        showTestFindingsBP();
-        showTestFindingsBS();
-        showHCIAtalAmrit();
-        showHCIAyushmanBharat();
-        showCovidFactsInfo();
-        fetchingSymptoms();
-        showSymptomsMembers();
-        //setupTestFindingsDialogRecycler();
     }
+
     public void showGeneralHabitDialog(View view)    {
-        // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("General Habits");
-        // set the custom layout
-        final View customLayout = getLayoutInflater().inflate(R.layout.general_habits,null);
 
+        View customLayout = getLayoutInflater().inflate(R.layout.general_habits_recycler,null);
         builder.setView(customLayout);
 
-        DBhandler dBhandler = new DBhandler(getApplicationContext());
-        LinearLayout smokingLayout = customLayout.findViewById(R.id.llSmoking);
-        LinearLayout alcoholLayout = customLayout.findViewById(R.id.llAlcohol);
+        generalRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
 
+        GeneralHabitsAdapter testFindingsAdapter = new GeneralHabitsAdapter(this, member, this);
+        generalRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+        generalRecycler.setAdapter(testFindingsAdapter);
 
-
-        ArrayList<CheckBox> checkBoxesSmoking = new ArrayList<>();
-        ArrayList<CheckBox> checkBoxesAlcohol= new ArrayList<>();
-
-
-        for (int i = 0; i < member.size(); i++){
-            cb = new CheckBox(SurveyActivity.this);
-            cb1 = new CheckBox(SurveyActivity.this);
-            cb.setText(member.get(i).getMemberName());
-            cb.setTag(member.get(i).getMember_id());
-            smokingLayout.addView(cb);
-            checkBoxesSmoking.add(cb);
-            cb1.setText(member.get(i).getMemberName());
-            cb1.setTag(member.get(i).getMember_id());
-            alcoholLayout.addView(cb1);
-            checkBoxesAlcohol.add(cb1);
-            Cursor cursor1 = dBhandler.getGeneralHabitsAlcohol(getIntent().getStringExtra("familyId"));
-            if (cursor1.moveToFirst()){
-                do {
-                    if (cursor1.getString(0).equals(cb1.getTag())){
-                        cb1.setChecked(true);
-
-                    }
-                }while (cursor1.moveToNext());
-            }
-            Cursor cursor2 = dBhandler.getGeneralHabitsSmoking(getIntent().getStringExtra("familyId"));
-            if (cursor2.moveToFirst()){
-                do {
-                    if (cursor2.getString(0).equals(cb.getTag())){
-                        cb.setChecked(true);
-
-                    }
-                }while (cursor2.moveToNext());
-            }
-        }
-
-
-        // add a button
         builder.setPositiveButton(
                 "OK",
                 new DialogInterface.OnClickListener() {
                     DBhandler dBhandler;
                     @Override
-                    public void onClick(DialogInterface dialog,int which)
-                    {
+                    public void onClick(DialogInterface dialog,int which) {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_general_habits_alcohol", null,null);
-                        db.delete("tbl_general_habits_smoking",null,null);
-                        for (int i = 0; i<checkBoxesAlcohol.size();i++){
-                            if (checkBoxesAlcohol.get(i).isChecked()) {
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addGeneralHabitsAlcohol(
-                                        String.valueOf(checkBoxesAlcohol.get(i).getTag()),
+                        db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
+
+                        if (finalCount == 0){
+                            for (int i = 0; i < member.size(); i++){
+                                String isSmoker = member.get(i).isSmoker() ? "Yes" : "No";
+                                String isAlcoholic = member.get(i).isAlcoholic() ? "Yes" : "No";
+
+                                int getCount = mPreferences1.getInt(familySurveyId, 0);
+                                finalCount = ++getCount;
+                                preferencesEditor = mPreferences1.edit();
+                                preferencesEditor.putInt(familySurveyId, finalCount);
+                                preferencesEditor.apply();
+
+                                memberSurveyIdArrayList.add("M_SRV_" + familySurveyId + "_00" + finalCount);
+
+                                dBhandler.addGeneralHabitsAlcohol(member.get(i).getMember_id(),
+                                        getIntent().getStringExtra("familyId"),member.get(i).getMemberName(),
+                                        isSmoker,
+                                        isAlcoholic,"M_SRV_" + familySurveyId + "_00"+finalCount,
+                                        latitude,longitude,format);
+
+                            }
+                        }else {
+                            for (int i = 0; i < member.size(); i++){
+                                String isSmoker = member.get(i).isSmoker() ? "Yes" : "No";
+                                String isAlcoholic = member.get(i).isAlcoholic() ? "Yes" : "No";
+                                dBhandler.addGeneralHabitsAlcohol(member.get(i).getMember_id(),
                                         getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesAlcohol.get(i).getText()));
-                                checkBoxesAlcohol.get(i).setChecked(true);
-                                showGeneralHabitsAlcohol();
+                                        member.get(i).getMemberName(), isSmoker,
+                                        isAlcoholic, memberSurveyIdArrayList.get(i), latitude,longitude,format);
+
                             }
                         }
-                        //
-                        for (int i = 0; i<checkBoxesSmoking.size();i++){
-                            if (checkBoxesSmoking.get(i).isChecked()) {
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addGeneralHabitsSmoking(
-                                        String.valueOf(checkBoxesSmoking.get(i).getTag()),
-                                        getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesSmoking.get(i).getText()));
-                                checkBoxesSmoking.get(i).setChecked(true);
-                                showGeneralHabitsSmoking();
-                            }
-                        }
+
+                        showGeneralHabitsAlcohol(CallingTypeUpdate);
+
                     }
 
                 });
-        // create and show
-        // the alert dialog
-        /**/
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
-
     }
+
     public void showTestFindingDialog(View view) {
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -288,7 +371,8 @@ public class SurveyActivity extends AppCompatActivity {
                 list2.add(editModel);
             } while (cursor1.moveToNext());
         }
-        if (cursor1.getCount() > 0 ){
+
+        /*if (cursor1.getCount() > 0 ){
             for (int i = 0; i < list2.size(); i++){
                 editModel2 = new MemberDetailsForDialogModel();
                 editModel2.setMemberName(list2.get(i).getMemberName());
@@ -304,7 +388,7 @@ public class SurveyActivity extends AppCompatActivity {
                 recyclerViewDialog.setAdapter(testFindingsAdapter);
                 editButton.setVisibility(View.VISIBLE);
             }
-        }else {
+        }else {*/
             for (int i = 0; i < member.size(); i++){
                 editModel = new MemberDetailsForDialogModel();
                 editModel.setMemberName(member.get(i).getMemberName());
@@ -314,7 +398,10 @@ public class SurveyActivity extends AppCompatActivity {
                 recyclerViewDialog.setAdapter(testFindingsAdapter);
                 editButton.setVisibility(View.GONE);
             }
+        if (cursor1.getCount() > 0 ){
+            editButton.setVisibility(View.VISIBLE);
         }
+
 
         builder.setPositiveButton(
                 "OK",
@@ -325,14 +412,16 @@ public class SurveyActivity extends AppCompatActivity {
                     {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_test_findings", null,null);
+                        db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
+                       // db.delete("tbl_test_findings", null,null);
                         for (int i = 0; i < member.size(); i++){
                             dBhandler.addTestFindings(member.get(i).getMember_id(),
                                     getIntent().getStringExtra("familyId"),member.get(i).getMemberName(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueSys(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueDia(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getTypeSpinner(),
-                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue());
+                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue(),
+                                    memberSurveyIdArrayList.get(i),format);
                             //setupTestFindingsDialogRecycler();
                             showTestFindingsBP();
                             showTestFindingsBS();
@@ -346,57 +435,22 @@ public class SurveyActivity extends AppCompatActivity {
                 |WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
+
     public void showHealthCardInfoDialog(View view)    {
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Health Card Information");
         // set the custom layout
-        final View customLayout = getLayoutInflater().inflate(R.layout.health_card_information,null);
+        View customLayout = getLayoutInflater().inflate(R.layout.general_habits_recycler,null);
 
         builder.setView(customLayout);
 
-        DBhandler dBhandler = new DBhandler(getApplicationContext());
-        LinearLayout atalAmritLayout = customLayout.findViewById(R.id.ll_AtalAmritAbhyan);
-        LinearLayout ayushmanBharatLayout = customLayout.findViewById(R.id.ll_AyushmanBharat);
+        healthCardRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
 
+        HealthCardAdapter testFindingsAdapter = new HealthCardAdapter(this, member1,this);
+        healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+        healthCardRecycler.setAdapter(testFindingsAdapter);
 
-
-        ArrayList<CheckBox> checkBoxesAtalAmrit = new ArrayList<>();
-        ArrayList<CheckBox> checkBoxesAyushmanBharat= new ArrayList<>();
-
-
-        for (int i = 0; i < member.size(); i++){
-            cb = new CheckBox(SurveyActivity.this);
-            cb1 = new CheckBox(SurveyActivity.this);
-            cb.setText(member.get(i).getMemberName());
-            cb.setTag(member.get(i).getMember_id());
-            atalAmritLayout.addView(cb);
-            checkBoxesAtalAmrit.add(cb);
-            cb1.setText(member.get(i).getMemberName());
-            cb1.setTag(member.get(i).getMember_id());
-            ayushmanBharatLayout.addView(cb1);
-            checkBoxesAyushmanBharat.add(cb1);
-            Cursor cursor1 = dBhandler.getHCIAtalAmrit(getIntent().getStringExtra("familyId"));
-            if (cursor1.moveToFirst()){
-                do {
-                    if (cursor1.getString(0).equals(cb.getTag())){
-                        cb.setChecked(true);
-
-                    }
-                }while (cursor1.moveToNext());
-            }
-            Cursor cursor2 = dBhandler.getHCIAyushmanBharat(getIntent().getStringExtra("familyId"));
-            if (cursor2.moveToFirst()){
-                do {
-                    if (cursor2.getString(0).equals(cb1.getTag())){
-                        cb1.setChecked(true);
-
-                    }
-                }while (cursor2.moveToNext());
-            }
-        }
-
-        // add a button
         builder.setPositiveButton(
                 "OK",
                 new DialogInterface.OnClickListener() {
@@ -406,41 +460,25 @@ public class SurveyActivity extends AppCompatActivity {
                     {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_hci_atal_amrit", null,null);
-                        db.delete("tbl_hci_ayushman_bharat",null,null);
-                        for (int i = 0; i<checkBoxesAyushmanBharat.size();i++){
-                            if (checkBoxesAyushmanBharat.get(i).isChecked()) {
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addHCIAyushmanBharat(
-                                        String.valueOf(checkBoxesAyushmanBharat.get(i).getTag()),
-                                        getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesAyushmanBharat.get(i).getText()));
-                                checkBoxesAyushmanBharat.get(i).setChecked(true);
-                                showHCIAyushmanBharat();
-                            }
-                        }
-                        //
-                        for (int i = 0; i<checkBoxesAtalAmrit.size();i++){
-                            if (checkBoxesAtalAmrit.get(i).isChecked()) {
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addHCIAtalAmrit(
-                                        String.valueOf(checkBoxesAtalAmrit.get(i).getTag()),
-                                        getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesAtalAmrit.get(i).getText()));
-                                checkBoxesAtalAmrit.get(i).setChecked(true);
-                                showHCIAtalAmrit();
-                            }
-                        }
-                    }
+                        db.execSQL("delete from tbl_hci_atal_amrit where family_id  = '" + familyid + "'" );
 
+                        for (int i = 0; i < member1.size(); i++){
+                            String isAtal = member1.get(i).isAtal() ? "Yes" : "No";
+                            String isAyush = member1.get(i).isAyush() ? "Yes" : "No";
+
+                            dBhandler = new DBhandler(getApplicationContext());
+                            dBhandler.addHCIAtalAmrit(member1.get(i).getMember_id(),
+                                    getIntent().getStringExtra("familyId"), member1.get(i).getMemberName(),
+                                    isAtal,isAyush,memberSurveyIdArrayList.get(i),format);
+                        }
+                        showHCIAtalAmrit(CallingTypeUpdate);
+                    }
                 });
-        // create and show
-        // the alert dialog
-        /**/
         dialog = builder.create();
         dialog.show();
-
     }
+
+/*
     public void showCovidFIDialog(View view)    {
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -472,7 +510,10 @@ public class SurveyActivity extends AppCompatActivity {
                     {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_covid_facts", null,null);
+                        db.execSQL("delete from tbl_covid_facts where family_id  = '" + familyid + "'" );
+                        */
+/*db.delete("tbl_covid_facts", null,null);*//*
+
                         for (int i = 0; i < member.size(); i++){
                             dBhandler.addCovidFacts(member.get(i).getMember_id(),
                                     getIntent().getStringExtra("familyId"),member.get(i).getMemberName(),
@@ -489,6 +530,8 @@ public class SurveyActivity extends AppCompatActivity {
 
 
     }
+*/
+
     public void showOtherInfoDialog(View view)    {
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -540,7 +583,6 @@ public class SurveyActivity extends AppCompatActivity {
                 do {
                     if (cursor2.getString(0).equals(cb1.getTag())){
                         cb1.setChecked(true);
-
                     }
                 }while (cursor2.moveToNext());
             }
@@ -565,9 +607,13 @@ public class SurveyActivity extends AppCompatActivity {
                     {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_other_info_telemed", null,null);
+                        db.execSQL("delete from tbl_other_info_telemed where family_id  = '" + familyid + "'" );
+                        db.execSQL("delete from tbl_other_info_opd where family_id  = '" + familyid + "'" );
+                        db.execSQL("delete from tbl_other_info_ambulance where family_id  = '" + familyid + "'" );
+
+                       /* db.delete("tbl_other_info_telemed", null,null);
                         db.delete("tbl_other_info_opd",null,null);
-                        db.delete("tbl_other_info_ambulance",null,null);
+                        db.delete("tbl_other_info_ambulance",null,null);*/
 
                         for (int i = 0; i<checkBoxesTeleMed.size();i++){
                             if (checkBoxesTeleMed.get(i).isChecked()) {
@@ -575,7 +621,8 @@ public class SurveyActivity extends AppCompatActivity {
                                 dBhandler.addOtherInfoTelemed(
                                         String.valueOf(checkBoxesTeleMed.get(i).getTag()),
                                         getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesTeleMed.get(i).getText()));
+                                        String.valueOf(checkBoxesTeleMed.get(i).getText()),
+                                        memberSurveyIdArrayList.get(i),format);
                                 checkBoxesTeleMed.get(i).setChecked(true);
                                 showOiTelemed();
                             }
@@ -587,7 +634,8 @@ public class SurveyActivity extends AppCompatActivity {
                                 dBhandler.addOtherInfoOpd(
                                         String.valueOf(checkBoxesOpd.get(i).getTag()),
                                         getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesOpd.get(i).getText()));
+                                        String.valueOf(checkBoxesOpd.get(i).getText()),
+                                        memberSurveyIdArrayList.get(i),format);
                                 checkBoxesOpd.get(i).setChecked(true);
                                 showOiOpd();
                             }
@@ -598,7 +646,8 @@ public class SurveyActivity extends AppCompatActivity {
                                 dBhandler.addOtherInfoAmbulance(
                                         String.valueOf(checkBoxesAmbulsnce.get(i).getTag()),
                                         getIntent().getStringExtra("familyId"),
-                                        String.valueOf(checkBoxesAmbulsnce.get(i).getText()));
+                                        String.valueOf(checkBoxesAmbulsnce.get(i).getText()),
+                                        memberSurveyIdArrayList.get(i),format);
                                 checkBoxesAmbulsnce.get(i).setChecked(true);
                                 showOiAmbulance();
                             }
@@ -635,6 +684,7 @@ public class SurveyActivity extends AppCompatActivity {
             recyclerViewDialog.setAdapter(testFindingsAdapterSurveyActivity);
         }*/
     }
+
     public void showTestFindingsBP(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
@@ -665,6 +715,7 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+
     public void showTestFindingsBS(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
@@ -684,6 +735,7 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+/*
     public void showGeneralHabitsSmoking(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getGeneralHabitsSmoking(getIntent().getStringExtra("familyId"));
@@ -702,40 +754,137 @@ public class SurveyActivity extends AppCompatActivity {
         }
 
     }
-    public void showGeneralHabitsAlcohol(){
-        DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getGeneralHabitsAlcohol(getIntent().getStringExtra("familyId"));
-        TextView tvAlcohol;
-        LinearLayout displayAlcohol = findViewById(R.id.ll_alcoholDisplay);
-        displayAlcohol.removeAllViews();
-        if (cursor.moveToFirst()) {
-            do {
-                tvAlcohol = new TextView(SurveyActivity.this);
-                tvAlcohol.setPadding(10,10,10,10);
-                tvAlcohol.setTextColor(Color.parseColor("#000000"));
-                tvAlcohol.setGravity(Gravity.CENTER);
-                tvAlcohol.setText(cursor.getString(2));
-                displayAlcohol.addView(tvAlcohol);
-            } while (cursor.moveToNext());
+*/
+
+    public void showGeneralHabitsAlcohol( String callingType){
+        String sourceString = "";
+
+        switch (callingType){
+            case "LOAD":
+                member = new ArrayList<>();
+                DBhandler dBhandler = new DBhandler(getApplicationContext());
+                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
+
+                /**
+                 * member data
+                 */
+
+                if (cursorFamilyMember.moveToFirst()) {
+                    do {
+                        MemberDetailsForDialogModel memberDetailsForDialogModel = new MemberDetailsForDialogModel();
+
+                        memberDetailsForDialogModel.setMemberName(cursorFamilyMember.getString(3)); //member name
+                        memberDetailsForDialogModel.setMember_id(cursorFamilyMember.getString(0)); //member id
+
+                        Cursor cursorGeneralHabits = dBhandler.getGeneralHabitsAlcoholByMember(cursorFamilyMember.getString(0));
+
+                        if(cursorGeneralHabits.moveToFirst()){
+                            if(cursorGeneralHabits.getString(0).equals("Yes")) { //smoking
+                                memberDetailsForDialogModel.setSmoker(true);
+                            } else {
+                                memberDetailsForDialogModel.setSmoker(false);
+                            }
+
+                            if(cursorGeneralHabits.getString(1).equals("Yes")) { //alcoholic
+                                memberDetailsForDialogModel.setAlcoholic(true);
+                            } else {
+                                memberDetailsForDialogModel.setAlcoholic(false);
+                            }
+                        }
+
+                        member.add(memberDetailsForDialogModel);
+                    } while (cursorFamilyMember.moveToNext());
+                }
+
+
+
+                Cursor cursor = dBhandler.getGeneralHabitsAlcohol(getIntent().getStringExtra("familyId"));
+                if (cursor.moveToFirst()) {
+                    do {
+                        sourceString += "<b>" + cursor.getString(2) + "</b><br/>" +
+                                "<b>Smoking? :</b>" + cursor.getString(3) + "<br/>" +
+                                "<b>Alcohol? :</b>" + cursor.getString(4) + "<br/>";
+                    } while (cursor.moveToNext());
+                }
+                break;
+            case "UPDATE":
+                for(int i = 0; i < member.size(); i++){
+                    String isSmoker = member.get(i).isSmoker() ? "Yes" : "No";
+                    String isAlcoholic = member.get(i).isAlcoholic() ? "Yes" : "No";
+                    sourceString += "<b>" + member.get(i).getMemberName() + "</b><br/>" +
+                            "<b>Smoking? :</b>" + isSmoker + "<br/>" +
+                            "<b>Alcohol? :</b>" + isAlcoholic + "<br/>";
+                }
+                break;
         }
+        txtGeneralHabits.setText(Html.fromHtml(sourceString));
     }
-    public void showHCIAtalAmrit(){
-        DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getHCIAtalAmrit(getIntent().getStringExtra("familyId"));
-        TextView tvAtal;
-        LinearLayout displayAtalAmrit = findViewById(R.id.ll_AtlAmrDisplay);
-        displayAtalAmrit.removeAllViews();
-        if (cursor.moveToFirst()) {
-            do {
-                tvAtal = new TextView(SurveyActivity.this);
-                tvAtal.setPadding(10,10,10,10);
-                tvAtal.setTextColor(Color.parseColor("#000000"));
-                tvAtal.setGravity(Gravity.CENTER);
-                tvAtal.setText(cursor.getString(2));
-                displayAtalAmrit.addView(tvAtal);
-            } while (cursor.moveToNext());
+
+    public void showHCIAtalAmrit( String callingType){
+        String sourceString = "";
+
+        switch (callingType){
+            case "LOAD":
+                member1 = new ArrayList<>();
+                DBhandler dBhandler = new DBhandler(getApplicationContext());
+                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
+
+                /**
+                 * member data
+                 */
+
+                if (cursorFamilyMember.moveToFirst()) {
+                    do {
+                        MemberDetailsForDialogModel memberDetailsForDialogModel = new MemberDetailsForDialogModel();
+
+                        memberDetailsForDialogModel.setMemberName(cursorFamilyMember.getString(3)); //member name
+                        memberDetailsForDialogModel.setMember_id(cursorFamilyMember.getString(0)); //member id
+
+                        Cursor cursorHealthCard = dBhandler.getHCIAtalAmritByMember(cursorFamilyMember.getString(0));
+
+                        if(cursorHealthCard.moveToFirst()){
+                            if(cursorHealthCard.getString(0).equals("Yes")) { //atalAmrit
+                                memberDetailsForDialogModel.setAtal(true);
+                            } else {
+                                memberDetailsForDialogModel.setAtal(false);
+                            }
+
+                            if(cursorHealthCard.getString(1).equals("Yes")) { //ayushmanBharat
+                                memberDetailsForDialogModel.setAyush(true);
+                            } else {
+                                memberDetailsForDialogModel.setAyush(false);
+                            }
+                        }
+
+                        member1.add(memberDetailsForDialogModel);
+                    } while (cursorFamilyMember.moveToNext());
+                }
+
+
+
+                Cursor cursor = dBhandler.getHCIAtalAmrit(getIntent().getStringExtra("familyId"));
+                if (cursor.moveToFirst()) {
+                    do {
+                        sourceString += "<b>" + cursor.getString(2) + "</b><br/>" +
+                                "<b>Atal Amrit Beneficiary? :</b>" + cursor.getString(3) + "<br/>" +
+                                "<b>Ayushman Beneficiary? :</b>" + cursor.getString(4) + "<br/>";
+                    } while (cursor.moveToNext());
+                }
+                break;
+            case "UPDATE":
+                for(int i = 0; i < member1.size(); i++){
+                    String isAtal = member1.get(i).isAtal() ? "Yes" : "No";
+                    String isAyush = member1.get(i).isAyush() ? "Yes" : "No";
+                    sourceString += "<b>" + member1.get(i).getMemberName() + "</b><br/>" +
+                            "<b>Atal Amrit Beneficiary? :</b>" + isAtal + "<br/>" +
+                            "<b>Ayushman Beneficiary? :</b>" + isAyush + "<br/>";
+                }
+                break;
         }
+        txtHealthCard.setText(Html.fromHtml(sourceString));
     }
+
+/*
     public void showHCIAyushmanBharat(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getHCIAyushmanBharat(getIntent().getStringExtra("familyId"));
@@ -753,6 +902,7 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+*/
     public void showOiTelemed(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getOtherInfoTelemed(getIntent().getStringExtra("familyId"));
@@ -770,6 +920,7 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+
     public void showOiOpd(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getOtherInfoOpd(getIntent().getStringExtra("familyId"));
@@ -787,6 +938,7 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+
     public void showOiAmbulance(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getOtherInfoAmbulance(getIntent().getStringExtra("familyId"));
@@ -805,6 +957,7 @@ public class SurveyActivity extends AppCompatActivity {
         }
     }
 
+/*
     public void showCovidFactsInfo(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getCovidFacts(getIntent().getStringExtra("familyId"));
@@ -826,6 +979,8 @@ public class SurveyActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
     }
+*/
+
     private void fetchingSymptoms() {
 
         //showSimpleProgressDialog(this, "Loading...","Saving",false);
@@ -954,6 +1109,7 @@ public class SurveyActivity extends AppCompatActivity {
 
 
     }
+
     public void showSymptoms(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Signs And Symptoms");
@@ -1038,7 +1194,8 @@ public class SurveyActivity extends AppCompatActivity {
 
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_symptoms_member", null,null);
+                        db.execSQL("delete from tbl_symptoms_member where family_id  = '" + familyid + "'" );
+                        /*db.delete("tbl_symptoms_member", null,null);*/
                         for (int i = 0; i<checkBoxesSymptoms.size();i++){
                             if (checkBoxesSymptoms.get(i).isChecked()) {
                                 dBhandler = new DBhandler(getApplicationContext());
@@ -1048,7 +1205,7 @@ public class SurveyActivity extends AppCompatActivity {
                                         String.valueOf(checkBoxesSymptoms.get(i).getText()),
                                         String.valueOf(checkBoxesSymptoms.get(i).getTag(R.id.symptomHeader)),
                                         String.valueOf(checkBoxesSymptoms.get(i).getTag(R.id.symptomBody)),
-                                        "true");
+                                        "true",memberSurveyIdArrayList.get(i),format);
                                 checkBoxesSymptoms.get(i).setChecked(true);
                                 //ssModelArraylist.add(true);
                                 //Log.d("testingcheck", "onClick: "+ssModelArraylist.set(i,checkBoxesSymptoms.get(i).isChecked()));
@@ -1066,6 +1223,7 @@ public class SurveyActivity extends AppCompatActivity {
         dialog.show();
 
     }
+
     public void showSymptomsMembers(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
 
@@ -1094,6 +1252,7 @@ public class SurveyActivity extends AppCompatActivity {
             }
         }
     }
+
     public void showEditTestFindings(){
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1144,14 +1303,15 @@ public class SurveyActivity extends AppCompatActivity {
                     {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.delete("tbl_test_findings", null,null);
+                        db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
                         for (int i = 0; i < member.size(); i++){
                             dBhandler.addTestFindings(member.get(i).getMember_id(),
                                     getIntent().getStringExtra("familyId"),member.get(i).getMemberName(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueSys(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueDia(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getTypeSpinner(),
-                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue());
+                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue(),
+                                    memberSurveyIdArrayList.get(i),format);
                             //setupTestFindingsDialogRecycler();
                             showTestFindingsBP();
                             showTestFindingsBS();
@@ -1166,5 +1326,185 @@ public class SurveyActivity extends AppCompatActivity {
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
+    @Override
+    public void onSmokinClick(int position, boolean isTrue) {
+        member.get(position).setSmoker(isTrue);
+    }
+
+    @Override
+    public void onAlcoholicClick(int position, boolean isTrue) {
+        member.get(position).setAlcoholic(isTrue);
+    }
+
+    @Override
+    public void onAtalClick(int position, boolean isTrue) {
+        member1.get(position).setAtal(isTrue);
+    }
+
+    @Override
+    public void onAyushmanClick(int position, boolean isTrue) {
+        member1.get(position).setAyush(isTrue);
+    }
+
+    private boolean isCameraPresentInPhone(){
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)){
+            return  true;
+        }else {
+            return false;
+        }
+    }
+
+    private void getCameraPermission(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+        }
+    }
+
+    private void recordVideo(){
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        startActivityForResult(intent,VIDEO_RECORD_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == VIDEO_RECORD_CODE){
+
+            if (resultCode == RESULT_OK){
+                videoPath = data.getData();
+            }
+            else if (resultCode == RESULT_CANCELED){
+
+            }else{
+
+            }
+        }
+    }
+
+    public void setupSharedPreference(){
+       /* */
+        for (int i = 0; i<member.size(); i++) {
+
+        }
+        /*Cursor cursor = dBhandler.getGeneralHabitsAlcohol(familyid);
+        String id = null;
+
+        if (cursor.moveToFirst()){
+            do {
+                id = cursor.getString(1);
+            }while (cursor.moveToNext());
+        }
+
+        if (id!=null && id.equals(familySurveyId)){
+            int getCount = mPreferences1.getInt(familySurveyId,0);
+            finalCount = ++getCount;
+            preferencesEditor = mPreferences1.edit();
+            preferencesEditor.putInt(familySurveyId,finalCount);
+            preferencesEditor.apply();
+        }else {
+            int getCount = mPreferences1.getInt(familySurveyId,0);
+            finalCount = ++getCount;
+            preferencesEditor = mPreferences1.edit();
+            preferencesEditor.putInt(familySurveyId,finalCount);
+            preferencesEditor.apply();
+        }*/
+    }
+
+    public void locationPermission(){
+        try {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void gpsTracker(){
+         //Get permissions
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // Define a listener that responds to location updates
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            OnGPS();
+        } else {
+            getLocation();
+        }
+
+    }
+
+    private void OnGPS() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes",
+                new  DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void getLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                SurveyActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                SurveyActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION);
+        } else {
+            GPSTracker abc = new GPSTracker(this);
+            latitude = String.valueOf(abc.getLatitude());
+            longitude = String.valueOf(abc.getLongitude());
+
+        }
+    }
+
+    public void onBackPressed() {
+        AlertDialog diaBox = AskOption();
+        diaBox.show();
+    }
+
+    private AlertDialog AskOption()
+    {
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                .setTitle("ARE YOU SURE YOU WANT TO EXIT THE SURVEY?")
+                .setMessage("All your unsaved data will be deleted")
+
+
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        clearTables();
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
+    }
+    public void clearTables(){
+        SQLiteDatabase db = dBhandler.getWritableDatabase();
+        db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_hci_atal_amrit where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_other_info_telemed where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_other_info_opd where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_other_info_ambulance where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_symptoms_member where family_id  = '" + familyid + "'" );
+    }
 
 }

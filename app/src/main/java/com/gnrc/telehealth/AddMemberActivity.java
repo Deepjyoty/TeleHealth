@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -21,6 +22,7 @@ import android.widget.RadioGroup;
 import com.gnrc.telehealth.Adapter.AddFamily_Adapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.AddFamilyModel;
+import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +46,12 @@ public class AddMemberActivity extends AppCompatActivity {
     SimpleDateFormat simpleDateFormat,simpleDateFormat2;
     RecyclerView recyclerView;
     RadioGroup radioGroup;
+    int counter = 000;
+    String familyId;
+    SharedPreferences mPreferences1;
+    SharedPreferences.Editor preferencesEditor;
+    int finalCount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +59,11 @@ public class AddMemberActivity extends AppCompatActivity {
         setTitle("Family Members");
         recyclerView = (RecyclerView) findViewById(R.id.am_recycler);
         addfamilymember = (Button) findViewById(R.id.add_family_member);
+        familyId = getIntent().getStringExtra("id");
+        mPreferences1=getSharedPreferences(familyId,MODE_PRIVATE);
+
+        dBhandler = new DBhandler(getApplicationContext());
+
 
         addfamilymember.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,36 +127,7 @@ public class AddMemberActivity extends AppCompatActivity {
         dialog.show();
 
     }
-    /*public void datepicker(){
-        final Calendar c = Calendar.getInstance();
 
-        // on below line we are getting
-        // our day, month and year.
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        // on below line we are creating a variable for date picker dialog.
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                // on below line we are passing context.
-                AddMemberActivity.this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        // on below line we are setting date to our text view.
-                        dob.getEditText().setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                        int age1 = c.get(Calendar.YEAR)- year;
-                        AddMemberActivity.this.year.getEditText().getText();
-
-                    }
-                },
-                // on below line we are passing year,
-                // month and day for selected date in our date picker.
-                year, month, day);
-        // at last we are calling show to
-        // display our date picker dialog.
-        datePickerDialog.show();
-    }*/
     private void addDataToDatabase(){
         Calendar c = Calendar.getInstance();
         int dobYear = Math.abs(Integer.parseInt(year.getEditText().getText().toString()));
@@ -171,7 +155,10 @@ public class AddMemberActivity extends AppCompatActivity {
         format = simpleDateFormat.format(new Date());
         format2 = simpleDateFormat2.format(new Date());
         dBhandler = new DBhandler(getApplicationContext());
-        dBhandler.addfamilymember("AM" + phone.getEditText().getText().toString()+format,
+
+        setupSharedPreference();
+
+        dBhandler.addfamilymember(getIntent().getStringExtra("id") +"_00"+ finalCount,
                 format2,
                 "A",
                 name.getEditText().getText().toString(),
@@ -196,8 +183,8 @@ public class AddMemberActivity extends AppCompatActivity {
     private void setupRecyclerAm_DB(){
         ArrayList<AddFamilyModel> addFamilyArrayList = new ArrayList<>();
         AddFamilyModel familyModel;
-        dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("id"));
+
         //Family_Head_Model dmodel = new Family_Head_Model();
 
         if (cursor.moveToFirst()) {
@@ -231,5 +218,30 @@ public class AddMemberActivity extends AppCompatActivity {
 
         }
 
+    }
+    public void setupSharedPreference(){
+        Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("id"));
+
+        String id = null;
+
+        if (cursor.moveToFirst()){
+            do {
+                id = cursor.getString(18);
+            }while (cursor.moveToNext());
+        }
+
+        if (id!=null && id.equals(familyId)){
+            int getCount = mPreferences1.getInt(familyId,0);
+            finalCount = ++getCount;
+            preferencesEditor = mPreferences1.edit();
+            preferencesEditor.putInt(familyId,finalCount);
+            preferencesEditor.apply();
+        }else {
+            int getCount = mPreferences1.getInt(familyId,0);
+            finalCount = ++getCount;
+            preferencesEditor = mPreferences1.edit();
+            preferencesEditor.putInt(familyId,finalCount);
+            preferencesEditor.apply();
+        }
     }
 }

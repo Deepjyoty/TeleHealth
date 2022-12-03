@@ -9,9 +9,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
-import com.gnrc.telehealth.Family_List_Activity;
+import com.gnrc.telehealth.FamilyHeadActivity;
 import com.gnrc.telehealth.R;
 
 
@@ -47,7 +46,7 @@ public class SurveyFragment extends Fragment {
         survey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), Family_List_Activity.class);
+                Intent intent = new Intent(getActivity(), FamilyHeadActivity.class);
                 startActivity(intent);
             }
         });
