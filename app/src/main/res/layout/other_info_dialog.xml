@@ -41,6 +41,15 @@
                         android:text="OTHER INFO"
                         android:textColor="#F5F5F5"
                         android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/tvOiMemberName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center"
+                        android:text="Member Name"
+                        android:textColor="#F5F5F5"
+                        android:textSize="16sp" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -58,7 +67,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
-
+                            <RadioGroup
+                                android:id="@+id/rgTeleMed"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+                                <RadioButton
+                                    android:id="@+id/rbTeleMedYes"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yes"/>
+                                <RadioButton
+                                    android:id="@+id/rbTeleMedNo"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="No"/>
+                            </RadioGroup>
 
                         </LinearLayout>
                         <TextView
@@ -73,7 +99,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
-
+                            <RadioGroup
+                                android:id="@+id/rgOpd"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+                                <RadioButton
+                                    android:id="@+id/rbOpdYes"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yes"/>
+                                <RadioButton
+                                    android:id="@+id/rbOpdNo"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="No"/>
+                            </RadioGroup>
                         </LinearLayout>
                         <TextView
                             android:layout_width="match_parent"
@@ -87,7 +130,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
-
+                            <RadioGroup
+                                android:id="@+id/rgAmbulance"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+                                <RadioButton
+                                    android:id="@+id/rbAmbuYes"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="Yes"/>
+                                <RadioButton
+                                    android:id="@+id/rbAmbuNo"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="No"/>
+                            </RadioGroup>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>

@@ -50,8 +50,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final int IMMEDIATE_APP_UPDATE_REQ_CODE = 124;
     ProgressDialog pdDialog;
     private DBhandler dBhandler;
-    String URL_LOGIN = "https://www.gnrctelehealth.com/telehealth_api/";
-    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
+    String URL_LOGIN = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
+    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
     String luser,lpass;
     TextInputLayout username,password;
     Button loginButton;

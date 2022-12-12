@@ -4,17 +4,50 @@ import java.io.Serializable;
 
 public class MemberDetailsForDialogModel implements Serializable {
     private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue,
-            covidStatus, doseStatus,noVaccineReason, smokingStatus,alcoholStatus, atalAmritStatus, ayushmanStatus;
+            covidStatus, doseStatus,noVaccineReason, smokingStatus,alcoholStatus, atalAmritStatus, ayushmanStatus,
+    memberSurveyId;
     private Boolean checkedStatus;
     private int checkedId;
 
     //))))))))))))))))))))))))))))))))
 
-    private boolean isSmoker,isAtal;
+    private boolean isSmoker,isAtal,isTeleMed,isOpd,isAmbulance;
     private boolean isAlcoholic,isAyush;
 
     //))))))))))))))))))))))))))))))))
 
+
+    public boolean isTeleMed() {
+        return isTeleMed;
+    }
+
+    public void setTeleMed(boolean teleMed) {
+        isTeleMed = teleMed;
+    }
+
+    public boolean isOpd() {
+        return isOpd;
+    }
+
+    public void setOpd(boolean opd) {
+        isOpd = opd;
+    }
+
+    public boolean isAmbulance() {
+        return isAmbulance;
+    }
+
+    public void setAmbulance(boolean ambulance) {
+        isAmbulance = ambulance;
+    }
+
+    public String getMemberSurveyId() {
+        return memberSurveyId;
+    }
+
+    public void setMemberSurveyId(String memberSurveyId) {
+        this.memberSurveyId = memberSurveyId;
+    }
 
     public boolean isAtal() {
         return isAtal;

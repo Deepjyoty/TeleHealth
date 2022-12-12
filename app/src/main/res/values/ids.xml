@@ -6,4 +6,5 @@
     <item type="id" name="Atr_Code" />
     <item type="id" name="chkboxId" />
     <item type="id" name="memberName" />
+    <item type="id" name="surveymemberID" />
 </resources>

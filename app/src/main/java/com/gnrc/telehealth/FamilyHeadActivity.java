@@ -57,7 +57,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Button addfamilymember;
     private DBhandler dBhandler;
-    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
+    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
     private static ProgressDialog mProgressDialog;
     ArrayList<Family_Head_Model> familyHeadModelArrayList;
     ArrayList<StateDataModel> stateDataModelArrayList;

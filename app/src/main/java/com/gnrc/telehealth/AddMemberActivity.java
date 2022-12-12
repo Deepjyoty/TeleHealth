@@ -36,7 +36,7 @@ import java.util.Locale;
 public class AddMemberActivity extends AppCompatActivity {
     Button addfamilymember;
     private DBhandler dBhandler;
-    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
+    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
     private static ProgressDialog mProgressDialog;
     private TextInputLayout name,dob, year,phone,occupation,month;
     AlertDialog dialog;
