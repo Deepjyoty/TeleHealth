@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class MemberDetailsForDialogModel implements Serializable {
     private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue,
             covidStatus, doseStatus,noVaccineReason, smokingStatus,alcoholStatus, atalAmritStatus, ayushmanStatus,
-    memberSurveyId;
+    memberSurveyId, groupSurveyID, timeStamp;
     private Boolean checkedStatus;
     private int checkedId;
 
@@ -16,6 +16,22 @@ public class MemberDetailsForDialogModel implements Serializable {
 
     //))))))))))))))))))))))))))))))))
 
+
+    public String getGroupSurveyID() {
+        return groupSurveyID;
+    }
+
+    public void setGroupSurveyID(String groupSurveyID) {
+        this.groupSurveyID = groupSurveyID;
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
     public boolean isTeleMed() {
         return isTeleMed;

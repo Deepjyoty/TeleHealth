@@ -653,7 +653,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
                 playerModel.setState(cursor.getString(9));
                 playerModel.setPin(cursor.getString(10));
                 familyHeadModelArrayList.add(playerModel);
-                Log.d("val", "setupRecycler: "+playerModel);
+                Log.d("val", "setupRecycler: " + playerModel);
                 playerModel.setViewtext("Add Member");
                 playerModel.setEdittext("Survey");
 

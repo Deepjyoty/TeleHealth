@@ -88,7 +88,7 @@ public class SurveyActivity extends AppCompatActivity
     String latitude, longitude,list1,familyid;
     CheckBox cb;
     AlertDialog dialog;
-    int num = 1000;
+    int num = 1000,sum;
     int finalCount;
     private static ProgressDialog mProgressDialog;
     private RequestQueue rQueue;
@@ -134,6 +134,9 @@ public class SurveyActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
+
+        dBhandler = new DBhandler(getApplicationContext());
+        checkFlag();
         mPreferences = getSharedPreferences("smokingAlcohol", MODE_PRIVATE);
 
         member = new ArrayList<>();
@@ -146,7 +149,7 @@ public class SurveyActivity extends AppCompatActivity
 
         familyid = getIntent().getStringExtra("familyId");
 
-        dBhandler = new DBhandler(getApplicationContext());
+        getCameraPermission();
 
         mPreferences1=getSharedPreferences(familySurveyId,MODE_PRIVATE);
 
@@ -163,8 +166,8 @@ public class SurveyActivity extends AppCompatActivity
         showSymptomsMembers();
 
         locationPermission();
-        getCameraPermission();
-        OnGPS();
+
+        gpsTracker();
 
         if (finalCount == 0){
             for (int i = 0; i < member.size(); i++) {
@@ -177,6 +180,11 @@ public class SurveyActivity extends AppCompatActivity
                 memberSurveyIdArrayList.add("M_SRV_" + familySurveyId + "_00" + finalCount);
             }
         }
+
+
+
+        dBhandler.addOverallFlag(familySurveyId,0,0,0,
+                0,0,0,0);
     }
 
     private void initView(){
@@ -257,7 +265,7 @@ public class SurveyActivity extends AppCompatActivity
         genHab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gpsTracker();
+
                 showGeneralHabitDialog(v);
             }
         });
@@ -331,6 +339,8 @@ public class SurveyActivity extends AppCompatActivity
                         }
 
                         showGeneralHabitsAlcohol(CallingTypeUpdate);
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_general_habits_alcohol = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
 
                     }
 
@@ -401,7 +411,10 @@ public class SurveyActivity extends AppCompatActivity
                             //setupTestFindingsDialogRecycler();
                             showTestFindingsBP();
                             showTestFindingsBS();
+
                         }
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_test_findings = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
                     }
 
                 });
@@ -448,6 +461,8 @@ public class SurveyActivity extends AppCompatActivity
                                     isAtal,isAyush,memberSurveyIdArrayList.get(i),format);
                         }
                         showHCIAtalAmrit(CallingTypeUpdate);
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_hci_atal_amrit = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
                     }
                 });
         dialog = builder.create();
@@ -545,6 +560,8 @@ public class SurveyActivity extends AppCompatActivity
                                     isTelemed,isOpd,isAmbulance,memberSurveyIdArrayList.get(i),format);
                         }
                         showOtherInfo(CallingTypeUpdate);
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_other_info = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
                     }
                 });
         dialog = builder.create();
@@ -986,6 +1003,7 @@ public class SurveyActivity extends AppCompatActivity
                         cb.setId(++chkId);
                         cb.setTag(R.id.Atr_Code,cursor.getString(0));
                         cb.setTag(R.id.memberId,member.get(i).getMember_id());
+                        Log.d("testingcheck", "onClick: "+member.get(i).getMember_id());
                         cb.setTag(R.id.symptomBody,cursor.getString(6));
                         cb.setTag(R.id.symptomHeader,cursor.getString(2));
                         cb.setTag(R.id.surveymemberID,memberSurveyIdArrayList.get(i));
@@ -995,7 +1013,7 @@ public class SurveyActivity extends AppCompatActivity
                         Cursor cursor1 = dBhandler.getSymptomsMember(member.get(i).getMember_id());
                         if (cursor1.moveToFirst()){
                             do {
-                                if (cursor1.getString(0).equals(cb.getTag(R.id.Atr_Code))){
+                                if (cursor1.getString(1).equals(cb.getTag(R.id.Atr_Code))){
                                     cb.setChecked(true);
 
                                 }
@@ -1039,6 +1057,8 @@ public class SurveyActivity extends AppCompatActivity
 
                             }
                         }
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_symptoms_member = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
                     }
 
                 });
@@ -1143,6 +1163,8 @@ public class SurveyActivity extends AppCompatActivity
                             showTestFindingsBP();
                             showTestFindingsBS();
                         }
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_test_findings = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
                     }
 
                 });
@@ -1225,11 +1247,16 @@ public class SurveyActivity extends AppCompatActivity
                     DBhandler dBhandler = new DBhandler(getApplicationContext());
                     for (int i = 0; i < member.size(); i++){
                         dBhandler.addVideoPath(familySurveyId, videoPath,format);
+                        SQLiteDatabase db = dBhandler.getWritableDatabase();
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
+                        db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
                     }
 
                     Toast.makeText(SurveyActivity.this,
                             "Data saved locally due to no Internet Connection", Toast.LENGTH_LONG).show();
-                    clearTables();
+                    //clearTables();
                     Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                     startActivity(i);
                     // not connected to the internet
@@ -1337,6 +1364,12 @@ public class SurveyActivity extends AppCompatActivity
         db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + familySurveyId + "'" );
         db.execSQL("delete from tbl_other_info where group_surveyid  = '" + familySurveyId + "'" );
         db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + familySurveyId + "'" );
+
+/*        db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_hci_atal_amrit where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_other_info where family_id  = '" + familyid + "'" );
+        db.execSQL("delete from tbl_symptoms_member where family_id  = '" + familyid + "'" );*/
     }
 
     private void saveDataToServer() {
@@ -1424,12 +1457,13 @@ public class SurveyActivity extends AppCompatActivity
             Cursor cursor5 = dBhandler.getHCIAtalAmrit(familyid);
             Cursor cursor9 = dBhandler.getOtherInfo(familyid);
             for (int i = 0; i<memberID.size();i++){
+
                 //General Habits
                 Cursor cursor6 = dBhandler.getSymptomsMember(memberID.get(i));
                 jsonobjectSymptomsData = new JSONObject();
                 if (cursor3.moveToFirst()){
                     do {
-                        if (cursor3.getString(0).equals(memberID.get(i))){
+                        if (cursor3.getString(1).equals(memberID.get(i))){
                             jsonobjectSymptomsData.put(cursor3.getColumnName(0), cursor3.getString(0));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(1), cursor3.getString(1));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(2), cursor3.getString(2));
@@ -1446,7 +1480,7 @@ public class SurveyActivity extends AppCompatActivity
 
                 if (cursor4.moveToFirst()){
                     do {
-                        if (cursor4.getString(0).equals(memberID.get(i))){
+                        if (cursor4.getString(1).equals(memberID.get(i))){
                             jsonobjectSymptomsData.put(cursor4.getColumnName(0), cursor4.getString(0));
                             jsonobjectSymptomsData.put(cursor4.getColumnName(1), cursor4.getString(1));
                             jsonobjectSymptomsData.put(cursor4.getColumnName(2), cursor4.getString(2));
@@ -1463,7 +1497,7 @@ public class SurveyActivity extends AppCompatActivity
                 //---- health card
                 if (cursor5.moveToFirst()){
                     do {
-                        if (cursor5.getString(0).equals(memberID.get(i))){
+                        if (cursor5.getString(1).equals(memberID.get(i))){
                             jsonobjectSymptomsData.put(cursor5.getColumnName(0), cursor5.getString(0));
                             jsonobjectSymptomsData.put(cursor5.getColumnName(1), cursor5.getString(1));
                             jsonobjectSymptomsData.put(cursor5.getColumnName(2), cursor5.getString(2));
@@ -1478,14 +1512,9 @@ public class SurveyActivity extends AppCompatActivity
                 }
 
 
-
-
-
-
-
                 if (cursor9.moveToFirst()){
                     do {
-                        if (cursor9.getString(0).equals(memberID.get(i))){
+                        if (cursor9.getString(1).equals(memberID.get(i))){
                             jsonobjectSymptomsData.put(cursor9.getColumnName(0), cursor9.getString(0));
                             jsonobjectSymptomsData.put(cursor9.getColumnName(1), cursor9.getString(1));
                             jsonobjectSymptomsData.put(cursor9.getColumnName(2), cursor9.getString(2));
@@ -1504,7 +1533,7 @@ public class SurveyActivity extends AppCompatActivity
 
                     do {
                         jsonobjectSymptoms = new JSONObject();
-                        if (cursor6.getString(1).equals(memberID.get(i))){
+                        if (cursor6.getString(2).equals(memberID.get(i))){
                             jsonobjectSymptoms.put(cursor6.getColumnName(0), cursor6.getString(0));
                             jsonobjectSymptoms.put(cursor6.getColumnName(1), cursor6.getString(1));
                             jsonobjectSymptoms.put(cursor6.getColumnName(2), cursor6.getString(2));
@@ -1728,5 +1757,33 @@ public class SurveyActivity extends AppCompatActivity
         }
         return byteBuffer.toByteArray();
     }
+
+    public void checkFlag(){
+        SQLiteDatabase db = dBhandler.getWritableDatabase();
+
+        Cursor cursor = dBhandler.getOverallFlag();
+        if (cursor.getCount()>0){
+            if (cursor.moveToFirst()){
+                do {
+                    String id = cursor.getString(0);
+                    sum = cursor.getInt(1) + cursor.getInt(2) + cursor.getInt(3) +
+                            cursor.getInt(4) + cursor.getInt(5) + cursor.getInt(6);
+                    if (sum<6){
+                        db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + id + "'");
+                        db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + id + "'");
+                        db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + id + "'");
+                        db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + id + "'");
+                        db.execSQL("delete from tbl_other_info where group_surveyid  = '" + id + "'");
+                        db.execSQL("delete from tbl_video_store where group_surveyid  = '" + id + "'");
+                        db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + id + "'");
+                    }else{
+                        db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + id + "'");
+                    }
+                }while (cursor.moveToNext());
+
+            }
+        }
+    }
+
 
 }
