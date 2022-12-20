@@ -70,14 +70,14 @@ public class GeneralHabitsAdapter extends RecyclerView.Adapter<GeneralHabitsAdap
 
         public MyViewHolder(View itemView, GeneralHabits habitListener) {
             super(itemView);
-            member = (TextView) itemView.findViewById(R.id.tvMemberName);
-            radioSmoking = (RadioGroup) itemView.findViewById(R.id.rgSmoking);
-            radioAlcohol = (RadioGroup) itemView.findViewById(R.id.rgAlcohol);
+            member =  itemView.findViewById(R.id.tvMemberName);
+            radioSmoking =  itemView.findViewById(R.id.rgSmoking);
+            radioAlcohol =  itemView.findViewById(R.id.rgAlcohol);
 
-            smokYes = (RadioButton) itemView.findViewById(R.id.smokYes);
-            smokNo = (RadioButton) itemView.findViewById(R.id.smokNo);
-            alcoYes = (RadioButton) itemView.findViewById(R.id.alcoYes);
-            alcoNo = (RadioButton) itemView.findViewById(R.id.alcoNo);
+            smokYes =  itemView.findViewById(R.id.smokYes);
+            smokNo =  itemView.findViewById(R.id.smokNo);
+            alcoYes =  itemView.findViewById(R.id.alcoYes);
+            alcoNo =  itemView.findViewById(R.id.alcoNo);
 
             smokYes.setOnClickListener(this);
             smokNo.setOnClickListener(this);

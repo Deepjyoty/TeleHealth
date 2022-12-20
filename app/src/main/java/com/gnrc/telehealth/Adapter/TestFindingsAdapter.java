@@ -36,13 +36,14 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
     String familyId;
     private ArrayList<String> names = new ArrayList<String>();
     ArrayList<MemberDetailsForDialogModel> member1;
-    public TestFindingsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList,String familyId){
+    public TestFindingsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList){
 
         inflater = LayoutInflater.from(ctx);
         this.addMemberDialogArrayList = addMemberDialogArrayList;
-        this.familyId = familyId;
+        //this.familyId = familyId;
 
     }
+
     @Override
     public TestFindingsAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 

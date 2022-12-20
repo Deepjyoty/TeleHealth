@@ -1,10 +1,20 @@
 package com.gnrc.telehealth.Model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class AddFamilyModel implements Serializable {
     String regnum,  regDt,  regStatus,  ptName, gender,  dob, year,  month, day, contact,
-     areaLocality,  distCode,  blockName,  pancName, villName, createDate,  loginId,  updDate, f_id;
+     areaLocality,  distCode,  blockName,  pancName, villName, createDate,  loginId,  updDate, f_id,
+    memberId;
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
 
     public String getRegnum() {
         return regnum;

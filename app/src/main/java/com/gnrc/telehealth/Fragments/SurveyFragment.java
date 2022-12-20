@@ -12,11 +12,12 @@ import android.view.ViewGroup;
 
 import com.gnrc.telehealth.FamilyHeadActivity;
 import com.gnrc.telehealth.R;
+import com.gnrc.telehealth.ResurveyPreparation;
 
 
 public class SurveyFragment extends Fragment {
 
-    CardView survey,wallet;
+    CardView survey,wallet,resurvey;
     View view;
     public SurveyFragment() {
         // Required empty public constructor
@@ -43,10 +44,20 @@ public class SurveyFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_survey, container, false);
         survey = view.findViewById(R.id.cardView_survey);
         wallet = view.findViewById(R.id.cardView_wallet);
+        resurvey = view.findViewById(R.id.cardView_resurvey);
+
         survey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), FamilyHeadActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        resurvey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ResurveyPreparation.class);
                 startActivity(intent);
             }
         });

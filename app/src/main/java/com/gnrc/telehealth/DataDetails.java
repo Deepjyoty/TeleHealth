@@ -24,7 +24,6 @@ public class DataDetails extends AppCompatActivity {
         setContentView(R.layout.activity_data_details);
         ActionBar actionBar = getSupportActionBar();
 
-
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
 

@@ -57,6 +57,8 @@ import com.gnrc.telehealth.Adapter.TestFindingsAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 import com.gnrc.telehealth.Model.SignsAndSymptomsModel;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -75,9 +77,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class SurveyActivity extends AppCompatActivity
         implements GeneralHabitsAdapter.GeneralHabits, HealthCardAdapter.HealthCard, OtherInfoAdapter.OtherInfo {
@@ -102,7 +106,7 @@ public class SurveyActivity extends AppCompatActivity
     String format, format2;
 
     ArrayList<CheckBox> checkBoxesSymptoms;
-    ArrayList<String> mapObject;
+    ArrayList<String> memberList;
     public ArrayList<String> memberSurveyIdArrayList;
 
     ArrayList<MemberDetailsForDialogModel> member;
@@ -112,7 +116,7 @@ public class SurveyActivity extends AppCompatActivity
 
     MemberDetailsForDialogModel editModel;
     MemberDetailsForDialogModel editModel2;
-
+    Uri videoCaptureUri;
 
     Button  saveSurvey;
     TreeMap<String, ArrayList<String>> multiMap;
@@ -127,6 +131,8 @@ public class SurveyActivity extends AppCompatActivity
     private Uri videoPath;
     private String familySurveyId, memberSurveyId;
 
+    String r;
+
     DBhandler dBhandler;
     LocationManager locationManager;
 
@@ -135,12 +141,18 @@ public class SurveyActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
+        memberList = new ArrayList<>();
+        memberList = getIntent().getStringArrayListExtra("memberList");
+        r = memberList.stream().collect(Collectors.joining("','", "'", "'"));
+
         dBhandler = new DBhandler(getApplicationContext());
         checkFlag();
         mPreferences = getSharedPreferences("smokingAlcohol", MODE_PRIVATE);
 
         member = new ArrayList<>();
+
         memberSurveyIdArrayList = new ArrayList<String>();
+
         initView();
 
         initListener();
@@ -157,13 +169,43 @@ public class SurveyActivity extends AppCompatActivity
 
         format = simpleDateFormat.format(new Date());
 
+        SQLiteDatabase db = dBhandler.getWritableDatabase();
+        Cursor cursor = dBhandler.getSurveyTypeFlag();
+        if (cursor.getCount()>0){
+            if (cursor.moveToFirst()){
+
+            }
+        }
+
+        if (getIntent().getStringExtra("resurvey")!= null){
+            if (getIntent().getStringExtra("resurvey").equals("resurvey")){
+
+                db.execSQL("UPDATE tbl_general_habits_alcohol SET group_surveyid = '" + familySurveyId + "'" +
+                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
+                db.execSQL("UPDATE tbl_test_findings SET group_surveyid = '" + familySurveyId + "'" +
+                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
+                db.execSQL("UPDATE tbl_hci_atal_amrit SET group_surveyid = '" + familySurveyId + "'" +
+                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
+                db.execSQL("UPDATE tbl_symptoms_member SET group_surveyid = '" + familySurveyId + "'" +
+                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
+                db.execSQL("UPDATE tbl_other_info SET group_surveyid = '" + familySurveyId + "'" +
+                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
+
+                /*showGeneralHabitsAlcohol(CallingTypeLoad,getIntent().getStringExtra("SurveyId"));
+                showTestFindingsBP(getIntent().getStringExtra("SurveyId"));
+                showTestFindingsBS(getIntent().getStringExtra("SurveyId"));
+                showHCIAtalAmrit(CallingTypeLoad,getIntent().getStringExtra("SurveyId"));
+                showOtherInfo(CallingTypeLoad,getIntent().getStringExtra("SurveyId"));
+                showSymptomsMembersResurvey();*/
+            }
+        }
+
         showGeneralHabitsAlcohol(CallingTypeLoad);
         showTestFindingsBP();
         showTestFindingsBS();
         showHCIAtalAmrit(CallingTypeLoad);
         showOtherInfo(CallingTypeLoad);
-        fetchingSymptoms();
-        showSymptomsMembers();
+        /*showSymptomsMembersResurvey();*/
 
         locationPermission();
 
@@ -181,10 +223,10 @@ public class SurveyActivity extends AppCompatActivity
             }
         }
 
-
-
         dBhandler.addOverallFlag(familySurveyId,0,0,0,
                 0,0,0,0);
+
+        dBhandler.addSurveyTypeFlag(familySurveyId,familyid,"R");
     }
 
     private void initView(){
@@ -214,11 +256,11 @@ public class SurveyActivity extends AppCompatActivity
         saveSurvey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Cursor cursor1 = dBhandler.getGeneralHabitsAlcohol(familyid);
-                Cursor cursor2 = dBhandler.getTestFindings(familyid);
-                Cursor cursor3 = dBhandler.getHCIAtalAmrit(familyid);
+                Cursor cursor1 = dBhandler.getGeneralHabitsAlcohol(familySurveyId);
+                Cursor cursor2 = dBhandler.getTestFindings(familySurveyId);
+                Cursor cursor3 = dBhandler.getHCIAtalAmrit(familySurveyId);
                 Cursor cursor4 = dBhandler.getSymptomsMemberByFamilyId(familyid);
-                Cursor cursor5 = dBhandler.getOtherInfo(familyid);
+                Cursor cursor5 = dBhandler.getOtherInfo(familySurveyId);
 
                 if (cursor1.getCount() == 0){
                     Toast.makeText(SurveyActivity.this, "Please Complete General Habits Survey",
@@ -327,18 +369,19 @@ public class SurveyActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog,int which) {
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
+
                         db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
-                        for (int i = 0; i < member.size(); i++){
+                        for (int i = 0; i < memberList.size(); i++){
                             String isSmoker = member.get(i).isSmoker() ? "Yes" : "No";
                             String isAlcoholic = member.get(i).isAlcoholic() ? "Yes" : "No";
                             dBhandler.addGeneralHabitsAlcohol(familySurveyId,member.get(i).getMember_id(),
                                     getIntent().getStringExtra("familyId"),
                                     member.get(i).getMemberName(), isSmoker,
                                     isAlcoholic, memberSurveyIdArrayList.get(i), latitude,longitude,format);
-
                         }
 
                         showGeneralHabitsAlcohol(CallingTypeUpdate);
+
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_general_habits_alcohol = 1 " +
                                 "WHERE group_surveyid = '" + familySurveyId + "'");
 
@@ -357,10 +400,12 @@ public class SurveyActivity extends AppCompatActivity
         // set the custom layout
         final View customLayout = getLayoutInflater().inflate(R.layout.testfindingsrecycler, null);
         builder.setView(customLayout);
+
         recyclerViewDialog = (RecyclerView) customLayout.findViewById(R.id.testFindingsDialogRecycler);
         ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+
         DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor1 = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
+        Cursor cursor1 = dBhandler.getTestFindings(familySurveyId);
         list2 = new ArrayList<>();
         //RecyclerView recyclerViewDialog = (RecyclerView) findViewById(R.id.rv_testFindings);
         if (cursor1.moveToFirst()) {
@@ -374,11 +419,11 @@ public class SurveyActivity extends AppCompatActivity
                 list2.add(editModel);
             } while (cursor1.moveToNext());
         }
-            for (int i = 0; i < member.size(); i++){
+            for (int i = 0; i < memberList.size(); i++){
                 editModel = new MemberDetailsForDialogModel();
                 editModel.setMemberName(member.get(i).getMemberName());
                 list.add(editModel);
-                TestFindingsAdapter testFindingsAdapter = new TestFindingsAdapter(this, list,getIntent().getStringExtra("familyId"));
+                TestFindingsAdapter testFindingsAdapter = new TestFindingsAdapter(this, list);
                 recyclerViewDialog.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
                 recyclerViewDialog.setAdapter(testFindingsAdapter);
 
@@ -412,6 +457,83 @@ public class SurveyActivity extends AppCompatActivity
                             showTestFindingsBP();
                             showTestFindingsBS();
 
+                        }
+                        db.execSQL("UPDATE tbl_overall_flag SET tbl_test_findings = 1 " +
+                                "WHERE group_surveyid = '" + familySurveyId + "'");
+                    }
+
+                });
+        dialog = builder.create();
+        dialog.show();
+        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                |WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    public void showEditTestFindings(){
+        // Create an alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Test Findings");
+        // set the custom layout
+        final View customLayout = getLayoutInflater().inflate(R.layout.testfindingsrecycler, null);
+        builder.setView(customLayout);
+
+        recyclerViewDialog = (RecyclerView) customLayout.findViewById(R.id.testFindingsDialogRecycler);
+        ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+        DBhandler dBhandler = new DBhandler(getApplicationContext());
+
+        Cursor cursor1 = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
+        list2 = new ArrayList<>();
+        //RecyclerView recyclerViewDialog = (RecyclerView) findViewById(R.id.rv_testFindings);
+        if (cursor1.moveToFirst()) {
+            do {
+                MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
+                editModel.setMemberName(cursor1.getString(3));
+                editModel.setEditTextValueSys(cursor1.getString(4));
+                editModel.setEditTextValueDia(cursor1.getString(5));
+                editModel.setTypeSpinner(cursor1.getString(6));
+                editModel.setEditTextValueValue(cursor1.getString(7));
+                list2.add(editModel);
+            } while (cursor1.moveToNext());
+        }
+        for (int i = 0; i < list2.size(); i++){
+            editModel2 = new MemberDetailsForDialogModel();
+            editModel2.setMemberName(list2.get(i).getMemberName());
+            editModel2.setEditTextValueSys(list2.get(i).getEditTextValueSys());
+            editModel2.setEditTextValueDia(list2.get(i).getEditTextValueDia());
+            editModel2.setEditTextValueValue(list2.get(i).getEditTextValueValue());
+            editModel2.setTypeSpinner(list2.get(i).getTypeSpinner());
+
+            list.add(editModel2);
+
+            TestFindingsAdapter testFindingsAdapter = new TestFindingsAdapter(this, list);
+            recyclerViewDialog.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+            recyclerViewDialog.setAdapter(testFindingsAdapter);
+
+
+        }
+        builder.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    DBhandler dBhandler;
+                    @Override
+                    public void onClick(DialogInterface dialog,int which)
+                    {
+                        dBhandler = new DBhandler(getApplicationContext());
+                        SQLiteDatabase db = dBhandler.getWritableDatabase();
+                        db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
+                        for (int i = 0; i < member.size(); i++){
+                            dBhandler.addTestFindings(familySurveyId,
+                                    member.get(i).getMember_id(),
+                                    getIntent().getStringExtra("familyId"),member.get(i).getMemberName(),
+                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueSys(),
+                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueDia(),
+                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getTypeSpinner(),
+                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue(),
+                                    memberSurveyIdArrayList.get(i),format);
+                            //setupTestFindingsDialogRecycler();
+                            showTestFindingsBP();
+                            showTestFindingsBS();
                         }
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_test_findings = 1 " +
                                 "WHERE group_surveyid = '" + familySurveyId + "'");
@@ -570,7 +692,7 @@ public class SurveyActivity extends AppCompatActivity
 
     public void showTestFindingsBP(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
+        Cursor cursor = dBhandler.getTestFindings(familySurveyId);
         TextView tvTestFindings;
         LinearLayout displayTestFindings = findViewById(R.id.ll_BPDisplay);
         displayTestFindings.removeAllViews();
@@ -602,7 +724,7 @@ public class SurveyActivity extends AppCompatActivity
 
     public void showTestFindingsBS(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
+        Cursor cursor = dBhandler.getTestFindings(familySurveyId);
         TextView tvTestFindings;
         LinearLayout displayTestFindings = findViewById(R.id.ll_BSDisplay);
         displayTestFindings.removeAllViews();
@@ -620,14 +742,14 @@ public class SurveyActivity extends AppCompatActivity
         }
     }
 
-    public void showGeneralHabitsAlcohol( String callingType){
+    public void showGeneralHabitsAlcohol( String callingType ){
         String sourceString = "";
 
         switch (callingType){
             case "LOAD":
                 member = new ArrayList<>();
                 DBhandler dBhandler = new DBhandler(getApplicationContext());
-                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
+                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"),r);
 
                 /**
                  * member data
@@ -641,7 +763,7 @@ public class SurveyActivity extends AppCompatActivity
                         memberDetailsForDialogModel.setMember_id(cursorFamilyMember.getString(0)); //member id
 
                         Cursor cursorGeneralHabits =
-                                dBhandler.getGeneralHabitsAlcoholByMember(cursorFamilyMember.getString(0));
+                                dBhandler.getGeneralHabitsAlcoholByMember(familySurveyId);
 
                         if(cursorGeneralHabits.moveToFirst()){
                             if(cursorGeneralHabits.getString(0).equals("Yes")) { //smoking
@@ -663,7 +785,7 @@ public class SurveyActivity extends AppCompatActivity
 
 
 
-                Cursor cursor = dBhandler.getGeneralHabitsAlcohol(getIntent().getStringExtra("familyId"));
+                Cursor cursor = dBhandler.getGeneralHabitsAlcohol(familySurveyId);
                 if (cursor.moveToFirst()) {
                     do {
                         sourceString += "<b>" + cursor.getString(3) + "</b><br/>" +
@@ -692,7 +814,7 @@ public class SurveyActivity extends AppCompatActivity
             case "LOAD":
                 member2 = new ArrayList<>();
                 DBhandler dBhandler = new DBhandler(getApplicationContext());
-                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
+                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"),r);
 
                 /**
                  * member data
@@ -705,7 +827,7 @@ public class SurveyActivity extends AppCompatActivity
                         memberDetailsForDialogModel.setMemberName(cursorFamilyMember.getString(3)); //member name
                         memberDetailsForDialogModel.setMember_id(cursorFamilyMember.getString(0)); //member id
 
-                        Cursor cursorHealthCard = dBhandler.getOtherInfoByMember(cursorFamilyMember.getString(0));
+                        Cursor cursorHealthCard = dBhandler.getOtherInfoByMember(familySurveyId);
 
                         if(cursorHealthCard.moveToFirst()){
                             if(cursorHealthCard.getString(0).equals("Yes")) { //Telemed
@@ -732,7 +854,7 @@ public class SurveyActivity extends AppCompatActivity
 
 
 
-                Cursor cursor = dBhandler.getOtherInfo(getIntent().getStringExtra("familyId"));
+                Cursor cursor = dBhandler.getOtherInfo(familySurveyId);
                 if (cursor.moveToFirst()) {
                     do {
                         sourceString += "<b>" + cursor.getString(3) + "</b><br/>" +
@@ -764,7 +886,7 @@ public class SurveyActivity extends AppCompatActivity
             case "LOAD":
                 member1 = new ArrayList<>();
                 DBhandler dBhandler = new DBhandler(getApplicationContext());
-                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"));
+                Cursor cursorFamilyMember = dBhandler.getFamilyMemberList(getIntent().getStringExtra("familyId"),r);
 
                 /**
                  * member data
@@ -777,7 +899,7 @@ public class SurveyActivity extends AppCompatActivity
                         memberDetailsForDialogModel.setMemberName(cursorFamilyMember.getString(3)); //member name
                         memberDetailsForDialogModel.setMember_id(cursorFamilyMember.getString(0)); //member id
 
-                        Cursor cursorHealthCard = dBhandler.getHCIAtalAmritByMember(cursorFamilyMember.getString(0));
+                        Cursor cursorHealthCard = dBhandler.getHCIAtalAmritByMember(familySurveyId);
 
                         if(cursorHealthCard.moveToFirst()){
                             if(cursorHealthCard.getString(0).equals("Yes")) { //atalAmrit
@@ -799,7 +921,7 @@ public class SurveyActivity extends AppCompatActivity
 
 
 
-                Cursor cursor = dBhandler.getHCIAtalAmrit(getIntent().getStringExtra("familyId"));
+                Cursor cursor = dBhandler.getHCIAtalAmrit(familySurveyId);
                 if (cursor.moveToFirst()) {
                     do {
                         sourceString += "<b>" + cursor.getString(3) + "</b><br/>" +
@@ -819,135 +941,6 @@ public class SurveyActivity extends AppCompatActivity
                 break;
         }
         txtHealthCard.setText(Html.fromHtml(sourceString));
-    }
-
-    private void fetchingSymptoms() {
-
-        //showSimpleProgressDialog(this, "Loading...","Saving",false);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("strrrrr", ">>" + response);
-                        multiMap = new TreeMap<>();
-                        try {
-                            removeSimpleProgressDialog();
-
-                            JSONObject obj = new JSONObject(response);
-
-
-                            Log.d("deep", ">>" + response);
-
-                            String message = obj.getString("status");
-                            Toast.makeText(SurveyActivity.this, ""+ message, Toast.LENGTH_SHORT).show();
-                            JSONArray jsonObject = obj.getJSONArray("data");
-
-                            for (int i = 0; i < jsonObject.length(); i++) {
-
-                                mapObject = new ArrayList<>();
-                                JSONObject jsondata = jsonObject.getJSONObject(i);
-                                DBhandler dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addSymptomsMaster(jsondata.getString("ATR_CODE"),
-                                        jsondata.getString("PRT_CODE"),
-                                        jsondata.getString("PRT_DESC"),
-                                        jsondata.getString("PRT_DESC_ALT"),
-                                        jsondata.getString("PRT_DESC_BENG"),
-                                        jsondata.getString("PRT_SLNO"),
-                                        jsondata.getString("ATR_DESC"),
-                                        jsondata.getString("ATR_DESC_ALT"),
-                                        jsondata.getString("ATR_DESC_BENG"),
-                                        jsondata.getString("ATR_SLNO"),
-                                        jsondata.getString("IMAGE_URL"));
-
-                                if (!jsondata.getString("IMAGE_URL").equals("")){
-                                    Picasso.get().load(jsondata.getString("IMAGE_URL"))
-                                            .into(new Target() {
-                                                      @Override
-                                                      public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                                          try {
-                                                              String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-                                                              File myDir = new File(root + "/symptom_image");
-
-                                                              if (!myDir.exists()) {
-                                                                  myDir.mkdirs();
-                                                              }
-
-                                                              String name = ++num + ".jpg";
-                                                              myDir = new File(myDir, name);
-                                                              FileOutputStream out = new FileOutputStream(myDir);
-                                                              bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-
-                                                              out.flush();
-                                                              out.close();
-                                                          } catch(Exception e){
-                                                              // some action
-                                                          }
-                                                      }
-                                                      @Override
-                                                      public void onBitmapFailed(Exception e,Drawable errorDrawable) {
-                                                      }
-
-                                                      @Override
-                                                      public void onPrepareLoad(Drawable placeHolderDrawable) {
-                                                      }
-                                                  }
-                                            );
-                                }
-
-
-                                mapObject.add(jsondata.getString("ATR_CODE"));
-                                mapObject.add(jsondata.getString("PRT_DESC"));
-                                mapObject.add(jsondata.getString("PRT_DESC_ALT"));
-                                mapObject.add(jsondata.getString("PRT_DESC_BENG"));
-                                mapObject.add(jsondata.getString("PRT_SLNO"));
-                                mapObject.add(jsondata.getString("ATR_DESC"));
-                                mapObject.add(jsondata.getString("ATR_DESC_ALT"));
-                                mapObject.add(jsondata.getString("ATR_DESC_BENG"));
-                                mapObject.add(jsondata.getString("ATR_SLNO"));
-
-                                multiMap.put(jsondata.getString("PRT_CODE"),mapObject);
-
-
-                                //
-
-                            }
-
-                            // }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //displaying the error in toast if occurrs
-                        //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                DBhandler dBhandler = new DBhandler(getApplicationContext());
-                Cursor cursor = dBhandler.getFamilyDbData();
-                //Family_Head_Model dmodel = new Family_Head_Model();
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("req_type","get-symptoms-list");
-                Log.d("deep", "getParams: "+params);
-                return params;
-
-            }
-        };
-        // request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-
     }
 
     public void showSymptoms(View view){
@@ -971,7 +964,7 @@ public class SurveyActivity extends AppCompatActivity
         HashMap<String,ArrayList<CheckBox>> symptomsMap = new HashMap<>();
         int chkId = 1001;
 
-        for (Map.Entry<String, ArrayList<String>> entry : multiMap.entrySet()) {
+        for (Map.Entry<String, ArrayList<String>> entry : readFromSP().entrySet()) {
             list1 = entry.getKey();
 
             Cursor cursor = dBhandler.getSymptomsMaster(list1);
@@ -1013,7 +1006,8 @@ public class SurveyActivity extends AppCompatActivity
                         Cursor cursor1 = dBhandler.getSymptomsMember(member.get(i).getMember_id());
                         if (cursor1.moveToFirst()){
                             do {
-                                if (cursor1.getString(1).equals(cb.getTag(R.id.Atr_Code))){
+                                if (cursor1.getString(1).equals(cb.getTag(R.id.Atr_Code))&&
+                                cursor1.getString(0).equals(familySurveyId)){
                                     cb.setChecked(true);
 
                                 }
@@ -1099,81 +1093,39 @@ public class SurveyActivity extends AppCompatActivity
         }
     }
 
-    public void showEditTestFindings(){
-        // Create an alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Test Findings");
-        // set the custom layout
-        final View customLayout = getLayoutInflater().inflate(R.layout.testfindingsrecycler, null);
-        builder.setView(customLayout);
-        recyclerViewDialog = (RecyclerView) customLayout.findViewById(R.id.testFindingsDialogRecycler);
-        ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+/*
+    public void showSymptomsMembersResurvey(){
         DBhandler dBhandler = new DBhandler(getApplicationContext());
+        ArrayList<String> memberId = new ArrayList<>();
+        memberId = getIntent().getStringArrayListExtra("MemberId");
+        Log.d("letsee", "showSymptomsMembersResurvey: "+memberId);
+        TextView tvMemberName,tvSymptomName;
+        LinearLayout displaySymptomsMember = findViewById(R.id.ll_signsAndSymptoms);
+        displaySymptomsMember.removeAllViews();
+        for (int i = 0; i < memberId.size(); i++){
+            Cursor cursor = dBhandler.getSymptomsMember(memberId.get(i));
 
-        Cursor cursor1 = dBhandler.getTestFindings(getIntent().getStringExtra("familyId"));
-        list2 = new ArrayList<>();
-        //RecyclerView recyclerViewDialog = (RecyclerView) findViewById(R.id.rv_testFindings);
-        if (cursor1.moveToFirst()) {
-            do {
-                MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
-                editModel.setMemberName(cursor1.getString(3));
-                editModel.setEditTextValueSys(cursor1.getString(4));
-                editModel.setEditTextValueDia(cursor1.getString(5));
-                editModel.setTypeSpinner(cursor1.getString(6));
-                editModel.setEditTextValueValue(cursor1.getString(7));
-                list2.add(editModel);
-            } while (cursor1.moveToNext());
+            if (cursor.moveToFirst()) {
+                tvMemberName = new TextView(SurveyActivity.this);
+                tvMemberName.setPadding(10,10,10,10);
+                tvMemberName.setTextColor(Color.parseColor("#000000"));
+                tvMemberName.setGravity(Gravity.CENTER);
+                String sourceString = "<b>" + cursor.getString(4) + "</b>" ;
+                tvMemberName.setText(Html.fromHtml(sourceString));
+                displaySymptomsMember.addView(tvMemberName);
+                do {
+                    tvSymptomName = new TextView(SurveyActivity.this);
+                    tvSymptomName.setPadding(10,10,10,10);
+                    tvSymptomName.setTextColor(Color.parseColor("#000000"));
+                    tvSymptomName.setGravity(Gravity.CENTER);
+                    String sourceString2 = "<b>" + " Symptoms : "+"</b>"+cursor.getString(6);
+                    tvSymptomName.setText(Html.fromHtml(sourceString2));
+                    displaySymptomsMember.addView(tvSymptomName);
+                } while (cursor.moveToNext());
+            }
         }
-        for (int i = 0; i < list2.size(); i++){
-            editModel2 = new MemberDetailsForDialogModel();
-            editModel2.setMemberName(list2.get(i).getMemberName());
-            editModel2.setEditTextValueSys(list2.get(i).getEditTextValueSys());
-            editModel2.setEditTextValueDia(list2.get(i).getEditTextValueDia());
-            editModel2.setEditTextValueValue(list2.get(i).getEditTextValueValue());
-            editModel2.setTypeSpinner(list2.get(i).getTypeSpinner());
-
-            list.add(editModel2);
-
-            TestFindingsAdapter testFindingsAdapter = new TestFindingsAdapter(this, list,getIntent().getStringExtra("familyId"));
-            recyclerViewDialog.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-            recyclerViewDialog.setAdapter(testFindingsAdapter);
-
-
-        }
-        builder.setPositiveButton(
-                "OK",
-                new DialogInterface.OnClickListener() {
-                    DBhandler dBhandler;
-                    @Override
-                    public void onClick(DialogInterface dialog,int which)
-                    {
-                        dBhandler = new DBhandler(getApplicationContext());
-                        SQLiteDatabase db = dBhandler.getWritableDatabase();
-                        db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
-                        for (int i = 0; i < member.size(); i++){
-                            dBhandler.addTestFindings(familySurveyId,
-                                    member.get(i).getMember_id(),
-                                    getIntent().getStringExtra("familyId"),member.get(i).getMemberName(),
-                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueSys(),
-                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueDia(),
-                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getTypeSpinner(),
-                                    TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue(),
-                                    memberSurveyIdArrayList.get(i),format);
-                            //setupTestFindingsDialogRecycler();
-                            showTestFindingsBP();
-                            showTestFindingsBS();
-                        }
-                        db.execSQL("UPDATE tbl_overall_flag SET tbl_test_findings = 1 " +
-                                "WHERE group_surveyid = '" + familySurveyId + "'");
-                    }
-
-                });
-        dialog = builder.create();
-        dialog.show();
-        dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                |WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
+*/
 
     @Override
     public void onSmokinClick(int position, boolean isTrue) {
@@ -1212,6 +1164,7 @@ public class SurveyActivity extends AppCompatActivity
     }
 
     private void recordVideo(){
+
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
         intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 10983040L);//5*1048*1048=5MB
@@ -1233,12 +1186,14 @@ public class SurveyActivity extends AppCompatActivity
                     if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                         // connected to wifi
                         videoPath = data.getData();
+                        Log.d("pathofvideo", "onActivityResult: "+videoPath);
                         uploadPDF(familySurveyId+".mp4",videoPath);
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         startActivity(i);
                     } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                         // connected to mobile data
                         videoPath = data.getData();
+                        Log.d("pathofvideo", "onActivityResult: "+videoPath);
                         uploadPDF(familySurveyId+".mp4",videoPath);
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         startActivity(i);
@@ -1246,7 +1201,9 @@ public class SurveyActivity extends AppCompatActivity
                 } else {
                     DBhandler dBhandler = new DBhandler(getApplicationContext());
                     for (int i = 0; i < member.size(); i++){
-                        dBhandler.addVideoPath(familySurveyId, videoPath,format);
+                        videoPath = data.getData();
+                        Log.d("pathofvideo", "onActivityResult: "+videoPath);
+                        dBhandler.addVideoPath(familySurveyId, familyid, videoPath,format);
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
                                 "WHERE group_surveyid = '" + familySurveyId + "'");
@@ -1401,6 +1358,7 @@ public class SurveyActivity extends AppCompatActivity
             JSONArray symptomsArray = new JSONArray();
 
             Cursor cursor = dBhandler.getFamilyDbData();
+
             if (cursor.moveToFirst()){
                 do {
                     if (cursor.getString(0).equals(familyid)) {
@@ -1420,7 +1378,7 @@ public class SurveyActivity extends AppCompatActivity
                 }while (cursor.moveToNext());
             }
 
-            Cursor cursor2 = dBhandler.getFamilyMemberList(familyid);
+            Cursor cursor2 = dBhandler.getFamilyMemberList(familyid,r);
 
             if (cursor2.moveToFirst()){
                 do {
@@ -1452,14 +1410,15 @@ public class SurveyActivity extends AppCompatActivity
                 } while (cursor2.moveToNext());
             }
 
-            Cursor cursor3 = dBhandler.getGeneralHabitsAlcohol(familyid);
-            Cursor cursor4 = dBhandler.getTestFindings(familyid);
-            Cursor cursor5 = dBhandler.getHCIAtalAmrit(familyid);
-            Cursor cursor9 = dBhandler.getOtherInfo(familyid);
-            for (int i = 0; i<memberID.size();i++){
 
+            Cursor cursor3 = dBhandler.getGeneralHabitsAlcohol(familySurveyId);
+            Cursor cursor4 = dBhandler.getTestFindings(familySurveyId);
+            Cursor cursor5 = dBhandler.getHCIAtalAmrit(familySurveyId);
+            Cursor cursor9 = dBhandler.getOtherInfo(familySurveyId);
+            for (int i = 0; i<memberID.size();i++){
                 //General Habits
                 Cursor cursor6 = dBhandler.getSymptomsMember(memberID.get(i));
+
                 jsonobjectSymptomsData = new JSONObject();
                 if (cursor3.moveToFirst()){
                     do {
@@ -1473,11 +1432,12 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor3.getColumnName(6), cursor3.getString(6));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(7), cursor3.getString(7));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(8), cursor3.getString(8));
+                            jsonobjectSymptomsData.put(cursor3.getColumnName(9), cursor3.getString(9));
                         }
 
                     }while (cursor3.moveToNext());
                 }
-
+                //Test Findings
                 if (cursor4.moveToFirst()){
                     do {
                         if (cursor4.getString(1).equals(memberID.get(i))){
@@ -1490,6 +1450,8 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor4.getColumnName(6), cursor4.getString(6));
                             jsonobjectSymptomsData.put(cursor4.getColumnName(7), cursor4.getString(7));
                             jsonobjectSymptomsData.put(cursor4.getColumnName(8), cursor4.getString(8));
+                            jsonobjectSymptomsData.put(cursor4.getColumnName(9), cursor4.getString(9));
+
                         }
 
                     }while (cursor4.moveToNext());
@@ -1505,13 +1467,13 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor5.getColumnName(4), cursor5.getString(4));
                             jsonobjectSymptomsData.put(cursor5.getColumnName(5), cursor5.getString(5));
                             jsonobjectSymptomsData.put(cursor5.getColumnName(6), cursor5.getString(6));
-
+                            jsonobjectSymptomsData.put(cursor5.getColumnName(7), cursor5.getString(7));
                         }
 
                     }while (cursor5.moveToNext());
                 }
 
-
+                //Other Info
                 if (cursor9.moveToFirst()){
                     do {
                         if (cursor9.getString(1).equals(memberID.get(i))){
@@ -1520,6 +1482,10 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor9.getColumnName(2), cursor9.getString(2));
                             jsonobjectSymptomsData.put(cursor9.getColumnName(3), cursor9.getString(3));
                             jsonobjectSymptomsData.put(cursor9.getColumnName(4), cursor9.getString(4));
+                            jsonobjectSymptomsData.put(cursor9.getColumnName(5), cursor9.getString(5));
+                            jsonobjectSymptomsData.put(cursor9.getColumnName(6), cursor9.getString(6));
+                            jsonobjectSymptomsData.put(cursor9.getColumnName(7), cursor9.getString(7));
+                            jsonobjectSymptomsData.put(cursor9.getColumnName(8), cursor9.getString(8));
 
                         }
 
@@ -1530,7 +1496,6 @@ public class SurveyActivity extends AppCompatActivity
                 // symptoms---
                 if (cursor6.moveToFirst()){
                     symptomArray1 = new JSONArray();
-
                     do {
                         jsonobjectSymptoms = new JSONObject();
                         if (cursor6.getString(2).equals(memberID.get(i))){
@@ -1543,7 +1508,7 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptoms.put(cursor6.getColumnName(6), cursor6.getString(6));
                             jsonobjectSymptoms.put(cursor6.getColumnName(7), cursor6.getString(7));
                             jsonobjectSymptoms.put(cursor6.getColumnName(8), cursor6.getString(8));
-
+                            jsonobjectSymptoms.put(cursor6.getColumnName(9), cursor6.getString(9));
                         }
                         symptomArray1.put(jsonobjectSymptoms);
 
@@ -1785,5 +1750,12 @@ public class SurveyActivity extends AppCompatActivity
         }
     }
 
-
+    private TreeMap<String, ArrayList<String>> readFromSP(){
+        SharedPreferences sharedPreferences = getSharedPreferences("multimap", MODE_PRIVATE);
+        String defValue = new Gson().toJson(new TreeMap<String, ArrayList<String>>());
+        String json=sharedPreferences.getString("map",defValue);
+        TypeToken<TreeMap<String, ArrayList<String>>> token = new TypeToken<TreeMap<String, ArrayList<String>>>() {};
+        TreeMap<String, ArrayList<String>> retrievedMap=new Gson().fromJson(json,token.getType());
+        return retrievedMap;
+    }
 }

@@ -55,29 +55,30 @@ import java.util.Map;
 public class FamilyHeadActivity extends AppCompatActivity implements  Family_Head_Adapter.userclicklistener{
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
-    Button addfamilymember;
     private DBhandler dBhandler;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
     private static ProgressDialog mProgressDialog;
-    ArrayList<Family_Head_Model> familyHeadModelArrayList;
-    ArrayList<StateDataModel> stateDataModelArrayList;
-    ArrayList<StateDataModel> districtDataModelArrayList;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyyhhmmss", Locale.CHINESE);
-    String format;
+    private ArrayList<String> states;
+    private ArrayList<String> district ;
     private Family_Head_Adapter familyHeadAdapter;
     private RecyclerView recyclerView;
     private TextInputLayout familyhead, phone, house, address, city, pin;
     private Spinner dist, state;
+    int spinnerPosition;
+
     String userid="";
     SharedPreferences mPreferences;
     String sharedprofFile="com.gnrc.telehealth";
     SharedPreferences.Editor preferencesEditor;
     Family_Head_Model playerModel;
     StateDataModel stateModel;
-    private ArrayList<String> states;
-    private ArrayList<String> district ;
+    ArrayList<Family_Head_Model> familyHeadModelArrayList;
+    ArrayList<StateDataModel> stateDataModelArrayList;
+    ArrayList<StateDataModel> districtDataModelArrayList;
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyyhhmmss", Locale.CHINESE);
+    String format;
+    Button addfamilymember;
     ArrayAdapter<String> spinnerArrayAdapter;
-    int spinnerPosition;
     AlertDialog dialog;
     String value,value2;
 
@@ -180,40 +181,65 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         // set the custom layout
         final View customLayout = getLayoutInflater().inflate(R.layout.family_head_custom_alert_dialog,null);
         builder.setView(customLayout);
-
         // add a button
         builder.setPositiveButton(
                         "OK",
                         new DialogInterface.OnClickListener() {
-
                             @Override
                             public void onClick(DialogInterface dialog,int which)
                             {
-                                // send data from the
-                                // AlertDialog to the Activity
-                                familyhead = customLayout.findViewById(R.id.etfamilyhead);
-                                phone = customLayout.findViewById(R.id.etfamilyheadphone);
-                                house = customLayout.findViewById(R.id.etfamilyheadhouseno);
-                                address = customLayout.findViewById(R.id.etfamilyheadaddress);
-                                city = customLayout.findViewById(R.id.etfamilyheadcity);
-                                //dist = (Spinner) customLayout.findViewById(R.id.spfamilyheaddistrict);
-                                //state = (Spinner) customLayout.findViewById(R.id.spfamilyheadstate);
-                                pin = customLayout.findViewById(R.id.etfamilyheadpin);
-
-                                adddatatodatabase();
-
-                                setupRecyclerFrom_DB();
-
-                                familyHeadAdapter.notifyDataSetChanged();
-                                /*Intent i = new Intent(FamilyHeadActivity.this,FamilyHeadActivity.class);
-                                startActivity(i);
-                                finish();*/
                             }
                         });
         // create and show
         // the alert dialog
         dialog = builder.create();
         dialog.show();
+        //Custom click listener for validation
+        Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        theButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                familyhead = customLayout.findViewById(R.id.etfamilyhead);
+                phone = customLayout.findViewById(R.id.etfamilyheadphone);
+                house = customLayout.findViewById(R.id.etfamilyheadhouseno);
+                address = customLayout.findViewById(R.id.etfamilyheadaddress);
+                city = customLayout.findViewById(R.id.etfamilyheadcity);
+                //dist = (Spinner) customLayout.findViewById(R.id.spfamilyheaddistrict);
+                //state = (Spinner) customLayout.findViewById(R.id.spfamilyheadstate);
+                pin = customLayout.findViewById(R.id.etfamilyheadpin);
+                if (familyhead.getEditText().getText().length()<=2){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "Please Insert Name with at least 3 letters", Toast.LENGTH_SHORT).show();
+                }
+                else if (phone.getEditText().getText().length() != 10){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "Phone number should be 10 digits", Toast.LENGTH_SHORT).show();
+                }
+                else if (house.getEditText().getText().length() < 1){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "Please enter valid house number", Toast.LENGTH_SHORT).show();
+                }
+                else if (address.getEditText().getText().length() < 2){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "Address should be greater than 2 letters", Toast.LENGTH_SHORT).show();
+                }
+                else if (city.getEditText().getText().length() < 2){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "City should have atleast 3 letters", Toast.LENGTH_SHORT).show();
+                }
+
+                else if (pin.getEditText().getText().length()!=6){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "Pin should be 6 digits ", Toast.LENGTH_SHORT).show();
+                }else {
+
+                    adddatatodatabase();
+                    setupRecyclerFrom_DB();
+                    familyHeadAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                }
+            }
+        });
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
@@ -636,6 +662,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         familyHeadModelArrayList = new ArrayList<>();
         dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor = dBhandler.getFamilyDbData();
+        Cursor cursor1 = dBhandler.getSurveyTypeFlag();
         //Family_Head_Model dmodel = new Family_Head_Model();
         format = simpleDateFormat.format(new Date());
         if (cursor.moveToFirst()) {
@@ -655,7 +682,19 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
                 familyHeadModelArrayList.add(playerModel);
                 Log.d("val", "setupRecycler: " + playerModel);
                 playerModel.setViewtext("Add Member");
-                playerModel.setEdittext("Survey");
+
+                if (cursor1.getCount()>0){
+                    if (cursor1.moveToFirst()){
+                        do {
+                            if (cursor1.getString(1).equals(cursor.getString(0))){
+                                playerModel.setEdittext("Re-Survey");
+                            }else {
+                                playerModel.setEdittext("Survey");
+                            }
+                        }while (cursor1.moveToNext());
+                    }
+                }
+
 
             }while (cursor.moveToNext());
             familyHeadAdapter = new Family_Head_Adapter(this, familyHeadModelArrayList,this::selecteduser);

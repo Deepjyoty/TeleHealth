@@ -8,9 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,13 +41,20 @@ import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnFailureListener;
 import com.google.android.play.core.tasks.Task;
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class LoginActivity extends AppCompatActivity {
     private AppUpdateManager appUpdateManager;
@@ -59,6 +70,11 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences mPreferences;
     String sharedprofFile="com.gnrc.telehealth";
     SharedPreferences.Editor preferencesEditor;
+
+    int num = 1000;
+    TreeMap<String, ArrayList<String>> multiMap;
+    ArrayList<String> mapObject;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +92,10 @@ public class LoginActivity extends AppCompatActivity {
         is_signed_in = mPreferences.getString("issignedin","false");
         if(is_signed_in.equals("true"))
         {
+            fetchingSymptoms();
             fetchingspinnerstate();
             getDistrictListApi();
+
             Intent i = new Intent(LoginActivity.this,NewsFeedActivity.class);
             startActivity(i);
 
@@ -187,6 +205,7 @@ public class LoginActivity extends AppCompatActivity {
     {
         fetchingspinnerstate();
         getDistrictListApi();
+        fetchingSymptoms();
         Log.d("deep", "getParams: "+username);
         pdDialog.show();
         final StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_LOGIN,
@@ -207,6 +226,7 @@ public class LoginActivity extends AppCompatActivity {
                                 preferencesEditor.putString("message",message);
                                 preferencesEditor.putString("user_id",user_id);
                                 preferencesEditor.apply();
+                                insertToSP(multiMap);
                                 Intent i = new Intent(LoginActivity.this,NewsFeedActivity.class);
                                 startActivity(i);
                                 finish();
@@ -382,5 +402,138 @@ public class LoginActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
 
+    }
+
+    private void fetchingSymptoms() {
+
+        //showSimpleProgressDialog(this, "Loading...","Saving",false);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("strrrrr", ">>" + response);
+                        multiMap = new TreeMap<>();
+                        try {
+                            removeSimpleProgressDialog();
+
+                            JSONObject obj = new JSONObject(response);
+
+
+                            Log.d("deep", ">>" + response);
+
+                            String message = obj.getString("status");
+                            Toast.makeText(LoginActivity.this, ""+ message, Toast.LENGTH_SHORT).show();
+                            JSONArray jsonObject = obj.getJSONArray("data");
+
+                            for (int i = 0; i < jsonObject.length(); i++) {
+
+                                mapObject = new ArrayList<>();
+                                JSONObject jsondata = jsonObject.getJSONObject(i);
+                                DBhandler dBhandler = new DBhandler(getApplicationContext());
+                                dBhandler.addSymptomsMaster(jsondata.getString("ATR_CODE"),
+                                        jsondata.getString("PRT_CODE"),
+                                        jsondata.getString("PRT_DESC"),
+                                        jsondata.getString("PRT_DESC_ALT"),
+                                        jsondata.getString("PRT_DESC_BENG"),
+                                        jsondata.getString("PRT_SLNO"),
+                                        jsondata.getString("ATR_DESC"),
+                                        jsondata.getString("ATR_DESC_ALT"),
+                                        jsondata.getString("ATR_DESC_BENG"),
+                                        jsondata.getString("ATR_SLNO"),
+                                        jsondata.getString("IMAGE_URL"));
+
+                                if (!jsondata.getString("IMAGE_URL").equals("")){
+                                    Picasso.get().load(jsondata.getString("IMAGE_URL"))
+                                            .into(new Target() {
+                                                      @Override
+                                                      public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                                          try {
+                                                              String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                                                              File myDir = new File(root + "/symptom_image");
+
+                                                              if (!myDir.exists()) {
+                                                                  myDir.mkdirs();
+                                                              }
+
+                                                              String name = ++num + ".jpg";
+                                                              myDir = new File(myDir, name);
+                                                              FileOutputStream out = new FileOutputStream(myDir);
+                                                              bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+
+                                                              out.flush();
+                                                              out.close();
+                                                          } catch(Exception e){
+                                                              // some action
+                                                          }
+                                                      }
+                                                      @Override
+                                                      public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                                                      }
+
+                                                      @Override
+                                                      public void onPrepareLoad(Drawable placeHolderDrawable) {
+                                                      }
+                                                  }
+                                            );
+                                }
+
+
+                                mapObject.add(jsondata.getString("ATR_CODE"));
+                                mapObject.add(jsondata.getString("PRT_DESC"));
+                                mapObject.add(jsondata.getString("PRT_DESC_ALT"));
+                                mapObject.add(jsondata.getString("PRT_DESC_BENG"));
+                                mapObject.add(jsondata.getString("PRT_SLNO"));
+                                mapObject.add(jsondata.getString("ATR_DESC"));
+                                mapObject.add(jsondata.getString("ATR_DESC_ALT"));
+                                mapObject.add(jsondata.getString("ATR_DESC_BENG"));
+                                mapObject.add(jsondata.getString("ATR_SLNO"));
+
+                                multiMap.put(jsondata.getString("PRT_CODE"),mapObject);
+                            }
+                            insertToSP(multiMap);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //displaying the error in toast if occurrs
+                        //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+
+        {
+            @Override
+            protected Map<String, String> getParams() {
+                DBhandler dBhandler = new DBhandler(getApplicationContext());
+                Cursor cursor = dBhandler.getFamilyDbData();
+                //Family_Head_Model dmodel = new Family_Head_Model();
+                Map<String,String> params = new HashMap<String,String>();
+                params.put("req_type","get-symptoms-list");
+                Log.d("deep", "getParams: "+params);
+                return params;
+
+            }
+        };
+        // request queue
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
+
+    }
+
+    private void insertToSP(TreeMap<String, ArrayList<String>> jsonMap) {
+        String jsonString = new Gson().toJson(jsonMap);
+        SharedPreferences sharedPreferences = getSharedPreferences("multimap", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("map", jsonString);
+        editor.apply();
     }
 }

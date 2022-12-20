@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.gnrc.telehealth.Adapter.AddFamily_Adapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
@@ -37,16 +38,16 @@ public class AddMemberActivity extends AppCompatActivity {
     Button addfamilymember;
     private DBhandler dBhandler;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
-    private static ProgressDialog mProgressDialog;
-    private TextInputLayout name,dob, year,phone,occupation,month;
+
+    private TextInputLayout name, year,phone,occupation,month;
     AlertDialog dialog;
-    Button addFamilymember;
+
     AddFamily_Adapter addFamily_adapter;
     String format,format2;
     SimpleDateFormat simpleDateFormat,simpleDateFormat2;
     RecyclerView recyclerView;
     RadioGroup radioGroup;
-    int counter = 000;
+
     String familyId;
     SharedPreferences mPreferences1;
     SharedPreferences.Editor preferencesEditor;
@@ -99,8 +100,8 @@ public class AddMemberActivity extends AppCompatActivity {
         builder.setTitle("Add Member");
         // set the custom layout
         final View customLayout = getLayoutInflater().inflate(R.layout.addmember_custom_alert_dialog,null);
-
         builder.setView(customLayout);
+
         name = customLayout.findViewById(R.id.fm_name);
         /*dob = customLayout.findViewById(R.id.fm_DOB);*/
         year = customLayout.findViewById(R.id.fm_Year);
@@ -109,15 +110,13 @@ public class AddMemberActivity extends AppCompatActivity {
         occupation = customLayout.findViewById(R.id.fm_occupation);
         radioGroup = (RadioGroup) customLayout.findViewById(R.id.amRG);
         // add a button
+
         builder.setPositiveButton(
                 "OK",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog,int which)
                     {
-                        addDataToDatabase();
-                        setupRecyclerAm_DB();
-                        addFamily_adapter.notifyDataSetChanged();
 
                     }
                 });
@@ -125,7 +124,44 @@ public class AddMemberActivity extends AppCompatActivity {
         // the alert dialog
         dialog = builder.create();
         dialog.show();
-
+        Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        theButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (name.getEditText().getText().length()<=2){
+                    Toast.makeText(AddMemberActivity.this,
+                            "Please Insert Name with at least 3 letters", Toast.LENGTH_SHORT).show();
+                }
+                else if (year.getEditText().getText().length() < 1
+                        && Integer.parseInt(year.getEditText().getText().toString()) > 120){
+                    Toast.makeText(AddMemberActivity.this,
+                            "Please enter valid age year", Toast.LENGTH_SHORT).show();
+                }
+                else if (month.getEditText().getText().length() < 1 && month.getEditText().getText().length() < 3
+                        && Integer.parseInt(month.getEditText().getText().toString()) > 12){
+                    Toast.makeText(AddMemberActivity.this,
+                            "Please enter valid age month", Toast.LENGTH_SHORT).show();
+                }
+                else if (phone.getEditText().getText().length() != 10){
+                    Toast.makeText(AddMemberActivity.this,
+                            "Phone number should be 10 digits", Toast.LENGTH_SHORT).show();
+                }
+                else if (occupation.getEditText().getText().length() < 2){
+                    Toast.makeText(AddMemberActivity.this,
+                            "Please enter occupation with at least 3 letters", Toast.LENGTH_SHORT).show();
+                }
+                else if (radioGroup.getCheckedRadioButtonId() == 0){
+                    Toast.makeText(AddMemberActivity.this,
+                            "Please select Gender", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    addDataToDatabase();
+                    setupRecyclerAm_DB();
+                    addFamily_adapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                }
+            }
+        });
     }
 
     private void addDataToDatabase(){
@@ -183,7 +219,7 @@ public class AddMemberActivity extends AppCompatActivity {
     private void setupRecyclerAm_DB(){
         ArrayList<AddFamilyModel> addFamilyArrayList = new ArrayList<>();
         AddFamilyModel familyModel;
-        Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("id"));
+        Cursor cursor = dBhandler.getFamilyMemberListWithoutMember(getIntent().getStringExtra("id"));
 
         //Family_Head_Model dmodel = new Family_Head_Model();
 
@@ -211,6 +247,7 @@ public class AddMemberActivity extends AppCompatActivity {
                 familyModel.setF_id(cursor.getString(18));
 
                 addFamilyArrayList.add(familyModel);
+
             }while (cursor.moveToNext());
             addFamily_adapter = new AddFamily_Adapter(this, addFamilyArrayList);
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
@@ -220,7 +257,7 @@ public class AddMemberActivity extends AppCompatActivity {
 
     }
     public void setupSharedPreference(){
-        Cursor cursor = dBhandler.getFamilyMemberList(getIntent().getStringExtra("id"));
+        Cursor cursor = dBhandler.getFamilyMemberListWithoutMember(getIntent().getStringExtra("id"));
 
         String id = null;
 

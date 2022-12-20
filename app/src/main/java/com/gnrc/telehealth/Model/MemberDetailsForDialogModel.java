@@ -5,17 +5,57 @@ import java.io.Serializable;
 public class MemberDetailsForDialogModel implements Serializable {
     private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue,
             covidStatus, doseStatus,noVaccineReason, smokingStatus,alcoholStatus, atalAmritStatus, ayushmanStatus,
-    memberSurveyId, groupSurveyID, timeStamp;
+    memberSurveyId, groupSurveyID, timeStamp,familyID, videoPath, HeadName, HeadAddress;
     private Boolean checkedStatus;
     private int checkedId;
 
     //))))))))))))))))))))))))))))))))
 
-    private boolean isSmoker,isAtal,isTeleMed,isOpd,isAmbulance;
+    private boolean isSmoker,isAtal,isTeleMed,isOpd,isAmbulance,isChecked;
     private boolean isAlcoholic,isAyush;
 
     //))))))))))))))))))))))))))))))))
 
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
+    public String getHeadName() {
+        return HeadName;
+    }
+
+    public void setHeadName(String headName) {
+        HeadName = headName;
+    }
+
+    public String getHeadAddress() {
+        return HeadAddress;
+    }
+
+    public void setHeadAddress(String headAddress) {
+        HeadAddress = headAddress;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
+    }
+
+    public String getFamilyID() {
+        return familyID;
+    }
+
+    public void setFamilyID(String familyID) {
+        this.familyID = familyID;
+    }
 
     public String getGroupSurveyID() {
         return groupSurveyID;

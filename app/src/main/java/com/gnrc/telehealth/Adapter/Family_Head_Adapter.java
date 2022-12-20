@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gnrc.telehealth.MemberSelectionActivity;
 import com.gnrc.telehealth.Model.AddFamilyModel;
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
@@ -56,6 +57,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
         this.addFamilyModelArrayList = addFamilyModelArrayList;
         filteredlist = new ArrayList<>(familyHeadModelArrayList);
         this.userclicklistener = userclicklistener;
+
     }
 
     @Override
@@ -83,7 +85,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
         holder.survey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(inflater.getContext(), ShowSurveyActivity.class);
+                Intent i = new Intent(inflater.getContext(), MemberSelectionActivity.class);
                 i.putExtra("familyId",familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
                 i.putExtra("headPhoneNo",familyHeadModelArrayList.get(holder.getAbsoluteAdapterPosition())
                         .getPhone());
@@ -114,6 +116,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
                 i.putExtra("id",familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
                 Log.d("deep", "onClick: "+ familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
                 inflater.getContext().startActivity(i);
+
 /*                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("Family Details");
                 final View customLayout = inflater.inflate(R.layout.family_head_custom_alert_dialog,null);
