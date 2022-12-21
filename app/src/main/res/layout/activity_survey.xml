@@ -102,14 +102,7 @@
                                 android:orientation="horizontal"
                                 android:layout_margin="10dp"
                                 android:layout_below="@+id/view1">
-                                <Button
-                                    android:id="@+id/editBtnGeneralHabits"
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="40dp"
-                                    android:layout_margin="5dp"
-                                    android:background="@drawable/roundedbutton"
-                                    android:text="Edit Survey"/>
+
 
                                 <Button
                                     android:id="@+id/btnGeneralHabits"
@@ -117,12 +110,12 @@
                                     android:layout_weight="1"
                                     android:layout_height="40dp"
                                     android:layout_below="@+id/view2"
-                                    android:layout_marginStart="5dp"
+                                    android:layout_marginStart="20dp"
                                     android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="5dp"
+                                    android:layout_marginEnd="20dp"
                                     android:layout_marginBottom="5dp"
                                     android:background="@drawable/roundedbutton"
-                                    android:text="Take Survey" />
+                                    android:text="Take Survey / Edit Survey" />
                             </LinearLayout>
 
                         </RelativeLayout>
@@ -228,14 +221,6 @@
                                 android:orientation="horizontal"
                                 android:layout_margin="10dp"
                                 android:layout_below="@+id/view2">
-                                <Button
-                                    android:id="@+id/editBtnTestFindings"
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="40dp"
-                                    android:layout_margin="5dp"
-                                    android:background="@drawable/roundedbutton"
-                                    android:text="Edit Survey"/>
 
                                 <Button
                                     android:id="@+id/btnTestFindings"
@@ -243,12 +228,12 @@
                                     android:layout_weight="1"
                                     android:layout_height="40dp"
                                     android:layout_below="@+id/view2"
-                                    android:layout_marginStart="5dp"
+                                    android:layout_marginStart="20dp"
                                     android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="5dp"
+                                    android:layout_marginEnd="20dp"
                                     android:layout_marginBottom="5dp"
                                     android:background="@drawable/roundedbutton"
-                                    android:text="Take Survey" />
+                                    android:text="Take Survey / Edit Survey" />
                             </LinearLayout>
 
                         </RelativeLayout>
@@ -328,14 +313,7 @@
                                 android:orientation="horizontal"
                                 android:layout_margin="10dp"
                                 android:layout_below="@+id/view3">
-                                <Button
-                                    android:id="@+id/editBtnHealth"
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="40dp"
-                                    android:layout_margin="5dp"
-                                    android:background="@drawable/roundedbutton"
-                                    android:text="Edit Survey"/>
+
 
                                 <Button
                                     android:id="@+id/btnHci"
@@ -343,12 +321,12 @@
                                     android:layout_weight="1"
                                     android:layout_height="40dp"
                                     android:layout_below="@+id/view2"
-                                    android:layout_marginStart="5dp"
+                                    android:layout_marginStart="20dp"
                                     android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="5dp"
+                                    android:layout_marginEnd="20dp"
                                     android:layout_marginBottom="5dp"
                                     android:background="@drawable/roundedbutton"
-                                    android:text="Take Survey" />
+                                    android:text="Take Survey / Edit Survey"  />
                             </LinearLayout>
                         </RelativeLayout>
                     </androidx.cardview.widget.CardView>
@@ -396,14 +374,6 @@
                                 android:orientation="horizontal"
                                 android:layout_margin="10dp"
                                 android:layout_below="@+id/view4">
-                                <Button
-                                    android:id="@+id/editBtnSigns"
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="40dp"
-                                    android:layout_margin="5dp"
-                                    android:background="@drawable/roundedbutton"
-                                    android:text="Edit Survey"/>
 
                                 <Button
                                     android:id="@+id/btnSignsSymptoms"
@@ -411,12 +381,12 @@
                                     android:layout_weight="1"
                                     android:layout_height="40dp"
                                     android:layout_below="@+id/view2"
-                                    android:layout_marginStart="5dp"
+                                    android:layout_marginStart="20dp"
                                     android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="5dp"
+                                    android:layout_marginEnd="20dp"
                                     android:layout_marginBottom="5dp"
                                     android:background="@drawable/roundedbutton"
-                                    android:text="Take Survey" />
+                                    android:text="Take Survey / Edit Survey"  />
                             </LinearLayout>
                         </RelativeLayout>
                     </androidx.cardview.widget.CardView>
@@ -473,14 +443,7 @@
                                 android:orientation="horizontal"
                                 android:layout_margin="10dp"
                                 android:layout_below="@+id/view5">
-                                <Button
-                                    android:id="@+id/editBtnOi"
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_height="40dp"
-                                    android:layout_margin="5dp"
-                                    android:background="@drawable/roundedbutton"
-                                    android:text="Edit Survey"/>
+
 
                                 <Button
                                     android:id="@+id/btnOtherInfo"
@@ -488,12 +451,12 @@
                                     android:layout_weight="1"
                                     android:layout_height="40dp"
                                     android:layout_below="@+id/view2"
-                                    android:layout_marginStart="5dp"
+                                    android:layout_marginStart="20dp"
                                     android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="5dp"
+                                    android:layout_marginEnd="20dp"
                                     android:layout_marginBottom="5dp"
                                     android:background="@drawable/roundedbutton"
-                                    android:text="Take Survey" />
+                                    android:text="Take Survey / Edit Survey"  />
                             </LinearLayout>
                         </RelativeLayout>
                     </androidx.cardview.widget.CardView>

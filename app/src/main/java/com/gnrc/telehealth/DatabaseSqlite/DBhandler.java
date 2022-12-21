@@ -143,7 +143,7 @@ public class DBhandler extends SQLiteOpenHelper {
                 "tbl_video_store INTEGER, final_save INTEGER) ";
 
         String q_create_survey_type_tbl = "CREATE TABLE IF NOT EXISTS " + TBL_SURVEY_TYPE_FLAG +
-                " (group_surveyid String primary key, family_id String, survey_type String) ";
+                " (group_surveyid String , family_id String, member_id String, survey_type String) ";
 
 
         // at last we are calling a exec sql
@@ -166,7 +166,7 @@ public class DBhandler extends SQLiteOpenHelper {
 
     }
 
-    public void addSurveyTypeFlag(String group_surveyid, String family_id, String survey_type ){
+    public void addSurveyTypeFlag(String group_surveyid, String family_id, String member_id, String survey_type ){
         // on below line we are creating a variable for
         // our sqlite database and calling writable method
         // as we are writing data in our database.
@@ -178,6 +178,7 @@ public class DBhandler extends SQLiteOpenHelper {
         // along with its key and value pair.
         values.put("group_surveyid", group_surveyid);
         values.put("family_id", family_id);
+        values.put("member_id", member_id);
         values.put("survey_type", survey_type);
 
         //   db.delete(TBL_GENERAL_HABITS_SMOKING,null,null);
@@ -600,17 +601,18 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getGeneralHabitsAlcohol(String group_surveyid) {
+    public Cursor getGeneralHabitsAlcohol(String group_surveyid,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+ TBL_GENERAL_HABITS_ALCOHOL + " where group_surveyid = '" + group_surveyid +"'",null);
+        Cursor res = db.rawQuery("select * from "+ TBL_GENERAL_HABITS_ALCOHOL + " where group_surveyid = '" + group_surveyid +"'"
+                + " and member_id in (" + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
 
-    public Cursor getTestFindings(String groupSurveyID) {
+    public Cursor getTestFindings(String groupSurveyID,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TBL_TEST_FINDINGS +
-                " where group_surveyid = '" + groupSurveyID +"'",null);
+                " where group_surveyid = '" + groupSurveyID +"'" + " and member_id in (" + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
@@ -623,10 +625,10 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getHCIAtalAmrit(String groupSurveyID) {
+    public Cursor getHCIAtalAmrit(String groupSurveyID,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TBL_HCI_ATAL_AMRIT +
-                " where group_surveyid = '" + groupSurveyID +"'",null);
+                " where group_surveyid = '" + groupSurveyID + "'" + " and member_id in (" + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
@@ -652,9 +654,10 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getSymptomsMember(String memberId) {
+    public Cursor getSymptomsMember(String memberId,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+ TBL_SYMPTOMS_MEMBER + " where member_id = '" + memberId +"'",null);
+        Cursor res = db.rawQuery("select * from "+ TBL_SYMPTOMS_MEMBER + " where member_id = '" + memberId +"'"
+                + " and member_id in (" + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
@@ -667,10 +670,10 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getOtherInfo(String groupSurveyID) {
+    public Cursor getOtherInfo(String groupSurveyID,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TBL_OTHER_INFO +
-                " where group_surveyid = '" + groupSurveyID +"'",null);
+                " where group_surveyid = '" + groupSurveyID +"'"+ " and member_id in (" + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
@@ -703,6 +706,13 @@ public class DBhandler extends SQLiteOpenHelper {
     public Cursor getFamilyMasterNameAddress(String familyId) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select SSFM_HEAD_NAME, SSFM_ADDR  from "+ TBL_FAMILY_MASTER + " where SSFM_ID = '" + familyId +"'",null);
+        //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
+        return res;
+    }
+    public Cursor getSurveyTypeFlag2(String memberId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select group_surveyid from tbl_survey_type_flag where member_id  = " +
+                "'" + memberId + "'",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }

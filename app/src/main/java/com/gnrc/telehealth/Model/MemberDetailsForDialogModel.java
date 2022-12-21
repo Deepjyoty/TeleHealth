@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class MemberDetailsForDialogModel implements Serializable {
     private String member_id,  memberName, editTextValueSys,editTextValueDia,typeSpinner, editTextValueValue,
             covidStatus, doseStatus,noVaccineReason, smokingStatus,alcoholStatus, atalAmritStatus, ayushmanStatus,
-    memberSurveyId, groupSurveyID, timeStamp,familyID, videoPath, HeadName, HeadAddress;
+    memberSurveyId, groupSurveyID, timeStamp,familyID, videoPath, HeadName, HeadAddress, memberList;
     private Boolean checkedStatus;
     private int checkedId;
 
@@ -16,6 +16,14 @@ public class MemberDetailsForDialogModel implements Serializable {
 
     //))))))))))))))))))))))))))))))))
 
+
+    public String getMemberList() {
+        return memberList;
+    }
+
+    public void setMemberList(String memberList) {
+        this.memberList = memberList;
+    }
 
     public boolean isChecked() {
         return isChecked;

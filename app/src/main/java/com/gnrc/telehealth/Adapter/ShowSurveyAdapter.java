@@ -29,7 +29,7 @@ public class ShowSurveyAdapter extends RecyclerView.Adapter<ShowSurveyAdapter.My
     private MemberDetailsForDialogModel addFamilyModel;
 
     DBhandler dBhandler;
-    String surveyID, familyID,videopath;
+    String surveyID, familyID,videopath, memberList;
 
     public ShowSurveyAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addFamilyModelArrayList){
         this.context = ctx;
@@ -63,8 +63,9 @@ public class ShowSurveyAdapter extends RecyclerView.Adapter<ShowSurveyAdapter.My
                 surveyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getGroupSurveyID();
                 familyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getFamilyID();
                 videopath = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getVideoPath();
+                memberList = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getMemberList();
                 SendDataToServer abc = new SendDataToServer(context);
-                abc.saveDataToServer(surveyID,familyID);
+                abc.saveDataToServer(surveyID,familyID,memberList);
                 abc.uploadPDF(surveyID, Uri.parse(videopath));
                 Log.d("rabbit", "onClick: This was executed Second");
             }

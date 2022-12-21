@@ -134,7 +134,7 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                         //Insert Test Findings to Sqlite
                         dBhandler.addTestFindings(
                                 resurveyModelArrayList3.get(k).getGroup_surveyid(),
-                                resurveyModelArrayList3.get(k).getSSR_REGN_NUM(),
+                                resurveyModelArrayList3.get(k).getMemberId(),
                                 resurveyModelArrayList3.get(k).getFamily_id(),
                                 resurveyModelArrayList3.get(k).getMember_name(),
                                 resurveyModelArrayList3.get(k).getSys(),
@@ -146,7 +146,7 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
 
                         //Insert Health card Information to Sqlite
                         dBhandler.addHCI(resurveyModelArrayList3.get(k).getGroup_surveyid(),
-                                resurveyModelArrayList3.get(k).getSSR_REGN_NUM(),
+                                resurveyModelArrayList3.get(k).getMemberId(),
                                 resurveyModelArrayList3.get(k).getFamily_id(),
                                 resurveyModelArrayList3.get(k).getMember_name(),
                                 resurveyModelArrayList3.get(k).getAtal_amrit(),
@@ -155,7 +155,7 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                                 resurveyModelArrayList3.get(k).getSSR_CRT_DT());
 
                         dBhandler.addOtherInfo(resurveyModelArrayList3.get(k).getGroup_surveyid(),
-                                resurveyModelArrayList3.get(k).getSSR_REGN_NUM(),
+                                resurveyModelArrayList3.get(k).getMemberId(),
                                 resurveyModelArrayList3.get(k).getFamily_id(),
                                 resurveyModelArrayList3.get(k).getMember_name(),
                                 resurveyModelArrayList3.get(k).getTelemedicine_booked(),
@@ -182,7 +182,10 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
 
                 }
 
-                dBhandler.addSurveyTypeFlag(surveyID,familyID,"R");
+                for (int j = 0; j<memberId.size();j++){
+                    dBhandler.addSurveyTypeFlag(surveyID,familyID,memberId.get(j),"R");
+                }
+
 
                 Intent i = new Intent(inflater.getContext(), FamilyHeadActivity.class);
                 i.putExtra("resurvey","resurvey");

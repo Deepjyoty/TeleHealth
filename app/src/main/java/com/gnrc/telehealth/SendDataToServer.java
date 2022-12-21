@@ -55,7 +55,7 @@ public class SendDataToServer {
         this.context = context;
     }
 
-    public void saveDataToServer(String surveyId, String familyId) {
+    public void saveDataToServer(String surveyId, String familyId, String memberList) {
         int count = 0;
         Log.d("rabbit", "onClick: This was executed Third");
         showSimpleProgressDialog(context, "Loading...","Saving",false);
@@ -139,14 +139,14 @@ public class SendDataToServer {
                 } while (cursor2.moveToNext());
             }
 
-            Cursor cursor3 = dBhandler.getGeneralHabitsAlcohol(surveyId);
-            Cursor cursor4 = dBhandler.getTestFindings(surveyId);
-            Cursor cursor5 = dBhandler.getHCIAtalAmrit(surveyId);
-            Cursor cursor9 = dBhandler.getOtherInfo(surveyId);
+            Cursor cursor3 = dBhandler.getGeneralHabitsAlcohol(surveyId,memberList);
+            Cursor cursor4 = dBhandler.getTestFindings(surveyId,memberList);
+            Cursor cursor5 = dBhandler.getHCIAtalAmrit(surveyId,memberList);
+            Cursor cursor9 = dBhandler.getOtherInfo(surveyId,memberList);
             for (int i = 0; i<memberID.size();i++){
 
                 //General Habits
-                Cursor cursor6 = dBhandler.getSymptomsMember(memberID.get(i));
+                Cursor cursor6 = dBhandler.getSymptomsMember(memberID.get(i),memberList);
                 jsonobjectSymptomsData = new JSONObject();
                 if (cursor3.moveToFirst()){
                     do {

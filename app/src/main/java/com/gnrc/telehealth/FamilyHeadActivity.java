@@ -693,6 +693,8 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
                             }
                         }while (cursor1.moveToNext());
                     }
+                }else{
+                    playerModel.setEdittext("Survey");
                 }
 
 
