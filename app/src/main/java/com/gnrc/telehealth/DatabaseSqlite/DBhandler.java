@@ -593,10 +593,10 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getGeneralHabitsAlcoholByMember(String group_surveyid) {
+    public Cursor getGeneralHabitsAlcoholByMember(String group_surveyid,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select smoking, alcohol from "+ TBL_GENERAL_HABITS_ALCOHOL +
-                " where group_surveyid = '" + group_surveyid +"'",null);
+                " where group_surveyid = '" + group_surveyid +"'"+" and member_id in ( " + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
@@ -617,10 +617,10 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getHCIAtalAmritByMember(String groupSurveyID) {
+    public Cursor getHCIAtalAmritByMember(String groupSurveyID,String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select atal_amrit, ayushman_bharat from "+ TBL_HCI_ATAL_AMRIT +
-                " where group_surveyid = '" + groupSurveyID +"'",null);
+                " where group_surveyid = '" + groupSurveyID + "'" + " and member_id in ( " + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }
@@ -662,10 +662,11 @@ public class DBhandler extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getOtherInfoByMember(String groupSurveyID) {
+    public Cursor getOtherInfoByMember(String groupSurveyID, String memberIdList) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select telemedicine_booked, opd_booked, ambulance_booked from "+
-                TBL_OTHER_INFO + " where group_surveyid = '" + groupSurveyID +"'",null);
+                TBL_OTHER_INFO + " where group_surveyid = '" + groupSurveyID + "'" + " and " +
+                "member_id in ( " + memberIdList  +")",null);
         //Cursor res = db.rawQuery("delete from "+TABLE_NAME,null);
         return res;
     }

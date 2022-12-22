@@ -140,7 +140,7 @@ public class SurveyActivity extends AppCompatActivity
         editModel = new MemberDetailsForDialogModel();
         editModel.setMemberList(r);
         dBhandler = new DBhandler(getApplicationContext());
-        checkFlag();
+
         mPreferences = getSharedPreferences("smokingAlcohol", MODE_PRIVATE);
 
         member = new ArrayList<>();
@@ -165,17 +165,6 @@ public class SurveyActivity extends AppCompatActivity
 
         SQLiteDatabase db = dBhandler.getWritableDatabase();
 
-        /*for (int i = 0; i<memberList.size(); i++){
-            if (cursor.getCount()>0){
-                if (cursor.moveToFirst()){
-                    do {
-                        if (cursor.getString(2).equals(memberList.get(i))){
-                            familySurveyId = cursor.getString(0);
-                        }
-                    }while (cursor.moveToNext());
-                }
-            }
-        }*/
         for (int i = 0; i<memberList.size(); i++){
             Cursor cursor = dBhandler.getSurveyTypeFlag2(memberList.get(i));
             if (cursor.getCount()>0){
@@ -187,7 +176,7 @@ public class SurveyActivity extends AppCompatActivity
             }
         }
 
-
+        checkFlag();
         if (getIntent().getStringExtra("resurvey")!= null){
             if (getIntent().getStringExtra("resurvey").equals("resurvey")){
 
@@ -291,12 +280,10 @@ public class SurveyActivity extends AppCompatActivity
                             Toast.LENGTH_SHORT).show();
                 }else {
                     if (isCameraPresentInPhone()){
-                        saveDataToServer();
+
                         recordVideo();
                     }
                 }
-
-
 
                /* Intent i = new Intent(SurveyActivity.this,FamilyHeadActivity.class);
                 startActivity(i);
@@ -358,10 +345,50 @@ public class SurveyActivity extends AppCompatActivity
         builder.setView(customLayout);
 
         generalRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
+        ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+        Cursor cursor1 = dBhandler.getGeneralHabitsAlcoholByMember(familySurveyId,r);
+        list2 = new ArrayList<>();
+        if (cursor1.moveToFirst()) {
+            do {
+                MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
+                if(cursor1.getString(0).equals("Yes")) { //smoking
+                    editModel.setSmoker(true);
+                } else {
+                    editModel.setSmoker(false);
+                }
 
-        GeneralHabitsAdapter testFindingsAdapter = new GeneralHabitsAdapter(this, member, this);
-        generalRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-        generalRecycler.setAdapter(testFindingsAdapter);
+                if(cursor1.getString(1).equals("Yes")) { //alcoholic
+                    editModel.setAlcoholic(true);
+                } else {
+                    editModel.setAlcoholic(false);
+                }
+
+                list2.add(editModel);
+            } while (cursor1.moveToNext());
+        }
+        if (cursor1.getCount()>0){
+            for (int i = 0; i < list2.size(); i++){
+                editModel2 = new MemberDetailsForDialogModel();
+                editModel2.setSmoker(list2.get(i).isSmoker());
+                editModel2.setAlcoholic(list2.get(i).isAlcoholic());
+
+                list.add(editModel2);
+
+                GeneralHabitsAdapter testFindingsAdapter = new GeneralHabitsAdapter(this, list, this);
+                generalRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                generalRecycler.setAdapter(testFindingsAdapter);
+            }
+        }else {
+            for (int i = 0; i < memberList.size(); i++) {
+                editModel = new MemberDetailsForDialogModel();
+                editModel.setMemberName(member.get(i).getMemberName());
+                list.add(editModel);
+
+                GeneralHabitsAdapter testFindingsAdapter = new GeneralHabitsAdapter(this, list, this);
+                generalRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                generalRecycler.setAdapter(testFindingsAdapter);
+            }
+        }
 
         builder.setPositiveButton(
                 "OK",
@@ -576,10 +603,52 @@ public class SurveyActivity extends AppCompatActivity
         builder.setView(customLayout);
 
         healthCardRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
+        ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+        Cursor cursor1 = dBhandler.getHCIAtalAmritByMember(familySurveyId,r);
+        list2 = new ArrayList<>();
+        if (cursor1.moveToFirst()) {
+            do {
+                MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
+                if(cursor1.getString(0).equals("Yes")) { //atal amrit
+                    editModel.setAtal(true);
+                } else {
+                    editModel.setAtal(false);
+                }
 
-        HealthCardAdapter testFindingsAdapter = new HealthCardAdapter(this, member1,this);
-        healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-        healthCardRecycler.setAdapter(testFindingsAdapter);
+                if(cursor1.getString(1).equals("Yes")) { //ayushman
+                    editModel.setAyush(true);
+                } else {
+                    editModel.setAyush(false);
+                }
+
+                list2.add(editModel);
+            } while (cursor1.moveToNext());
+        }
+
+        if (cursor1.getCount()>0){
+            for (int i = 0; i < list2.size(); i++){
+                editModel2 = new MemberDetailsForDialogModel();
+                editModel2.setAtal(list2.get(i).isAtal());
+                editModel2.setAyush(list2.get(i).isAyush());
+
+                list.add(editModel2);
+
+                HealthCardAdapter testFindingsAdapter = new HealthCardAdapter(this, list,this);
+                healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                healthCardRecycler.setAdapter(testFindingsAdapter);
+            }
+        }else {
+            for (int i = 0; i < memberList.size(); i++) {
+                editModel = new MemberDetailsForDialogModel();
+                editModel.setMemberName(member.get(i).getMemberName());
+                list.add(editModel);
+
+                HealthCardAdapter testFindingsAdapter = new HealthCardAdapter(this, list,this);
+                healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                healthCardRecycler.setAdapter(testFindingsAdapter);
+            }
+        }
+
 
         builder.setPositiveButton(
                 "OK",
@@ -673,11 +742,61 @@ public class SurveyActivity extends AppCompatActivity
         builder.setView(customLayout);
 
         healthCardRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
+        ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+        Cursor cursor1 = dBhandler.getOtherInfoByMember(familySurveyId,r);
+        list2 = new ArrayList<>();
+        if (cursor1.moveToFirst()) {
+            do {
+                MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
+                if(cursor1.getString(0).equals("Yes")) { //telemedicine
+                    editModel.setTeleMed(true);
+                } else {
+                    editModel.setTeleMed(false);
+                }
 
-        OtherInfoAdapter testFindingsAdapter = new OtherInfoAdapter(this, member2,this);
-        healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
-                LinearLayoutManager.VERTICAL,false));
-        healthCardRecycler.setAdapter(testFindingsAdapter);
+                if(cursor1.getString(1).equals("Yes")) { //opd
+                    editModel.setOpd(true);
+                } else {
+                    editModel.setOpd(false);
+                }
+
+                if(cursor1.getString(2).equals("Yes")) { //ambulance
+                    editModel.setAmbulance(true);
+                } else {
+                    editModel.setAmbulance(false);
+                }
+
+                list2.add(editModel);
+            } while (cursor1.moveToNext());
+        }
+
+        if (cursor1.getCount()>0){
+            for (int i = 0; i < list2.size(); i++){
+                editModel2 = new MemberDetailsForDialogModel();
+                editModel2.setTeleMed(list2.get(i).isTeleMed());
+                editModel2.setOpd(list2.get(i).isOpd());
+                editModel2.setAmbulance(list2.get(i).isAmbulance());
+
+                list.add(editModel2);
+
+                OtherInfoAdapter testFindingsAdapter = new OtherInfoAdapter(this, list,this);
+                healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
+                        LinearLayoutManager.VERTICAL,false));
+                healthCardRecycler.setAdapter(testFindingsAdapter);
+            }
+        }else {
+            for (int i = 0; i < memberList.size(); i++) {
+                editModel = new MemberDetailsForDialogModel();
+                editModel.setMemberName(member.get(i).getMemberName());
+                list.add(editModel);
+
+                OtherInfoAdapter testFindingsAdapter = new OtherInfoAdapter(this, list,this);
+                healthCardRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
+                        LinearLayoutManager.VERTICAL,false));
+                healthCardRecycler.setAdapter(testFindingsAdapter);
+            }
+        }
+
 
         builder.setPositiveButton(
                 "OK",
@@ -782,16 +901,16 @@ public class SurveyActivity extends AppCompatActivity
                         memberDetailsForDialogModel.setMember_id(cursorFamilyMember.getString(0)); //member id
 
                         Cursor cursorGeneralHabits =
-                                dBhandler.getGeneralHabitsAlcohol(familySurveyId,r);
+                                dBhandler.getGeneralHabitsAlcoholByMember(familySurveyId,r);
 
                         if(cursorGeneralHabits.moveToFirst()){
-                            if(cursorGeneralHabits.getString(4).equals("Yes")) { //smoking
+                            if(cursorGeneralHabits.getString(0).equals("Yes")) { //smoking
                                 memberDetailsForDialogModel.setSmoker(true);
                             } else {
                                 memberDetailsForDialogModel.setSmoker(false);
                             }
 
-                            if(cursorGeneralHabits.getString(5).equals("Yes")) { //alcoholic
+                            if(cursorGeneralHabits.getString(1).equals("Yes")) { //alcoholic
                                 memberDetailsForDialogModel.setAlcoholic(true);
                             } else {
                                 memberDetailsForDialogModel.setAlcoholic(false);
@@ -1204,26 +1323,37 @@ public class SurveyActivity extends AppCompatActivity
                     // connected to the internet
                     if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
                         // connected to wifi
+                        saveDataToServer();
+
                         videoPath = data.getData();
                         Log.d("pathofvideo", "onActivityResult: "+videoPath);
                         uploadPDF(familySurveyId+".mp4",videoPath);
+                        Toast.makeText(SurveyActivity.this,
+                                "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         startActivity(i);
+
                     } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                         // connected to mobile data
+                        saveDataToServer();
+
                         videoPath = data.getData();
                         Log.d("pathofvideo", "onActivityResult: "+videoPath);
                         uploadPDF(familySurveyId+".mp4",videoPath);
+                        Toast.makeText(SurveyActivity.this,
+                                "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         startActivity(i);
                     }
                 } else {
                     DBhandler dBhandler = new DBhandler(getApplicationContext());
-                    for (int i = 0; i < member.size(); i++){
+                    saveDataToServer();
+                    for (int i = 0; i < memberList.size(); i++){
                         videoPath = data.getData();
                         Log.d("pathofvideo", "onActivityResult: "+videoPath);
                         dBhandler.addVideoPath(familySurveyId, familyid, videoPath,format);
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
+
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
                                 "WHERE group_surveyid = '" + familySurveyId + "'");
                         db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
@@ -1335,11 +1465,18 @@ public class SurveyActivity extends AppCompatActivity
     }
     public void clearTables(){
         SQLiteDatabase db = dBhandler.getWritableDatabase();
-        db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + familySurveyId + "'" );
-        db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + familySurveyId + "'" );
-        db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + familySurveyId + "'" );
-        db.execSQL("delete from tbl_other_info where group_surveyid  = '" + familySurveyId + "'" );
-        db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + familySurveyId + "'" );
+
+        Cursor cursor1 = db.rawQuery(" select group_surveyid from  tbl_survey_type_flag where group_surveyid = '" + familySurveyId +"'",null);
+        if (cursor1.getCount()>0){
+            //do nothing
+        }else{
+            db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + familySurveyId + "'" );
+            db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + familySurveyId + "'" );
+            db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + familySurveyId + "'" );
+            db.execSQL("delete from tbl_other_info where group_surveyid  = '" + familySurveyId + "'" );
+            db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + familySurveyId + "'" );
+        }
+
 
 /*        db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
         db.execSQL("delete from tbl_test_findings where family_id  = '" + familyid + "'" );
@@ -1745,28 +1882,40 @@ public class SurveyActivity extends AppCompatActivity
     public void checkFlag(){
         SQLiteDatabase db = dBhandler.getWritableDatabase();
 
-        Cursor cursor = dBhandler.getOverallFlag();
-        if (cursor.getCount()>0){
-            if (cursor.moveToFirst()){
-                do {
-                    String id = cursor.getString(0);
-                    sum = cursor.getInt(1) + cursor.getInt(2) + cursor.getInt(3) +
-                            cursor.getInt(4) + cursor.getInt(5) + cursor.getInt(6);
-                    if (sum<6){
-                        db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + id + "'");
-                        db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + id + "'");
-                        db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + id + "'");
-                        db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + id + "'");
-                        db.execSQL("delete from tbl_other_info where group_surveyid  = '" + id + "'");
-                        db.execSQL("delete from tbl_video_store where group_surveyid  = '" + id + "'");
-                        db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + id + "'");
-                    }else{
-                        db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + id + "'");
-                    }
-                }while (cursor.moveToNext());
 
+        Cursor cursor1 = db.rawQuery(" select group_surveyid from tbl_survey_type_flag where " +
+                "group_surveyid = '" + familySurveyId +"'",null);
+
+        Log.d("dikhabe", "checkFlag: "+familySurveyId);
+        if (cursor1.getCount()>0){
+            //do nothing0
+        }else{
+            Cursor cursor = dBhandler.getOverallFlag();
+            if (cursor.getCount()>0){
+                if (cursor.moveToFirst()){
+                    do {
+                        String id = cursor.getString(0);
+                        sum = cursor.getInt(1) + cursor.getInt(2) + cursor.getInt(3) +
+                                cursor.getInt(4) + cursor.getInt(5) + cursor.getInt(6);
+                        if (sum<6){
+                            db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + id + "'");
+                            db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + id + "'");
+                            db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + id + "'");
+                            db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + id + "'");
+                            db.execSQL("delete from tbl_other_info where group_surveyid  = '" + id + "'");
+                            db.execSQL("delete from tbl_video_store where group_surveyid  = '" + id + "'");
+                            db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + id + "'");
+                        }else{
+                            db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + id + "'");
+                        }
+                    }while (cursor.moveToNext());
+
+                }
             }
         }
+
+
+
     }
 
     private TreeMap<String, ArrayList<String>> readFromSP(){
