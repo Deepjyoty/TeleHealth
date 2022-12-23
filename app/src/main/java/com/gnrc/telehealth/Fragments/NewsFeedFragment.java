@@ -1,8 +1,13 @@
 package com.gnrc.telehealth.Fragments;
 
+import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -26,8 +31,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.News_feed_Adapter;
+import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.Model_newsfeed;
 import com.gnrc.telehealth.R;
+import com.gnrc.telehealth.ShowSurveyActivity;
+import com.gnrc.telehealth.SurveyActivity;
 import com.gnrc.telehealth.VideoPlayerActivity;
 
 import org.json.JSONArray;
@@ -75,13 +83,31 @@ public class NewsFeedFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_news_feed, container, false);
         // Add the following lines to create RecyclerView
         recyclerView = view.findViewById(R.id.newsrecycler);
+        ConnectivityManager cm = (ConnectivityManager) getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                // connected to wifi
+                fetchingJSON();
 
-        fetchingJSON();
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to mobile data
+                fetchingJSON();
+            }
+        } else {
+            Toast.makeText(getContext(), "This page cannot be loaded due to no " +
+                    "Internet connectivity", Toast.LENGTH_LONG).show();
+
+            }
+
+
         return view;
     }
     private void fetchingJSON() {
 
-        showSimpleProgressDialog(getContext(), "Loading...","Fetching Json",false);
+        showSimpleProgressDialog(getContext(), "Loading...","Fetching Data",false);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
                 new Response.Listener<String>() {
@@ -133,7 +159,8 @@ public class NewsFeedFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //displaying the error in toast if occurrs
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "This page cannot be loaded due to no " +
+                                "Internet connectivity", Toast.LENGTH_SHORT).show();
                     }
                 })
         {

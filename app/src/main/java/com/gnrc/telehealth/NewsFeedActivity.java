@@ -2,10 +2,12 @@ package com.gnrc.telehealth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,11 +25,10 @@ public class NewsFeedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_feed);
+
         navigationView = (BottomNavigationView) findViewById(R.id.navigation);
         navigationView.setOnItemSelectedListener(selectedListener);
-        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));*/
 
         // When we open the application first
         // time the fragment should be shown to the user
@@ -63,4 +64,9 @@ public class NewsFeedActivity extends AppCompatActivity {
             return false;
         }
     };
+    public void onBackPressed() {
+        Intent i = new Intent(this,ChoiceActivity.class);
+        startActivity(i);
+        finish();
+    }
 }

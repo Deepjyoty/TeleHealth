@@ -1,10 +1,12 @@
 package com.gnrc.telehealth;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ChoiceActivity extends AppCompatActivity {
@@ -27,10 +29,37 @@ public class ChoiceActivity extends AppCompatActivity {
         survey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ChoiceActivity.this, LoginActivity.class);
+                Intent i = new Intent(ChoiceActivity.this, PermissonActivity.class);
                 startActivity(i);
                 finish();
             }
         });
+    }
+    public void onBackPressed() {
+        AlertDialog diaBox = AskOption();
+        diaBox.show();
+    }
+
+    private AlertDialog AskOption()
+    {
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                .setTitle("EXIT")
+                .setMessage("Are you sure you want to exit?")
+
+
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        finishAndRemoveTask();
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
     }
 }

@@ -37,6 +37,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.Family_Head_Adapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
+import com.gnrc.telehealth.Fragments.SurveyFragment;
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.google.android.material.textfield.TextInputLayout;
@@ -142,7 +143,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(FamilyHeadActivity.this,ChoiceActivity.class);
+        Intent i = new Intent(this, NewsFeedActivity.class);
         startActivity(i);
     }
 
@@ -798,5 +799,6 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         builder.setMessage(Message);
         builder.show();
     }
+
 
 }

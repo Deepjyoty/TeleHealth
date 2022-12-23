@@ -3,16 +3,20 @@ package com.gnrc.telehealth;
 import static com.gnrc.telehealth.FamilyHeadActivity.removeSimpleProgressDialog;
 import static com.gnrc.telehealth.FamilyHeadActivity.showSimpleProgressDialog;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -21,10 +25,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -70,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences mPreferences;
     String sharedprofFile="com.gnrc.telehealth";
     SharedPreferences.Editor preferencesEditor;
+    private String[] PERMISSIONS;
 
     int num = 1000;
     TreeMap<String, ArrayList<String>> multiMap;
@@ -82,12 +91,15 @@ public class LoginActivity extends AppCompatActivity {
 
         // calling the action bar
         ActionBar actionBar = getSupportActionBar();
+
         // showing the back button in action bar
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+
         //Calling Shared Preferences
         mPreferences=getSharedPreferences(sharedprofFile,MODE_PRIVATE);
         preferencesEditor = mPreferences.edit();
+
         //Checking for the value stored in shared preference
         is_signed_in = mPreferences.getString("issignedin","false");
         if(is_signed_in.equals("true"))
@@ -103,13 +115,14 @@ public class LoginActivity extends AppCompatActivity {
         pdDialog= new ProgressDialog(LoginActivity.this);
         pdDialog.setTitle("LoginActivity please wait...");
         pdDialog.setCancelable(false);
-/*        mPreferences=getSharedPreferences(sharedprofFile,MODE_PRIVATE);
-        preferencesEditor = mPreferences.edit();*/
+
         loginButton = (Button) findViewById(R.id.loginbtn);
         username = (TextInputLayout) findViewById(R.id.usernameinp);
         password = (TextInputLayout) findViewById(R.id.passwordinp);
+
         //Defining the update manager
         appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+
         //Calling the app update method
         check_PlayStore_Update();
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -150,10 +163,10 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-        //Defining connectivity manager and checking internet status
 
 
     }
+
     //method to check play-store for new version of app
     private void check_PlayStore_Update() {
 
@@ -273,6 +286,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void getDistrictListApi() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Family Details");
@@ -536,4 +550,11 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("map", jsonString);
         editor.apply();
     }
+
+    public void onBackPressed() {
+        Intent i = new Intent(this, ChoiceActivity.class);
+        startActivity(i);
+        finish();
+    }
+
 }

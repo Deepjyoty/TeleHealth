@@ -126,6 +126,7 @@ public class ShowSurveyActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         registerNetworkReceiver();
+        populateRecycler();
     }
 
     @Override
