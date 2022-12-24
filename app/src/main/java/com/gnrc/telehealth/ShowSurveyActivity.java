@@ -116,8 +116,10 @@ public class ShowSurveyActivity extends AppCompatActivity {
                     surveydetailsarraylist.add(surveymodel);
                 }while (cursor.moveToNext());
                 showSurveyAdapter = new ShowSurveyAdapter(this, surveydetailsarraylist);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
+                        LinearLayoutManager.VERTICAL,false));
                 recyclerView.setAdapter(showSurveyAdapter);
+                showSurveyAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -127,6 +129,7 @@ public class ShowSurveyActivity extends AppCompatActivity {
         super.onStart();
         registerNetworkReceiver();
         populateRecycler();
+
     }
 
     @Override
@@ -134,6 +137,7 @@ public class ShowSurveyActivity extends AppCompatActivity {
         super.onResume();
         registerNetworkReceiver();
         populateRecycler();
+
     }
 
     @Override

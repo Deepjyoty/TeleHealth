@@ -1345,6 +1345,7 @@ public class SurveyActivity extends AppCompatActivity
                                 "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         startActivity(i);
+                        finish();
 
                     } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                         // connected to mobile data
@@ -1359,6 +1360,7 @@ public class SurveyActivity extends AppCompatActivity
                                 "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         startActivity(i);
+                        finish();
                     }
                 } else {
                     DBhandler dBhandler = new DBhandler(getApplicationContext());
@@ -1381,6 +1383,7 @@ public class SurveyActivity extends AppCompatActivity
                     //clearTables();
                     Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                     startActivity(i);
+                    finish();
                     // not connected to the internet
                 }
             }

@@ -47,15 +47,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
         //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
 
         //familyHeadModelArrayList.get(position).getDescription();
-        holder.survey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(inflater.getContext(), SurveyActivity.class);
-                i.putExtra("familyId", addFamilyModelArrayList.get(holder.getAdapterPosition()).getF_id());
-                i.putExtra("member_id", addFamilyModelArrayList.get(holder.getAdapterPosition()).getRegnum());
-                inflater.getContext().startActivity(i);
-            }
-        });
+
 
     }
     @Override
@@ -76,7 +68,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
             name = (TextView) itemView.findViewById(R.id.amName);
             gender = (TextView) itemView.findViewById(R.id.amGender);
             age = (TextView) itemView.findViewById(R.id.amAge);
-            survey = (TextView) itemView.findViewById(R.id.amView);
+
 
             //iv = (ImageView) itemView.findViewById(R.id.iv);
         }

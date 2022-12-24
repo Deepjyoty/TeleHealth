@@ -36,9 +36,10 @@ import java.util.Locale;
 
 public class AddMemberActivity extends AppCompatActivity {
     Button addfamilymember;
+    RadioButton radioButton;
     private DBhandler dBhandler;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
-
+    int selectedId;
     private TextInputLayout name, year,phone,occupation,month;
     AlertDialog dialog;
 
@@ -128,38 +129,46 @@ public class AddMemberActivity extends AppCompatActivity {
         theButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedId = radioGroup.getCheckedRadioButtonId();
                 if (name.getEditText().getText().length()<=2){
+                    name.setError("Please enter Name with at least 3 letters");
                     Toast.makeText(AddMemberActivity.this,
                             "Please Insert Name with at least 3 letters", Toast.LENGTH_SHORT).show();
                 }
-                else if (year.getEditText().getText().length() < 1
-                        && Integer.parseInt(year.getEditText().getText().toString()) > 120){
-                    Toast.makeText(AddMemberActivity.this,
-                            "Please enter valid age year", Toast.LENGTH_SHORT).show();
+
+                else if (Integer.parseInt(year.getEditText().getText().toString()) > 120){
+                    year.setError("Please enter valid age year");
+
                 }
-                else if (month.getEditText().getText().length() < 1 && month.getEditText().getText().length() < 3
-                        && Integer.parseInt(month.getEditText().getText().toString()) > 12){
-                    Toast.makeText(AddMemberActivity.this,
-                            "Please enter valid age month", Toast.LENGTH_SHORT).show();
+                else if (Integer.parseInt(month.getEditText().getText().toString()) < 1 ||
+                        Integer.parseInt(month.getEditText().getText().toString()) > 11){
+                    month.setError("Please enter valid age month");
+
                 }
                 else if (phone.getEditText().getText().length() != 10){
                     Toast.makeText(AddMemberActivity.this,
                             "Phone number should be 10 digits", Toast.LENGTH_SHORT).show();
                 }
                 else if (occupation.getEditText().getText().length() < 2){
+                    occupation.setError("Please enter occupation with at least 3 letters");
                     Toast.makeText(AddMemberActivity.this,
                             "Please enter occupation with at least 3 letters", Toast.LENGTH_SHORT).show();
                 }
-                else if (radioGroup.getCheckedRadioButtonId() == 0){
+
+                else if (selectedId == -1 ){
                     Toast.makeText(AddMemberActivity.this,
                             "Please select Gender", Toast.LENGTH_SHORT).show();
-                }
-                else {
+
+                }else {
                     addDataToDatabase();
                     setupRecyclerAm_DB();
                     addFamily_adapter.notifyDataSetChanged();
                     dialog.dismiss();
                 }
+                Log.d("radioCheck", "onClick: "+selectedId);
+               /* else {
+
+                }*/
             }
         });
     }
@@ -183,11 +192,11 @@ public class AddMemberActivity extends AppCompatActivity {
 
         //Checking for the value stored in shared preference
         String userid = mPreferences.getString("user_id","NoValue");
-        int selectedId = radioGroup.getCheckedRadioButtonId();
-
+        selectedId = radioGroup.getCheckedRadioButtonId();
+        radioButton = (RadioButton) radioGroup.findViewById(selectedId);
         dBhandler = new DBhandler(getApplicationContext());
         // find the radiobutton by returned id
-        RadioButton radioButton = (RadioButton) radioGroup.findViewById(selectedId);
+
         format = simpleDateFormat.format(new Date());
         format2 = simpleDateFormat2.format(new Date());
         dBhandler = new DBhandler(getApplicationContext());

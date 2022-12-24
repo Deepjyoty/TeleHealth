@@ -19,32 +19,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.2.3">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/PermissonActivity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/cam.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/location.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/mobhand.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/perm.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/read.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_permisson.xml" afterDir="false" />
+    <list default="true" id="ff3845c0-fe2a-499b-960a-41aa5aba3b62" name="Changes" comment="commit 1.2.4">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/ChoiceActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/ChoiceActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/FamilyHeadActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/FamilyHeadActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/NewsFeedFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Fragments/NewsFeedFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/LoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/LoginActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/NewsFeedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/NewsFeedActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/AddFamily_Adapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/Adapter/AddFamily_Adapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/AddMemberActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/AddMemberActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/ShowSurveyActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/ShowSurveyActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/SplashActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/SplashActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/SurveyActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/gnrc/telehealth/SurveyActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/card_view_fm.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/card_view_fm.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[RF8N21545XA]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\gnrc\.android\avd\Pixel_6_Pro_API_33.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -132,7 +120,7 @@
     <property name="android-custom-viewC:/Users/gnrc/AppData/Local/Android/Sdk/sources/android-33/android/widget/RelativeLayout.java_SELECTED" value="RelativeLayout" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/res/drawable" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -545,7 +533,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671705567093</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="commit 1.2.4">
+      <created>1671799590276</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1671799590276</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -561,7 +556,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="third commit" />
     <MESSAGE value="commit 1.0.0" />
     <MESSAGE value="commit 1.0.1" />
     <MESSAGE value="commit 1.0.2" />
@@ -586,7 +580,8 @@
     <MESSAGE value="commit 1.2.1" />
     <MESSAGE value="commit 1.2.2" />
     <MESSAGE value="commit 1.2.3" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit 1.2.3" />
+    <MESSAGE value="commit 1.2.4" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit 1.2.4" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
