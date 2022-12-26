@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -36,6 +37,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,6 +80,7 @@ import java.io.FileNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,6 +98,8 @@ public class SurveyActivity extends AppCompatActivity
     editGenHab, editTestFind, editHealthCard, editSignSymptoms, editOtherInfo;
     String latitude, longitude,list1,familyid;
     CheckBox cb;
+    RadioGroup radioGroup;
+    RadioButton english,assamese,bengali;
     AlertDialog dialog;
     int num = 1000,sum;
     int finalCount;
@@ -143,6 +149,12 @@ public class SurveyActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
+
+        radioGroup = findViewById(R.id.rg_language);
+        english = findViewById(R.id.rb_english);
+        assamese = findViewById(R.id.rb_assamese);
+        bengali = findViewById(R.id.rb_bengali);
+        radioGroup.check(R.id.rb_english);
 
         memberList = new ArrayList<>();
         memberList = getIntent().getStringArrayListExtra("memberList");
@@ -356,18 +368,20 @@ public class SurveyActivity extends AppCompatActivity
 
         generalRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
         ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
-        Cursor cursor1 = dBhandler.getGeneralHabitsAlcoholByMember(familySurveyId,r);
+        Cursor cursor1 = dBhandler.getGeneralHabitsAlcohol(familySurveyId,r);
         list2 = new ArrayList<>();
+
         if (cursor1.moveToFirst()) {
             do {
                 MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
-                if(cursor1.getString(0).equals("Yes")) { //smoking
+                editModel.setMemberName(cursor1.getString(3));
+                if(cursor1.getString(4).equals("Yes")) { //smoking
                     editModel.setSmoker(true);
                 } else {
                     editModel.setSmoker(false);
                 }
 
-                if(cursor1.getString(1).equals("Yes")) { //alcoholic
+                if(cursor1.getString(5).equals("Yes")) { //alcoholic
                     editModel.setAlcoholic(true);
                 } else {
                     editModel.setAlcoholic(false);
@@ -379,6 +393,7 @@ public class SurveyActivity extends AppCompatActivity
         if (cursor1.getCount()>0){
             for (int i = 0; i < list2.size(); i++){
                 editModel2 = new MemberDetailsForDialogModel();
+                editModel2.setMemberName(list2.get(i).getMemberName());
                 editModel2.setSmoker(list2.get(i).isSmoker());
                 editModel2.setAlcoholic(list2.get(i).isAlcoholic());
 
@@ -619,6 +634,7 @@ public class SurveyActivity extends AppCompatActivity
         if (cursor1.moveToFirst()) {
             do {
                 MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
+                editModel.setMemberName(cursor1.getString(3));
                 if(cursor1.getString(0).equals("Yes")) { //atal amrit
                     editModel.setAtal(true);
                 } else {
@@ -1124,7 +1140,16 @@ public class SurveyActivity extends AppCompatActivity
                 tvSignsSymptomsHeader.setTextSize(20);
                 tvSignsSymptomsHeader.setPadding(0,40,0,40);
                 tvSignsSymptomsHeader.setBackgroundColor(Color.parseColor("#046874"));
-                tvSignsSymptomsHeader.setText(cursor.getString(2));
+                int checkedid = radioGroup.getCheckedRadioButtonId();
+                RadioButton radioButton = findViewById(checkedid);
+                if (radioButton.getText().equals("Assamese")){
+                    byte[] data = Base64.decode(cursor.getString(3), Base64.DEFAULT);
+                    String text = new String(data, StandardCharsets.UTF_8);
+                    tvSignsSymptomsHeader.setText(text);
+                }else {
+                    tvSignsSymptomsHeader.setText(cursor.getString(2));
+                }
+
                 symptoms.addView(tvSignsSymptomsHeader);
 
                 ivSymptoms = new ImageView(SurveyActivity.this);
@@ -1136,7 +1161,14 @@ public class SurveyActivity extends AppCompatActivity
                     tvSignsSymptomsBody.setTextColor(Color.parseColor("#000000"));
                     tvSignsSymptomsBody.setBackgroundColor(Color.parseColor("#FFFDD0"));
                     tvSignsSymptomsBody.setGravity(Gravity.CENTER);
-                    tvSignsSymptomsBody.setText(cursor.getString(6));
+                    if (radioButton.getText().equals("Assamese")){
+                        byte[] data = Base64.decode(cursor.getString(7), Base64.DEFAULT);
+                        String text = new String(data, StandardCharsets.UTF_8);
+                        tvSignsSymptomsBody.setText(text);
+                    }else {
+                        tvSignsSymptomsBody.setText(cursor.getString(6));
+                    }
+
                     symptoms.addView(tvSignsSymptomsBody);
                     for (int i = 0; i < member.size(); i++){
 
@@ -1344,6 +1376,7 @@ public class SurveyActivity extends AppCompatActivity
                         Toast.makeText(SurveyActivity.this,
                                 "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
+                        i.putExtra("surveyId",familySurveyId);
                         startActivity(i);
                         finish();
 
@@ -1359,6 +1392,7 @@ public class SurveyActivity extends AppCompatActivity
                         Toast.makeText(SurveyActivity.this,
                                 "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
+                        i.putExtra("surveyId",familySurveyId);
                         startActivity(i);
                         finish();
                     }
@@ -1382,6 +1416,7 @@ public class SurveyActivity extends AppCompatActivity
                             "Data saved locally due to no Internet Connection", Toast.LENGTH_LONG).show();
                     //clearTables();
                     Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
+                    i.putExtra("surveyId",familySurveyId);
                     startActivity(i);
                     finish();
                     // not connected to the internet

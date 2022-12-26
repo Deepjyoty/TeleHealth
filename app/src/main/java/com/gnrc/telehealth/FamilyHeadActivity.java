@@ -1,5 +1,7 @@
 package com.gnrc.telehealth;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +11,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,16 +41,19 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.Family_Head_Adapter;
+import com.gnrc.telehealth.Adapter.ShowSurveyAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Fragments.SurveyFragment;
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,6 +105,47 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         preferencesEditor = mPreferences.edit();
         userid = mPreferences.getString("user_id","");
 
+        //Handling navigation drawer item clicks
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.nav_settings){
+                    Intent newIntent = new Intent(FamilyHeadActivity.this, ShowSurveyActivity.class);
+                    startActivity(newIntent);
+                }
+                else if (id == R.id.nav_logout){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(FamilyHeadActivity.this);
+                    builder.setTitle("LOGOUT");
+                    builder.setMessage("Are you sure you want to logout?");
+
+
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    preferencesEditor.putString("issignedin","false");
+                                    preferencesEditor.apply();
+                                    Toast.makeText(FamilyHeadActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+                                    Intent i = new Intent(FamilyHeadActivity.this,LoginActivity.class);
+                                    startActivity(i);
+                                }
+                            });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    builder.create();
+                    builder.show();
+
+                    /*finish();
+                    (FamilyHeadActivity.this).finishAffinity();
+                    System.exit(0);*/
+                }
+                return true;
+            }
+        });
+
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
@@ -126,8 +175,6 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         actionBarDrawerToggle.syncState();
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
     }
 
@@ -575,6 +622,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         format = simpleDateFormat.format(new Date());
         dBhandler = new DBhandler(getApplicationContext());
         dBhandler.addFamily_head_db("FH" + phone.getEditText().getText().toString()+format,
+                mPreferences.getString("user_id",""),
                 familyhead.getEditText().getText().toString(),
                 phone.getEditText().getText().toString(),
                 house.getEditText().getText().toString(),
@@ -800,5 +848,27 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         builder.show();
     }
 
+    private AlertDialog AskOption()
+    {
+        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
+                .setTitle("EXIT")
+                .setMessage("Are you sure you want to exit?")
+
+
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        finishAndRemoveTask();
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
+    }
 
 }

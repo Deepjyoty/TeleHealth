@@ -42,9 +42,9 @@ public class ShowSurveyActivity extends AppCompatActivity {
         MyReceiver = new MyReceiver();
         MyReceiver.getResultData();
         Log.d("receiver", "onCreate: "+MyReceiver.getResultData());
-        newSurvey = findViewById(R.id.btnNewSurvey);
+
         recyclerView = findViewById(R.id.rvShowSurvey);
-        newSurvey.setOnClickListener(new View.OnClickListener() {
+        /*newSurvey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(ShowSurveyActivity.this, SurveyActivity.class);
@@ -52,7 +52,7 @@ public class ShowSurveyActivity extends AppCompatActivity {
                 i.putExtra("headPhoneNo",getIntent().getStringExtra("headPhoneNo"));
                 startActivity(i);
             }
-        });
+        });*/
         populateRecycler();
     }
     public void syncSurvey(){
@@ -92,8 +92,9 @@ public class ShowSurveyActivity extends AppCompatActivity {
 
     public void populateRecycler(){
         dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getVideoPath(getIntent().getStringExtra("familyId"));
+        Cursor cursor = dBhandler.getVideoPath();
         Log.d("hi", "onCreate: "+cursor.getCount());
+
         if (cursor.getCount()>0){
             surveydetailsarraylist = new ArrayList<>();
             if (cursor.moveToFirst()){

@@ -1,8 +1,13 @@
 package com.gnrc.telehealth.Adapter;
 
+import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,6 +24,7 @@ import com.gnrc.telehealth.Model.AddFamilyModel;
 import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 import com.gnrc.telehealth.R;
 import com.gnrc.telehealth.SendDataToServer;
+import com.gnrc.telehealth.ShowSurveyActivity;
 import com.gnrc.telehealth.SurveyActivity;
 
 import java.util.ArrayList;
@@ -59,15 +66,39 @@ public class ShowSurveyAdapter extends RecyclerView.Adapter<ShowSurveyAdapter.My
         holder.syncSurvey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("rabbit", "onClick: This was executed first");
-                surveyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getGroupSurveyID();
-                familyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getFamilyID();
-                videopath = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getVideoPath();
-                memberList = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getMemberList();
-                SendDataToServer abc = new SendDataToServer(context);
-                abc.saveDataToServer(surveyID,familyID,memberList);
-                abc.uploadPDF(surveyID, Uri.parse(videopath));
-                Log.d("rabbit", "onClick: This was executed Second");
+                ConnectivityManager cm = (ConnectivityManager) context
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                    // connected to the internet
+                    if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                        // connected to wifi
+
+                        //send survey data to server
+                        surveyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getGroupSurveyID();
+                        familyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getFamilyID();
+                        videopath = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getVideoPath();
+                        memberList = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getMemberList();
+                        SendDataToServer abc = new SendDataToServer(context);
+                        abc.saveDataToServer(surveyID,familyID,memberList);
+                        abc.uploadPDF(surveyID, Uri.parse(videopath));
+
+                    } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                        // connected to mobile data
+                        //send survey data to server
+                        surveyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getGroupSurveyID();
+                        familyID = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getFamilyID();
+                        videopath = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getVideoPath();
+                        memberList = addFamilyModelArrayList.get(holder.getAbsoluteAdapterPosition()).getMemberList();
+                        SendDataToServer abc = new SendDataToServer(context);
+                        abc.saveDataToServer(surveyID,familyID,memberList);
+                        abc.uploadPDF(surveyID, Uri.parse(videopath));
+                    }
+                } else {
+                    Toast.makeText(context, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         });
 

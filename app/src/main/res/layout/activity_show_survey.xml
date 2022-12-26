@@ -25,14 +25,14 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <Button
+        <!--<Button
             android:id="@+id/btnNewSurvey"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
             android:text="New Survey"
-            android:layout_below="@+id/rvShowSurvey"/>
+            android:layout_below="@+id/rvShowSurvey"/>-->
        <!-- <Button
             android:id="@+id/btnResurvey"
             android:layout_width="match_parent"

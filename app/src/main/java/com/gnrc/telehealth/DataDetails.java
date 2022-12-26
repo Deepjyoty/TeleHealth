@@ -42,6 +42,7 @@ public class DataDetails extends AppCompatActivity {
             Picasso.get().load(dataModel.getThumbnail_url()).into(imageView);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
