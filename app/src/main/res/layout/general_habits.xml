@@ -7,7 +7,6 @@
     tools:context=".AddMemberActivity">
 
     <ScrollView
-        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/add_family"
@@ -33,20 +32,14 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:text="GENERAL HABITS"
-                        android:textColor="#F5F5F5"
-                        android:textSize="16sp" />
-                    <TextView
                         android:id="@+id/tvMemberName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:background="@color/colorPrimary"
+                        android:textColor="#F5F5F5"
+                        android:textSize="16sp"
                         android:text="Member Name"/>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -61,16 +54,17 @@
                             app:srcCompat="@drawable/smoking" />-->
 
                         <LinearLayout
-                            android:id="@+id/llSmoking"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
+                                android:id="@+id/tv_smoking"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
                                 android:padding="5dp"
+                                android:textStyle="bold"
                                 android:textColor="@color/black"
                                 android:text="Smoking?"/>
                             <RadioGroup
@@ -99,16 +93,17 @@
 
                         </LinearLayout>
                         <LinearLayout
-                            android:id="@+id/llAlcohol"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
+                                android:id="@+id/tv_alcohol"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
                                 android:padding="5dp"
+                                android:textStyle="bold"
                                 android:textColor="@color/black"
                                 android:text="Cons. Alcohol?"/>
                             <RadioGroup

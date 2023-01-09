@@ -7,7 +7,6 @@
     tools:context=".AddMemberActivity">
 
     <ScrollView
-        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/add_family"
@@ -33,21 +32,13 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:text="OTHER INFO"
-                        android:textColor="#F5F5F5"
-                        android:textSize="16sp" />
-                    <TextView
                         android:id="@+id/tvOiMemberName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/colorPrimary"
                         android:gravity="center"
                         android:text="Member Name"
+                        android:padding="10dp"
                         android:textColor="#F5F5F5"
                         android:textSize="16sp" />
                     <LinearLayout
@@ -56,19 +47,22 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tv_teleMed"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:padding="5dp"
+                            android:textStyle="bold"
                             android:textColor="@color/black"
                             android:text="Tele Medicine Booked?"/>
                         <LinearLayout
-                            android:id="@+id/llTeleMedicine"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <RadioGroup
                                 android:id="@+id/rgTeleMed"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
@@ -88,14 +82,15 @@
 
                         </LinearLayout>
                         <TextView
+                            android:id="@+id/tv_opd"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:padding="5dp"
+                            android:textStyle="bold"
                             android:textColor="@color/black"
                             android:text="OPD Booked?"/>
                         <LinearLayout
-                            android:id="@+id/llOpd"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -103,6 +98,8 @@
                                 android:id="@+id/rgOpd"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="horizontal">
                                 <RadioButton
                                     android:id="@+id/rbOpdYes"
@@ -119,14 +116,15 @@
                             </RadioGroup>
                         </LinearLayout>
                         <TextView
+                            android:id="@+id/tv_ambu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:padding="5dp"
+                            android:textStyle="bold"
                             android:textColor="@color/black"
                             android:text="Ambulance Booked?"/>
                         <LinearLayout
-                            android:id="@+id/llAmbulance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -134,6 +132,8 @@
                                 android:id="@+id/rgAmbulance"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
                                 android:orientation="horizontal">
                                 <RadioButton
                                     android:id="@+id/rbAmbuYes"

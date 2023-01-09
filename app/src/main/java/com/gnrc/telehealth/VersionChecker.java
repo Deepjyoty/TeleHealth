@@ -1,6 +1,9 @@
 package com.gnrc.telehealth;
+
 import android.os.AsyncTask;
+
 import org.jsoup.Jsoup;
+
 import java.io.IOException;
 
 public class VersionChecker extends AsyncTask<String, String, String> {

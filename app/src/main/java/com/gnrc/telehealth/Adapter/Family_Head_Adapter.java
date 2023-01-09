@@ -2,18 +2,22 @@ package com.gnrc.telehealth.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.MemberSelectionActivity;
 import com.gnrc.telehealth.Model.AddFamilyModel;
 import com.gnrc.telehealth.Model.Family_Head_Model;
@@ -30,19 +34,13 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
 
     private LayoutInflater inflater;
     private ArrayList<Family_Head_Model> familyHeadModelArrayList;
-    private ArrayList<StateDataModel> statedataModelArrayList;
     private ArrayList<Family_Head_Model> filteredlist;
     private ArrayList<Family_Head_Model> count;
     private Family_Head_Model familyHeadModel;
-    private ArrayList<AddFamilyModel> addFamilyModelArrayList;
 
-    private StateDataModel stateDataModel;
     public userclicklistener userclicklistener;
-    //private DBhandler dbHandler;
     private int aCount = 0;
     private ArrayList<String> names = new ArrayList<String>();
-    TextInputLayout familyhead, phone, house, address, city, pin;
-    Spinner dist, state;
 
 
     public interface userclicklistener{
@@ -53,8 +51,7 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
 
         inflater = LayoutInflater.from(ctx);
         this.familyHeadModelArrayList = familyHeadModelArrayList;
-        this.statedataModelArrayList = statedataModelArrayList;
-        this.addFamilyModelArrayList = addFamilyModelArrayList;
+
         filteredlist = new ArrayList<>(familyHeadModelArrayList);
         this.userclicklistener = userclicklistener;
 
@@ -78,19 +75,25 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
         holder.city.setText(familyHeadModelArrayList.get(position).getAddress());
         holder.view.setText(familyHeadModelArrayList.get(position).getViewtext());
         holder.survey.setText(familyHeadModelArrayList.get(position).getEdittext());
-        holder.counter.setText(String.valueOf(++position));
-        //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
+        //holder.counter.setText(String.valueOf(++position));
 
-        //familyHeadModelArrayList.get(position).getDescription();
+
         holder.survey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(inflater.getContext(), MemberSelectionActivity.class);
-                i.putExtra("familyId",familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
-                i.putExtra("headPhoneNo",familyHeadModelArrayList.get(holder.getAbsoluteAdapterPosition())
-                        .getPhone());
+                Cursor cursor = holder.dBhandler.getFamilyMemberListWithoutMember
+                        (familyHeadModelArrayList.get(holder.getAbsoluteAdapterPosition()).getId());
+                if (cursor.getCount()>0){
+                    Intent i = new Intent(inflater.getContext(), MemberSelectionActivity.class);
+                    i.putExtra("familyId",familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
+                    i.putExtra("headPhoneNo",familyHeadModelArrayList.get(holder.getAbsoluteAdapterPosition())
+                            .getPhone());
+                    inflater.getContext().startActivity(i);
+                }else{
+                    Toast.makeText(inflater.getContext(), "Please add member(s) first", Toast.LENGTH_SHORT).show();
+                }
 
-                inflater.getContext().startActivity(i);
+
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -117,46 +120,6 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
                 Log.d("deep", "onClick: "+ familyHeadModelArrayList.get(holder.getAdapterPosition()).getId());
                 inflater.getContext().startActivity(i);
 
-/*                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("Family Details");
-                final View customLayout = inflater.inflate(R.layout.family_head_custom_alert_dialog,null);
-                builder.setView(customLayout);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                familyhead = customLayout.findViewById(R.id.etfamilyhead);
-                phone = customLayout.findViewById(R.id.etfamilyheadphone);
-                house = customLayout.findViewBy    Id(R.id.etfamilyheadhouseno);
-                address = customLayout.findViewById(R.id.etfamilyheadaddress);
-                city = customLayout.findViewById(R.id.etfamilyheadcity);
-                dist = customLayout.findViewById(R.id.spfamilyheaddistrict);
-                state = customLayout.findViewById(R.id.spfamilyheadstate);
-                pin = customLayout.findViewById(R.id.etfamilyheadpin);
-
-                familyhead.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getFamilyhead());
-                phone.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getPhone());
-                house.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getHouse());
-                address.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getAddress());
-                city.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getCity());
-                if ((familyHeadModelArrayList.get(holder.getAdapterPosition()).getDist())!= null) {
-                    names.add(familyHeadModelArrayList.get(holder.getAdapterPosition()).getDist());
-                    ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(inflater.getContext(), simple_spinner_item, names);
-                    spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
-                    dist.setAdapter(spinnerArrayAdapter);
-*//*                    int spinnerPosition = spinnerArrayAdapter.getPosition(familyHeadModelArrayList.get(holder.getAdapterPosition()).getDist());
-                    dist.setSelection(spinnerPosition);*//*
-                }
-                if ((familyHeadModelArrayList.get(holder.getAdapterPosition()).getState())!= null) {
-                    names.add(familyHeadModelArrayList.get(holder.getAdapterPosition()).getState());
-                    ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(inflater.getContext(), simple_spinner_item, names);
-                    spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
-                    state.setAdapter(spinnerArrayAdapter);
-                    int spinnerPosition = spinnerArrayAdapter.getPosition(familyHeadModelArrayList.get(holder.getAdapterPosition()).getState());
-                    state.setSelection(spinnerPosition);
-                }
-                pin.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getPin());
-                pin.getEditText().setText(familyHeadModelArrayList.get(holder.getAdapterPosition()).getPin());*/
-
-                //Toast.makeText(inflater.getContext(), ""+familyHeadModelArrayList.get(holder.getAdapterPosition()).getFamilyhead(), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -170,18 +133,19 @@ public class Family_Head_Adapter extends RecyclerView.Adapter<Family_Head_Adapte
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView phone, name, city,view,survey,counter;
+        TextView phone, name, city,counter;
+        TextView view,survey;
         int cnt = 0;
-
+        DBhandler dBhandler = new DBhandler(itemView.getContext());
         public MyViewHolder(View itemView) {
             super(itemView);
 
             phone = (TextView) itemView.findViewById(R.id.phone);
             name = (TextView) itemView.findViewById(R.id.name);
             city = (TextView) itemView.findViewById(R.id.city);
-            view = (TextView) itemView.findViewById(R.id.tvview);
-            survey = (TextView) itemView.findViewById(R.id.tveditfamily);
-            counter = (TextView) itemView.findViewById(R.id.tvCounter);
+            view =  itemView.findViewById(R.id.btn_addMember);
+            survey =  itemView.findViewById(R.id.btn_survey);
+            //counter = (TextView) itemView.findViewById(R.id.tvCounter);
 
             //iv = (ImageView) itemView.findViewById(R.id.iv);
         }

@@ -129,7 +129,6 @@
                 android:src="@drawable/icon_switch_camera" />
 
             <TextView
-                android:id="@+id/text_video2"
                 style="@style/ZMTextView.ToolbarBtnLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

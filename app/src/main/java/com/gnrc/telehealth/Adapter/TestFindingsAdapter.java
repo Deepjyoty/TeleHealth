@@ -1,9 +1,11 @@
 package com.gnrc.telehealth.Adapter;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -78,7 +80,7 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView member;
+        TextView member, bs,bp;
         TextInputLayout sys,dia,value;
         Spinner spinner;
         Cursor cursor1;
@@ -91,6 +93,8 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
             dia = (TextInputLayout) itemView.findViewById(R.id.dia);
             value = (TextInputLayout) itemView.findViewById(R.id.typeValue);
             spinner = (Spinner) itemView.findViewById(R.id.tFSpinner);
+            bs = itemView.findViewById(R.id.tv_bloodSugar);
+            bp = itemView.findViewById(R.id.tv_bloodPressure);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -99,7 +103,6 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
                     }else {
                         addMemberDialogArrayList.get(getAdapterPosition()).setTypeSpinner(parent.getItemAtPosition(position).toString());
                     }
-                    //String tutorialsName = parent.getItemAtPosition(position).toString();
                 }
                 @Override
                 public void onNothingSelected(AdapterView <?> parent) {
@@ -158,7 +161,38 @@ public class TestFindingsAdapter extends RecyclerView.Adapter<TestFindingsAdapte
 
                 }
             });
+            SharedPreferences mPreferences2 = itemView.getContext().getSharedPreferences("language",MODE_PRIVATE);
+            String language = mPreferences2.getString("lang","NoValue");
 
+            if (language.equals("English")){
+                bs.setText("Blood Sugar");
+                bp.setText("Blood Pressure");
+
+            }else if (language.equals("Assamese")){
+                bs.setText("ব্লাড চুগাৰ");
+                bp.setText("ৰক্তচাপ");
+
+            }else if (language.equals("Bengali")){
+                bs.setText("ধূমপায়ী");
+                bp.setText("মদ্যপ");
+            }
+
+            /*if (sys.getEditText().length()<1){
+                sys.setError("Enter a valid data");
+            }
+            else if (dia.getEditText().length()<1){
+                sys.setError("Enter a valid data");
+            }
+            else if (value.getEditText().length()<1){
+                value.setError("Enter a valid data");
+            }
+            else if (spinner.getSelectedItemPosition() == 0){
+                Toast.makeText(getApplicationContext(), "This is not a valid selection",
+                        Toast.LENGTH_SHORT).show();
+            }
+            else{
+
+            }*/
             //iv = (ImageView) itemView.findViewById(R.id.iv);
         }
 

@@ -1,6 +1,9 @@
 package com.gnrc.telehealth.Adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +70,7 @@ public class OtherInfoAdapter extends RecyclerView.Adapter<OtherInfoAdapter.MyVi
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView member;
+        TextView member, telemed, opd, ambul;
         RadioGroup radioTeleMed,radioOpd,radioAmbulance;
         RadioButton teleMedYes,teleMedNo,opdYes,opdNo,ambuYes,ambuNo;
         private OtherInfoAdapter.OtherInfo otherInfo;
@@ -75,6 +78,11 @@ public class OtherInfoAdapter extends RecyclerView.Adapter<OtherInfoAdapter.MyVi
         public MyViewHolder(View itemView, OtherInfoAdapter.OtherInfo otherInfo) {
             super(itemView);
             member = (TextView) itemView.findViewById(R.id.tvOiMemberName);
+
+            telemed = itemView.findViewById(R.id.tv_teleMed);
+            opd = itemView.findViewById(R.id.tv_opd);
+            ambul = itemView.findViewById(R.id.tv_ambu);
+
             radioTeleMed = (RadioGroup) itemView.findViewById(R.id.rgTeleMed);
             radioOpd = (RadioGroup) itemView.findViewById(R.id.rgOpd);
             radioAmbulance = (RadioGroup) itemView.findViewById(R.id.rgAmbulance);
@@ -95,7 +103,24 @@ public class OtherInfoAdapter extends RecyclerView.Adapter<OtherInfoAdapter.MyVi
 
             this.otherInfo = otherInfo;
 
+            SharedPreferences mPreferences2 = itemView.getContext().getSharedPreferences("language",MODE_PRIVATE);
+            String language = mPreferences2.getString("lang","NoValue");
 
+            if (language.equals("English")){
+                telemed.setText("Telemedicine Booked?");
+                opd.setText("OPD Booked?");
+                ambul.setText("Ambulance Booked?");
+
+            }else if (language.equals("Assamese")){
+                telemed.setText("টেলিমেডিচিন বুকিং কৰা হৈছে?");
+                opd.setText("OPD বুকিং কৰা হৈছে?");
+                ambul.setText("এম্বুলেন্স বুকিং কৰা হৈছে?");
+
+            }else if (language.equals("Bengali")){
+                telemed.setText("টেলিমেডিসিন বুকড?");
+                opd.setText("ওপিডি বুকড?");
+                ambul.setText("অ্যাম্বুলেন্স বুকড?");
+            }
         }
 
 

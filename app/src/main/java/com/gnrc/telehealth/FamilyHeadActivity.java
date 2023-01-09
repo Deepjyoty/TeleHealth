@@ -1,7 +1,5 @@
 package com.gnrc.telehealth;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,15 +9,17 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -28,38 +28,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.Family_Head_Adapter;
-import com.gnrc.telehealth.Adapter.ShowSurveyAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
-import com.gnrc.telehealth.Fragments.SurveyFragment;
 import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.StateDataModel;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 public class FamilyHeadActivity extends AppCompatActivity implements  Family_Head_Adapter.userclicklistener{
     public DrawerLayout drawerLayout;
@@ -90,13 +74,13 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
     ArrayAdapter<String> spinnerArrayAdapter;
     AlertDialog dialog;
     String value,value2;
-
+    ConstraintLayout constraintLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_family_list);
         setTitle("Family Head");
-
+        constraintLayout = findViewById(R.id.cl_noData);
         addfamilymember = findViewById(R.id.add_family_head);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
@@ -176,6 +160,8 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+
     }
 
     @Override
@@ -211,14 +197,14 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
             @Override
             public boolean onQueryTextChange(String newText) {
                 familyHeadAdapter.getFilter().filter(newText);
-                spinnerArrayAdapter.getFilter().filter(newText);
+                //spinnerArrayAdapter.getFilter().filter(newText);
                 return false;
             }
         });
         return true;
     }
 
-    public void showAlertDialogButtonClicked(View view)
+    public void showAlertDialogButtonClicked()
     {
 
         // Create an alert builder
@@ -229,6 +215,54 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         // set the custom layout
         final View customLayout = getLayoutInflater().inflate(R.layout.family_head_custom_alert_dialog,null);
         builder.setView(customLayout);
+        familyhead = customLayout.findViewById(R.id.etfamilyhead);
+        phone = customLayout.findViewById(R.id.etfamilyheadphone);
+        house = customLayout.findViewById(R.id.etfamilyheadhouseno);
+        address = customLayout.findViewById(R.id.etfamilyheadaddress);
+        city = customLayout.findViewById(R.id.etfamilyheadcity);
+        pin = customLayout.findViewById(R.id.etfamilyheadpin);
+        SharedPreferences mPreferences=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor = mPreferences.edit();
+        //Checking for the value stored in shared preference
+        RadioGroup radioGroup = customLayout.findViewById(R.id.rg_language1);
+        RadioButton radioButton = customLayout.findViewById(R.id.rb_english1);
+        radioButton.setChecked(true);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = customLayout.findViewById(checkedId);
+                if (radioButton.getText().equals("Assamese")){
+                    familyhead.setHint("নাম");
+                    phone.setHint("যোগাযোগ নং");
+                    house.setHint("ঘৰৰ নম্বৰ");
+                    address.setHint("ঠিকনা");
+                    city.setHint("চহৰ");
+                    pin.setHint("পিন");
+                    preferencesEditor.putString("lang","Assamese");
+                    preferencesEditor.apply();
+
+                }else if (radioButton.getText().equals("Bengali")){
+                    familyhead.setHint("নাম");
+                    phone.setHint("যযোগাযোগের নম্বর");
+                    house.setHint("বাড়ির নম্বর");
+                    address.setHint("ঠিকানা");
+                    city.setHint("শহর");
+                    pin.setHint("পিন");
+                    preferencesEditor.putString("lang","Bengali");
+                    preferencesEditor.apply();
+
+                }else {
+                    familyhead.setHint("Head Name");
+                    phone.setHint("Phone");
+                    house.setHint("House No");
+                    address.setHint("Address");
+                    city.setHint("City");
+                    pin.setHint("Pin");
+                    preferencesEditor.putString("lang","English");
+                    preferencesEditor.apply();
+                }
+            }
+        });
         // add a button
         builder.setPositiveButton(
                         "OK",
@@ -247,44 +281,54 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         theButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                familyhead = customLayout.findViewById(R.id.etfamilyhead);
-                phone = customLayout.findViewById(R.id.etfamilyheadphone);
-                house = customLayout.findViewById(R.id.etfamilyheadhouseno);
-                address = customLayout.findViewById(R.id.etfamilyheadaddress);
-                city = customLayout.findViewById(R.id.etfamilyheadcity);
-                //dist = (Spinner) customLayout.findViewById(R.id.spfamilyheaddistrict);
-                //state = (Spinner) customLayout.findViewById(R.id.spfamilyheadstate);
-                pin = customLayout.findViewById(R.id.etfamilyheadpin);
+
                 if (familyhead.getEditText().getText().length()<=2){
-                    Toast.makeText(FamilyHeadActivity.this,
-                            "Please Insert Name with at least 3 letters", Toast.LENGTH_SHORT).show();
+                    familyhead.setError("Please Insert Name with at least 3 letters");
+                    familyhead.clearFocus();
+                    familyhead.requestFocus();
                 }
                 else if (phone.getEditText().getText().length() != 10){
-                    Toast.makeText(FamilyHeadActivity.this,
-                            "Phone number should be 10 digits", Toast.LENGTH_SHORT).show();
+                    phone.setError("Phone number should be 10 digits");
+                    phone.clearFocus();
+                    phone.requestFocus();
                 }
                 else if (house.getEditText().getText().length() < 1){
-                    Toast.makeText(FamilyHeadActivity.this,
-                            "Please enter valid house number", Toast.LENGTH_SHORT).show();
+                    house.setError("Please enter valid house number");
+                    house.clearFocus();
+                    house.requestFocus();
                 }
                 else if (address.getEditText().getText().length() < 2){
-                    Toast.makeText(FamilyHeadActivity.this,
-                            "Address should be greater than 2 letters", Toast.LENGTH_SHORT).show();
+                    address.setError("Address should be greater than 2 letters");
+                    address.clearFocus();
+                    address.requestFocus();
                 }
                 else if (city.getEditText().getText().length() < 2){
-                    Toast.makeText(FamilyHeadActivity.this,
-                            "City should have atleast 3 letters", Toast.LENGTH_SHORT).show();
+                    city.setError("City should have at least 3 letters");
+                    city.clearFocus();
+                    city.requestFocus();
                 }
-
-                else if (pin.getEditText().getText().length()!=6){
+                else if (state.getSelectedItemPosition() == 0){
                     Toast.makeText(FamilyHeadActivity.this,
-                            "Pin should be 6 digits ", Toast.LENGTH_SHORT).show();
+                            "Please select appropriate state", Toast.LENGTH_SHORT).show();
+
+                }
+                else if (dist.getSelectedItemPosition() == 0){
+                    Toast.makeText(FamilyHeadActivity.this,
+                            "Please select appropriate district", Toast.LENGTH_SHORT).show();
+
+                }
+                else if (pin.getEditText().getText().length()!=6){
+                    pin.setError("Pin should be 6 digits");
+                    pin.clearFocus();
+                    pin.requestFocus();
                 }else {
 
                     adddatatodatabase();
                     setupRecyclerFrom_DB();
                     familyHeadAdapter.notifyDataSetChanged();
+                    constraintLayout.setVisibility(View.GONE);
                     dialog.dismiss();
+
                 }
             }
         });
@@ -308,321 +352,22 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         }
     }
 
-    // Do something with the data
-    // coming from the AlertDialog
-    private void sendDialogDataToActivity(String data)
-    {
-        Toast.makeText(this,data,Toast.LENGTH_SHORT).show();
-    }
-/*    private void fetchingspinnerdistrict() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Family Details");
+    public void viewAll() {
 
-        // set the custom layout
-        final View customLayout = getLayoutInflater().inflate(R.layout.family_head_custom_alert_dialog,null);
-        builder.setView(customLayout);
-        dist = (Spinner) dialog.findViewById(R.id.spfamilyheaddistrict);
-        state = (Spinner) dialog.findViewById(R.id.spfamilyheadstate);
-
-
-        showSimpleProgressDialog(this, "Loading...","Fetching Json",false);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
-                new Response.Listener<String>() {
-
+        addfamilymember.setOnClickListener(
+                new View.OnClickListener() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d("strrrrr", ">>" + response);
-                        try {
-                            removeSimpleProgressDialog();
-
-                            JSONArray obj = new JSONArray(response);
-                            districtDataModelArrayList = new ArrayList<>();
-
-                            for (int i = 0; i < obj.length(); i++) {
-                                stateModel = new StateDataModel();
-                                JSONObject dataobj = obj.getJSONObject(i);
-
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addspinnerdist(dataobj.getString("id"),
-                                        dataobj.getString("value"));
-
-                            };
-                            setupspinnerdist();
-                            removeSimpleProgressDialog();
-                            // }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
+                    public void onClick(View v) {
+                        showAlertDialogButtonClicked();
                     }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //displaying the error in toast if occurrs
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-
-
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("req_type","get-district-list");
-                return params;
-            }
-        };
-        // request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }*/
-/*    private void fetchingspinnerstate() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Family Details");
-
-        // set the custom layout
-        final View customLayout = getLayoutInflater().inflate(R.layout.family_head_custom_alert_dialog,null);
-        builder.setView(customLayout);
-        dist = (Spinner) dialog.findViewById(R.id.spfamilyheaddistrict);
-        state = (Spinner) dialog.findViewById(R.id.spfamilyheadstate);
-
-        showSimpleProgressDialog(this, "Loading...","Fetching Json",false);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("strrrrr", ">>" + response);
-                        try {
-                            removeSimpleProgressDialog();
-
-                            JSONArray obj = new JSONArray(response);
-                            stateDataModelArrayList = new ArrayList<>();
-                            states = new ArrayList<String>();
-                            for (int i = 0; i < obj.length(); i++) {
-                                stateModel = new StateDataModel();
-                                JSONObject dataobj = obj.getJSONObject(i);
-
-                                *//*stateModel.setId(dataobj.getString("id"));
-                                stateModel.setState(dataobj.getString("value"));*//*
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addspinner(dataobj.getString("id"),
-                                        dataobj.getString("value"));
-
-                            };
-                            setupspinner();
-                            removeSimpleProgressDialog();
-                            // }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //displaying the error in toast if occurrs
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-
-
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("req_type","get-state-list");
-                return params;
-
-            }
-        };
-        // request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
-    }*/
-    public void fethingJSON() {
-
-        showSimpleProgressDialog(this, "Loading...","Fetching Json",false);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("strrrrr", ">>" + response);
-                        try {
-
-                            removeSimpleProgressDialog();
-
-                            JSONArray obj = new JSONArray(response);
-                            familyHeadModelArrayList = new ArrayList<>();
-
-                            for (int i = 0; i < obj.length(); i++) {
-                                playerModel = new Family_Head_Model();
-                                JSONObject dataobj = obj.getJSONObject(i);
-
-                                /*playerModel.setId(dataobj.getString("SSFM_ID"));
-                                playerModel.setFamilyhead(dataobj.getString("SSFM_HEAD_NAME"));
-                                playerModel.setPhone(dataobj.getString("SSFM_CONTACT_NO"));
-                                playerModel.setHouse(dataobj.getString("SSFM_HOUSE_NO"));
-                                playerModel.setAddress(dataobj.getString("SSFM_ADDR"));
-                                playerModel.setGaon_panchayat(dataobj.getString("SSFM_GAON_PNCHYT"));
-                                playerModel.setBlock_code(dataobj.getString("SSFM_BLOCK_CODE"));
-                                playerModel.setCity(dataobj.getString("SSFM_CITY_CODE"));
-                                playerModel.setDist(dataobj.getString("SSFM_DIST_CODE"));
-                                playerModel.setState(dataobj.getString("SSFM_STATE_CODE"));
-                                playerModel.setPin(dataobj.getString("SSFM_PIN"));
-                                playerModel.setViewtext("View");
-                                playerModel.setEdittext("EditFamily");
-
-                                familyHeadModelArrayList.add(playerModel);*/
-                                dBhandler = new DBhandler(getApplicationContext());
-                                dBhandler.addnewprod(dataobj.getString("SSFM_ID"),
-                                        dataobj.getString("SSFM_HEAD_NAME"),
-                                        dataobj.getString("SSFM_CONTACT_NO"),
-                                        dataobj.getString("SSFM_HOUSE_NO"),
-                                        dataobj.getString("SSFM_ADDR"),
-                                        dataobj.getString("SSFM_GAON_PNCHYT"),
-                                        dataobj.getString("SSFM_BLOCK_CODE"),
-                                        dataobj.getString("SSFM_CITY_CODE"),
-                                        dataobj.getString("SSFM_DIST_CODE"),
-                                        dataobj.getString("SSFM_STATE_CODE"),
-                                        dataobj.getString("SSFM_PIN"));
-
-                            }
-
-                            setupRecyclerFrom_DB();
-
-                            // }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //displaying the error in toast if occurrs
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-
-
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("req_type","get-family");
-                params.put("family-id","0");
-                return params;
-            }
-        };
-        // request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-
+                }
+        );
     }
 
-    private void storingJSON() {
-
-        showSimpleProgressDialog(this, "Loading...","Saving",false);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLstring,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("strrrrr", ">>" + response);
-                        try {
-                            removeSimpleProgressDialog();
-
-                            JSONObject obj = new JSONObject(response);
-                            Log.d("deep", ">>" + response);
-
-                            String message = obj.getString("message");
-                            Toast.makeText(FamilyHeadActivity.this, ""+ message, Toast.LENGTH_SHORT).show();
-                            familyHeadModelArrayList = new ArrayList<>();
-                            JSONArray dataArray  = obj.getJSONArray("products");
-
-                            for (int i = 0; i < dataArray.length(); i++) {
-                                Family_Head_Model playerModel = new Family_Head_Model();
-                                JSONObject dataobj = dataArray.getJSONObject(i);
-
-                                /*playerModel.setId(dataobj.getInt("id"));
-                                playerModel.setTitle(dataobj.getString("title"));
-                                playerModel.setBrand(dataobj.getString("brand"));
-                                playerModel.setPrice(dataobj.getInt("price"));
-                                playerModel.setThumbnail(dataobj.getString("thumbnail"));
-                                playerModel.setDescription(dataobj.getString("description"));*/
-
-                                familyHeadModelArrayList.add(playerModel);
-
-                            }
-
-                            setupRecyclerFrom_DB();
-                            // }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //displaying the error in toast if occurrs
-                        //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-
-        {
-            @Override
-            protected Map<String, String> getParams() {
-                dBhandler = new DBhandler(getApplicationContext());
-                Cursor cursor = dBhandler.getFamilyDbData();
-                //Family_Head_Model dmodel = new Family_Head_Model();
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("req_type","create-family");
-                params.put("family-id","0");
-                params.put("family-head-name", cursor.getString(10));
-                params.put("contact-no", cursor.getString(2));
-                params.put("house-no", cursor.getString(3));
-                params.put("address", cursor.getString(4));
-                params.put("gaon-panchayat-code", cursor.getString(5));
-                params.put("block-code", cursor.getString(6));
-                params.put("city-code", cursor.getString(7));
-                params.put("dist-code",cursor.getString(8));
-                params.put("state-code",cursor.getString(9));
-                params.put("pin-code", cursor.getString(10));
-                params.put("user-id", cursor.getString(0));
-                Log.d("deep", "getParams: "+params);
-                return params;
-
-            }
-        };
-        // request queue
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
     private void adddatatodatabase(){
         format = simpleDateFormat.format(new Date());
         dBhandler = new DBhandler(getApplicationContext());
         dBhandler.addFamily_head_db("FH" + phone.getEditText().getText().toString()+format,
-                mPreferences.getString("user_id",""),
                 familyhead.getEditText().getText().toString(),
                 phone.getEditText().getText().toString(),
                 house.getEditText().getText().toString(),
@@ -632,8 +377,10 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
                 city.getEditText().getText().toString(),
                 value,
                 value2,
-                pin.getEditText().getText().toString());
+                pin.getEditText().getText().toString(),
+                mPreferences.getString("user_id",""));
     }
+
     private void setupspinner(){
         state = (Spinner) dialog.findViewById(R.id.spfamilyheadstate);
         dBhandler = new DBhandler(getApplicationContext());
@@ -648,18 +395,27 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
                 stateDataModelArrayList.add(stateModel);
 
             } while (cursor.moveToNext());
-            spinnerArrayAdapter = new ArrayAdapter<String>(FamilyHeadActivity.this, android.R.layout.simple_spinner_item, states);
+
+            spinnerArrayAdapter = new ArrayAdapter<String>
+                    (FamilyHeadActivity.this, android.R.layout.simple_spinner_item, states);
+
             for (int i = 0; i < stateDataModelArrayList.size(); i++) {
                 states.add(stateDataModelArrayList.get(i).getState());
-                spinnerPosition = spinnerArrayAdapter.getPosition(stateDataModelArrayList.get(i).getState());
+                spinnerPosition = spinnerArrayAdapter.getPosition(stateDataModelArrayList.get(0).getState());
             }
+
             spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
             state.setAdapter(spinnerArrayAdapter);
             state.setSelection(spinnerPosition);
             state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                    value2 = adapterView.getItemAtPosition(position).toString();
+                    if (position == 0){
+                        Toast.makeText(FamilyHeadActivity.this,
+                                "Please select appropriate data", Toast.LENGTH_SHORT).show();
+                    }else{
+                        value2 = adapterView.getItemAtPosition(position).toString();
+                    }
 
                 }
 
@@ -670,6 +426,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
             });
         }
     }
+
     private void setupspinnerdist(){
         dist = (Spinner) dialog.findViewById(R.id.spfamilyheaddistrict);
         dBhandler = new DBhandler(getApplicationContext());
@@ -687,7 +444,7 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
             spinnerArrayAdapter = new ArrayAdapter<String>(FamilyHeadActivity.this, android.R.layout.simple_spinner_item, district);
             for (int i = 0; i < districtDataModelArrayList.size(); i++) {
                 district.add(districtDataModelArrayList.get(i).getDistrict());
-                spinnerPosition = spinnerArrayAdapter.getPosition(districtDataModelArrayList.get(i).getDistrict());
+                spinnerPosition = spinnerArrayAdapter.getPosition(districtDataModelArrayList.get(0).getDistrict());
             }
             spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
             dist.setAdapter(spinnerArrayAdapter);
@@ -695,7 +452,13 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
             dist.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                    value = adapterView.getItemAtPosition(position).toString();
+                    if (position == 0){
+                        Toast.makeText(FamilyHeadActivity.this,
+                                "Please select appropriate data", Toast.LENGTH_SHORT).show();
+                    }else{
+                        value = adapterView.getItemAtPosition(position).toString();
+                    }
+
 
                 }
 
@@ -714,44 +477,49 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         Cursor cursor1 = dBhandler.getSurveyTypeFlag();
         //Family_Head_Model dmodel = new Family_Head_Model();
         format = simpleDateFormat.format(new Date());
-        if (cursor.moveToFirst()) {
-            do {
-                playerModel = new Family_Head_Model();
-                playerModel.setId(cursor.getString(0));
-                playerModel.setFamilyhead(cursor.getString(1));
-                playerModel.setPhone(cursor.getString(2));
-                playerModel.setHouse(cursor.getString(3));
-                playerModel.setAddress(cursor.getString(4));
-                playerModel.setGaon_panchayat(cursor.getString(5));
-                playerModel.setBlock_code(cursor.getString(6));
-                playerModel.setCity(cursor.getString(7));
-                playerModel.setDist(cursor.getString(8));
-                playerModel.setState(cursor.getString(9));
-                playerModel.setPin(cursor.getString(10));
-                familyHeadModelArrayList.add(playerModel);
-                Log.d("val", "setupRecycler: " + playerModel);
-                playerModel.setViewtext("Add Member");
+        if (cursor.getCount()>0){
+            if (cursor.moveToFirst()) {
+                do {
+                    playerModel = new Family_Head_Model();
+                    playerModel.setId(cursor.getString(0));
+                    playerModel.setFamilyhead(cursor.getString(1));
+                    playerModel.setPhone(cursor.getString(2));
+                    playerModel.setHouse(cursor.getString(3));
+                    playerModel.setAddress(cursor.getString(4));
+                    playerModel.setGaon_panchayat(cursor.getString(5));
+                    playerModel.setBlock_code(cursor.getString(6));
+                    playerModel.setCity(cursor.getString(7));
+                    playerModel.setDist(cursor.getString(8));
+                    playerModel.setState(cursor.getString(9));
+                    playerModel.setPin(cursor.getString(10));
+                    familyHeadModelArrayList.add(playerModel);
+                    Log.d("val", "setupRecycler: " + playerModel);
+                    playerModel.setViewtext("Add Member");
 
-                if (cursor1.getCount()>0){
-                    if (cursor1.moveToFirst()){
-                        do {
-                            if (cursor1.getString(1).equals(cursor.getString(0))){
-                                playerModel.setEdittext("Re-Survey");
-                            }else {
-                                playerModel.setEdittext("Survey");
-                            }
-                        }while (cursor1.moveToNext());
+                    if (cursor1.getCount()>0){
+                        if (cursor1.moveToFirst()){
+                            do {
+                                if (cursor1.getString(1).equals(cursor.getString(0))){
+                                    playerModel.setEdittext("Re-Survey");
+                                }else {
+                                    playerModel.setEdittext("Survey");
+                                }
+                            }while (cursor1.moveToNext());
+                        }
+                    }else{
+                        playerModel.setEdittext("Survey");
                     }
-                }else{
-                    playerModel.setEdittext("Survey");
-                }
 
 
-            }while (cursor.moveToNext());
-            familyHeadAdapter = new Family_Head_Adapter(this, familyHeadModelArrayList,this::selecteduser);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-            recyclerView.setAdapter(familyHeadAdapter);
+                }while (cursor.moveToNext());
+                familyHeadAdapter = new Family_Head_Adapter(this, familyHeadModelArrayList,this::selecteduser);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                recyclerView.setAdapter(familyHeadAdapter);
 
+            }
+
+        }else{
+            constraintLayout.setVisibility(View.VISIBLE);
         }
 
     }
@@ -796,78 +564,32 @@ public class FamilyHeadActivity extends AppCompatActivity implements  Family_Hea
         }
     }
 
-
     @Override
     public void selecteduser(Family_Head_Model familyHeadModel) {
         //familyHeadModel.getid();
         //startActivity(new Intent(this,DataDetails.class).putExtra("data",familyHeadModel));
     }
-    public void viewAll() {
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        addfamilymember.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showAlertDialogButtonClicked(v);
-/*                        dBhandler = new DBhandler(getApplicationContext());
-                        Cursor res = dBhandler.getAllData();
-                        if(res.getCount() == 0) {
-                            // show message
-                            showMessage("Error","Nothing found");
-                            return;
-                        }
-
-                        StringBuffer buffer = new StringBuffer();
-                        while (res.moveToNext()) {
-                            buffer.append("Id :"+ res.getString(0)+"\n");
-                            buffer.append("Family Head :"+ res.getString(1)+"\n");
-                            buffer.append("Phone :"+ res.getString(2)+"\n");
-                            buffer.append("House :"+ res.getString(3)+"\n");
-                            buffer.append("Address :"+ res.getString(4)+"\n");
-                            buffer.append("GaonPanchayat :"+ res.getString(5)+"\n");
-                            buffer.append("BlockCode :"+ res.getString(6)+"\n");
-                            buffer.append("City :"+ res.getString(7)+"\n");
-                            buffer.append("District :"+ res.getString(8)+"\n");
-                            buffer.append("State :"+ res.getString(9)+"\n");
-                            buffer.append("Pin :"+ res.getString(10)+"\n");
-
-                        }
-
-                        // Show all data
-                        showMessage("Data",buffer.toString());*/
-                    }
-                }
-        );
     }
 
-    public void showMessage(String title,String Message){
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
-    private AlertDialog AskOption()
-    {
-        AlertDialog myQuittingDialogBox =new AlertDialog.Builder(this)
-                .setTitle("EXIT")
-                .setMessage("Are you sure you want to exit?")
+    @Override
+    public void onPause() {
+        super.onPause();
 
+    }
 
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        finishAndRemoveTask();
-                        finish();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .create();
-        return myQuittingDialogBox;
+    @Override
+    public void onStop() {
+        super.onStop();
 
     }
 

@@ -7,15 +7,19 @@ import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -26,9 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gnrc.telehealth.Adapter.ShowSurveyAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
-import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,25 +48,20 @@ public class SendDataToServer {
     private static final int PERMISSION_REQUEST_CODE = 100;
     private Context context;
     public RequestQueue rQueue;
-    public   String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
-    String groupSurveyId;
 
-    DBhandler dBhandler2 = new DBhandler(getApplicationContext());
+    public   String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
 
     public SendDataToServer(Context context) {
         this.context = context;
+
     }
 
     public void saveDataToServer(String surveyId, String familyId, String memberList) {
-        int count = 0;
-        Log.d("rabbit", "onClick: This was executed Third");
+
         showSimpleProgressDialog(context, "Loading...","Saving",false);
-        //JSONArray abc = new JSONArray();
         JSONObject js = new JSONObject();
         ArrayList<String> memberID = new ArrayList<>();
 
-
-        Log.d("rabbit", "onClick: This was executed Fourth");
         try {
             JSONObject jsonobject = new JSONObject();
             JSONObject jsonobjectHeadDetails = new JSONObject();
@@ -78,11 +75,7 @@ public class SendDataToServer {
 
             JSONObject jsonobjectSymptoms;
 
-            JSONObject storingSymptoms = new JSONObject();
-
             JSONArray symptomsArray = new JSONArray();
-
-            Log.d("rabbit", "onClick: This was executed Fifth");
 
             DBhandler dBhandler = new DBhandler(context);
 
@@ -160,6 +153,7 @@ public class SendDataToServer {
                             jsonobjectSymptomsData.put(cursor3.getColumnName(6), cursor3.getString(6));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(7), cursor3.getString(7));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(8), cursor3.getString(8));
+
                         }
 
                     }while (cursor3.moveToNext());
@@ -236,19 +230,14 @@ public class SendDataToServer {
 
                     }while (cursor6.moveToNext());
                     jsonobjectSymptomsData.put("Symptom",symptomArray1);
-                    /*symptomsArray.put(symptomArray1);*/
-/*
-                    symptomsArray.put(100, jsonobjectSymptoms);
-*/
+
                 }
 
-                //jsonobjectSymptoms.put(memberID.get(i),jsonobjectSymptomsData);
             }
 
             jsonobject.put("Head Data", jsonobjectHeadDetails);
             jsonobject.put("Member Data", memberArray);
             jsonobject.put("Symptoms Header", symptomsArray);
-            //   jsonobject.put("Symptoms Details", storingSymptoms);
             js.put("data", jsonobject);
 
         }catch (JSONException e) {
@@ -260,20 +249,46 @@ public class SendDataToServer {
 
                     @Override
                     public void onResponse(String response) {
-                        Log.d("rajnikant1", ">>" + response);
+
                         try {
                             removeSimpleProgressDialog();
-
+                            DBhandler dBhandler = new DBhandler(context);
                             JSONObject obj = new JSONObject(response);
-                            Log.d("rajnikant2", ">>get result" + obj);
+                            String dataObj = obj.getString("status");
+
+                            if (dataObj.equals("1")){
+
+                                SQLiteDatabase db = dBhandler.getWritableDatabase();
+                                db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + surveyId + "'" );
+                                db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + surveyId + "'" );
+                                db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + surveyId + "'" );
+                                db.execSQL("delete from tbl_other_info where group_surveyid  = '" + surveyId + "'" );
+                                db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + surveyId + "'" );
+                                db.execSQL("delete from tbl_survey_type_flag where group_surveyid  = '" + surveyId + "'" );
+                                db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + surveyId + "'");
+                                db.execSQL("delete from tbl_video_store where group_surveyid  = '" + surveyId + "'");
+                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+
+
+
+                            }else{
+                                SQLiteDatabase db = dBhandler.getWritableDatabase();
+
+                                db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
+                                        "WHERE group_surveyid = '" + surveyId + "'");
+                                db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
+                                        "WHERE group_surveyid = '" + surveyId + "'");
+                                Toast.makeText(context, "Failed to upload", Toast.LENGTH_SHORT).show();
+                            }
 
                             //String message = obj.getString("message");
-                            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+
 
                             // }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.d("rajnikant3", ">>exception" + e.getMessage());
+                            removeSimpleProgressDialog();
+
                         }
 
                     }
@@ -285,6 +300,7 @@ public class SendDataToServer {
                         //displaying the error in toast if occurrs
                         Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                         //Log.d("rajnikant", ">>get result" + error.getMessage());
+                        removeSimpleProgressDialog();
                     }
                 }) {
             @Override

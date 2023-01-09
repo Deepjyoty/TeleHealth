@@ -1,6 +1,9 @@
 package com.gnrc.telehealth.Adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +27,14 @@ public class GeneralHabitsAdapter extends RecyclerView.Adapter<GeneralHabitsAdap
     private MemberDetailsForDialogModel memberDetailsForDialogModel;
     private Context context;
 
-    public GeneralHabitsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList, GeneralHabits habitListener){
+
+    public GeneralHabitsAdapter(Context ctx, ArrayList<MemberDetailsForDialogModel> addMemberDialogArrayList,
+                                GeneralHabits habitListener){
         inflater = LayoutInflater.from(ctx);
         this.context = ctx;
         this.addMemberDialogArrayList = addMemberDialogArrayList;
         this.habitListener = habitListener;
+
     }
 
     @Override
@@ -42,6 +48,8 @@ public class GeneralHabitsAdapter extends RecyclerView.Adapter<GeneralHabitsAdap
     public void onBindViewHolder(@NonNull GeneralHabitsAdapter.MyViewHolder holder, int position) {
         memberDetailsForDialogModel = addMemberDialogArrayList.get(position);
         holder.member.setText(addMemberDialogArrayList.get(position).getMemberName());
+
+
 
         if(addMemberDialogArrayList.get(position).isSmoker()){
             holder.smokYes.setChecked(true);
@@ -63,14 +71,19 @@ public class GeneralHabitsAdapter extends RecyclerView.Adapter<GeneralHabitsAdap
 
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView member;
+        TextView member,smoking, alcohol;
         RadioGroup radioSmoking,radioAlcohol;
         RadioButton smokYes,smokNo,alcoYes,alcoNo;
+        SharedPreferences.Editor preferencesEditor;
         private GeneralHabits habitListener;
 
         public MyViewHolder(View itemView, GeneralHabits habitListener) {
             super(itemView);
             member =  itemView.findViewById(R.id.tvMemberName);
+
+            smoking = itemView.findViewById(R.id.tv_smoking);
+            alcohol = itemView.findViewById(R.id.tv_alcohol);
+
             radioSmoking =  itemView.findViewById(R.id.rgSmoking);
             radioAlcohol =  itemView.findViewById(R.id.rgAlcohol);
 
@@ -85,6 +98,21 @@ public class GeneralHabitsAdapter extends RecyclerView.Adapter<GeneralHabitsAdap
             alcoNo.setOnClickListener(this);
 
             this.habitListener = habitListener;
+            SharedPreferences mPreferences2 = itemView.getContext().getSharedPreferences("language",MODE_PRIVATE);
+            String language = mPreferences2.getString("lang","NoValue");
+
+            if (language.equals("English")){
+                smoking.setText("Smoking");
+                alcohol.setText("Alcohol");
+
+            }else if (language.equals("Assamese")){
+                smoking.setText("ধূমপায়ী");
+                alcohol.setText("মদ্যপায়ী");
+
+            }else if (language.equals("Bengali")){
+                smoking.setText("ধূমপায়ী");
+                alcohol.setText("মদ্যপ");
+            }
         }
 
         @Override

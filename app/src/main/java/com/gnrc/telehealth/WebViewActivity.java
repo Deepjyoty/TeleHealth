@@ -1,9 +1,5 @@
 package com.gnrc.telehealth;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -16,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +23,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.gnrc.telehealth.ui.InitAuthSDKActivity;
 
 import java.io.File;
@@ -37,7 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -366,12 +363,10 @@ public class WebViewActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        // this.moveTaskToBack(true);
-//        if (webView.canGoBack()) {
-//            webView.goBack();
-//        } else {
-//            super.onBackPressed();
-//        }
+        super.onBackPressed();
+        Intent i = new Intent(this,ChoiceActivity.class);
+        startActivity(i);
+        finish();
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -426,4 +421,5 @@ public class WebViewActivity extends AppCompatActivity {
 
 
     }
+
 }

@@ -1,6 +1,9 @@
 package com.gnrc.telehealth.Adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +65,7 @@ public class HealthCardAdapter extends RecyclerView.Adapter<HealthCardAdapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView member;
+        TextView member, atalAmrit, ayushBharat;
         RadioGroup radioAtal,radioAyushman;
         RadioButton atalYes,atalNo,ayushYes,ayushNo;
         private HealthCard healthCard;
@@ -70,6 +73,10 @@ public class HealthCardAdapter extends RecyclerView.Adapter<HealthCardAdapter.My
         public MyViewHolder(View itemView, HealthCard healthCard) {
             super(itemView);
             member = (TextView) itemView.findViewById(R.id.tvHciMemberName);
+
+            atalAmrit = itemView.findViewById(R.id.tv_atalAmrit);
+            ayushBharat = itemView.findViewById(R.id.tv_ayushBharat);
+
             radioAtal = (RadioGroup) itemView.findViewById(R.id.rgAtal);
             radioAyushman = (RadioGroup) itemView.findViewById(R.id.rgAyushman);
 
@@ -85,7 +92,21 @@ public class HealthCardAdapter extends RecyclerView.Adapter<HealthCardAdapter.My
 
             this.healthCard = healthCard;
 
+            SharedPreferences mPreferences2 = itemView.getContext().getSharedPreferences("language",MODE_PRIVATE);
+            String language = mPreferences2.getString("lang","NoValue");
 
+            if (language.equals("English")){
+                atalAmrit.setText("Are you a beneficiary of Atal Amrit Abhiyan?");
+                ayushBharat.setText("Are you a beneficiary of Ayushman Bharat Scheme?");
+
+            }else if (language.equals("Assamese")){
+                atalAmrit.setText("আপুনি অটল অমৃতৰ হিতাধিকাৰী নেকি?");
+                ayushBharat.setText("আপুনি আয়ুষ্মান ভাৰতৰ হিতাধিকাৰী নেকি?");
+
+            }else if (language.equals("Bengali")){
+                atalAmrit.setText("আপনি কি অটল অমৃতের হিতৈষী?");
+                ayushBharat.setText("আপনি কি আয়ুষ্মান ভারত এর সুবিধাভোগী?");
+            }
         }
 
 

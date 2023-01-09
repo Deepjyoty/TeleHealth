@@ -3,14 +3,18 @@ package com.gnrc.telehealth.Fragments;
 import static com.zipow.videobox.confapp.ConfMgr.getApplicationContext;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +37,8 @@ import com.android.volley.toolbox.Volley;
 import com.gnrc.telehealth.Adapter.News_feed_Adapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.Model_newsfeed;
+import com.gnrc.telehealth.Network.MyReceiver;
+import com.gnrc.telehealth.Network.NetworkListener;
 import com.gnrc.telehealth.R;
 import com.gnrc.telehealth.ShowSurveyActivity;
 import com.gnrc.telehealth.SurveyActivity;
@@ -47,12 +53,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class NewsFeedFragment extends Fragment {
-    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/";
+public class NewsFeedFragment extends Fragment implements NetworkListener {
+    private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
     private static ProgressDialog mProgressDialog;
     ArrayList<Model_newsfeed> dataModelArrayList;
     private News_feed_Adapter newsfeedAdapter;
     private RecyclerView recyclerView;
+    ConstraintLayout constraintLayout;
+    private BroadcastReceiver MyReceiver = null;
     View view;
 
 
@@ -81,8 +89,10 @@ public class NewsFeedFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_news_feed, container, false);
+        MyReceiver = new MyReceiver(this);
         // Add the following lines to create RecyclerView
         recyclerView = view.findViewById(R.id.newsrecycler);
+        constraintLayout = view.findViewById(R.id.noInternet);
         ConnectivityManager cm = (ConnectivityManager) getContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -97,8 +107,9 @@ public class NewsFeedFragment extends Fragment {
                 fetchingJSON();
             }
         } else {
-            Toast.makeText(getContext(), "This page cannot be loaded due to no " +
-                    "Internet connectivity", Toast.LENGTH_LONG).show();
+
+            /*Toast.makeText(getContext(), "This page cannot be loaded due to no " +
+                    "Internet connectivity", Toast.LENGTH_SHORT).show();*/
 
             }
 
@@ -161,6 +172,7 @@ public class NewsFeedFragment extends Fragment {
                         //displaying the error in toast if occurrs
                         Toast.makeText(getContext(), "This page cannot be loaded due to no " +
                                 "Internet connectivity", Toast.LENGTH_SHORT).show();
+                        removeSimpleProgressDialog();
                     }
                 })
         {
@@ -185,9 +197,7 @@ public class NewsFeedFragment extends Fragment {
         newsfeedAdapter = new News_feed_Adapter(getContext(),dataModelArrayList,this::selecteduser);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(newsfeedAdapter);
-        /*rvAdapter2 = new RvAdapter2(getContext(),dataModelArrayList,this::selecteduser);
-        recyclerView.setAdapter(rvAdapter2);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));*/
+
 
     }
 
@@ -260,5 +270,64 @@ public class NewsFeedFragment extends Fragment {
             startActivity(new Intent(getActivity(), VideoPlayerActivity.class).putExtra("data",dataModel));
         }
 
+    }
+    /**
+     * register bradcast receiver for network
+     */
+    private void registerNetworkReceiver(){
+        try {
+            getContext().registerReceiver(MyReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * un register broadcast receiver
+     */
+    private void unregisterNetworkReceiver(){
+        try {
+            if (MyReceiver != null){
+                LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(MyReceiver);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void onNetworkDisconnected() {
+        recyclerView.setVisibility(View.GONE);
+        constraintLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onNetworkConnected(String type) {
+        recyclerView.setVisibility(View.VISIBLE);
+        fetchingJSON();
+        constraintLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        registerNetworkReceiver();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerNetworkReceiver();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterNetworkReceiver();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        unregisterNetworkReceiver();
     }
 }

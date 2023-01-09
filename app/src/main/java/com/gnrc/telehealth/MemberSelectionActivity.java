@@ -1,21 +1,19 @@
 package com.gnrc.telehealth;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.gnrc.telehealth.Adapter.MemberSelectionAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.AddFamilyModel;
-import com.gnrc.telehealth.Model.Family_Head_Model;
 import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ public class MemberSelectionActivity extends AppCompatActivity implements Member
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_member_selection);
+        setTitle("Select Members For Survey");
 
         dBhandler = new DBhandler(getApplicationContext());
         //addFamilyModel = new AddFamilyModel();
@@ -121,6 +120,29 @@ public class MemberSelectionActivity extends AppCompatActivity implements Member
         for (int i = 0; i<checkedId.size(); i++){
             getCheckedId.add(checkedId.get(i));
         }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
 }

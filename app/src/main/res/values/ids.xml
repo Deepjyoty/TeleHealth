@@ -4,7 +4,5 @@
     <item type="id" name="symptomHeader" />
     <item type="id" name="memberId" />
     <item type="id" name="Atr_Code" />
-    <item type="id" name="chkboxId" />
-    <item type="id" name="memberName" />
     <item type="id" name="surveymemberID" />
 </resources>

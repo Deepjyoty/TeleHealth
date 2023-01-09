@@ -3,13 +3,7 @@ package com.gnrc.telehealth;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,42 +11,30 @@ import android.graphics.Bitmap;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-//import android.support.v4.app.ActivityCompat;
-//import android.support.v4.app.NotificationCompat;
-//import android.support.v4.content.ContextCompat;
-//import android.support.v4.content.FileProvider;
-//import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Base64;
+import android.util.Log;
 import android.webkit.DownloadListener;
-import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
-import android.webkit.MimeTypeMap;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-import android.util.Log;
-
-import com.gnrc.telehealth.ui.InitAuthSDKActivity;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.gnrc.telehealth.ui.InitAuthSDKActivity;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Set;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -434,26 +416,12 @@ public class Main2Activity extends AppCompatActivity {
 
             }
         }
-
-
         return;
     }
 
     @Override
     public void onBackPressed() {
-//        if (doubleBackToExitPressedOnce) {
-//            super.onBackPressed();
-//            return;
-//        }
-//
-//        this.doubleBackToExitPressedOnce = true;
-//        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                doubleBackToExitPressedOnce=false;
-//            }
-//        }, 2000);
+
     }
 
 }

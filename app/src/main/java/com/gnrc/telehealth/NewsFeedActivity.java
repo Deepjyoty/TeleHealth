@@ -1,18 +1,12 @@
 package com.gnrc.telehealth;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-
-
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.gnrc.telehealth.Fragments.NewsFeedFragment;
 import com.gnrc.telehealth.Fragments.SurveyFragment;
@@ -68,5 +62,28 @@ public class NewsFeedActivity extends AppCompatActivity {
         Intent i = new Intent(this,ChoiceActivity.class);
         startActivity(i);
         finish();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 }

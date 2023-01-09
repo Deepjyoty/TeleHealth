@@ -1,11 +1,5 @@
 package com.gnrc.telehealth;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -18,12 +12,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.gnrc.telehealth.Adapter.AddFamily_Adapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.AddFamilyModel;
-import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
@@ -54,11 +54,15 @@ public class AddMemberActivity extends AppCompatActivity {
     SharedPreferences.Editor preferencesEditor;
     int finalCount;
 
+    ConstraintLayout constraintLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addmember);
         setTitle("Family Members");
+
+        constraintLayout = findViewById(R.id.cl_noData);
         recyclerView = (RecyclerView) findViewById(R.id.am_recycler);
         addfamilymember = (Button) findViewById(R.id.add_family_member);
         familyId = getIntent().getStringExtra("id");
@@ -83,7 +87,6 @@ public class AddMemberActivity extends AppCompatActivity {
                 setupRecyclerAm_DB();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to mobile data
-
                 setupRecyclerAm_DB();
             }
         } else {
@@ -109,9 +112,93 @@ public class AddMemberActivity extends AppCompatActivity {
         month = customLayout.findViewById(R.id.fm_month);
         phone = customLayout.findViewById(R.id.fm_phone);
         occupation = customLayout.findViewById(R.id.fm_occupation);
+        TextView gender = customLayout.findViewById(R.id.tv_gender);
         radioGroup = (RadioGroup) customLayout.findViewById(R.id.amRG);
         // add a button
+        RadioGroup radioGroup = customLayout.findViewById(R.id.rg_language2);
+        RadioButton english = customLayout.findViewById(R.id.rb_english2);
+        RadioButton assamese = customLayout.findViewById(R.id.rb_assamese2);
+        RadioButton bengali = customLayout.findViewById(R.id.rb_bengali2);
+        english.setChecked(true);
+        SharedPreferences mPreferences2=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor = mPreferences2.edit();
+        String language = mPreferences2.getString("lang","NoValue");
 
+        if (language.equals("Assamese")){
+            assamese.setChecked(true);
+            name.setHint("নাম");
+            year.setHint("বছৰ");
+            year.setHelperText("বয়স");
+            month.setHelperText("বয়স");
+            month.setHint("মাহ");
+            phone.setHint("যোগাযোগ নং");
+            occupation.setHint("বৃত্তি");
+            gender.setText("লিংগ");
+
+        }else if (language.equals("Bengali")){
+            bengali.setChecked(true);
+            name.setHint("নাম");
+            year.setHint("বছর");
+            year.setHelperText("বয়স");
+            month.setHelperText("বয়স");
+            month.setHint("মাস");
+            phone.setHint("যযোগাযোগের নম্বর");
+            occupation.setHint("পেশা");
+            gender.setText("লিঙ্গ");
+        }else{
+            english.setChecked(true);
+            name.setHint("Name");
+            year.setHint("Year");
+            year.setHelperText("Age");
+            month.setHelperText("Age");
+            month.setHint("Month");
+            phone.setHint("Phone");
+            occupation.setHint("Occupation");
+            gender.setText("Gender");
+        }
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = customLayout.findViewById(checkedId);
+                if (radioButton.getText().equals("Assamese")){
+                    name.setHint("নাম");
+                    year.setHint("বছৰ");
+                    year.setHelperText("বয়স");
+                    month.setHelperText("বয়স");
+                    month.setHint("মাহ");
+                    phone.setHint("যোগাযোগ নং");
+                    occupation.setHint("বৃত্তি");
+                    gender.setText("লিংগ");
+                    preferencesEditor.putString("lang","Assamese");
+                    preferencesEditor.apply();
+
+                }else if (radioButton.getText().equals("Bengali")){
+                    name.setHint("নাম");
+                    year.setHint("বছর");
+                    year.setHelperText("বয়স");
+                    month.setHelperText("বয়স");
+                    month.setHint("মাস");
+                    phone.setHint("যযোগাযোগের নম্বর");
+                    occupation.setHint("পেশা");
+                    gender.setText("লিঙ্গ");
+                    preferencesEditor.putString("lang","Bengali");
+                    preferencesEditor.apply();
+
+                }else {
+                    name.setHint("Name");
+                    year.setHint("Year");
+                    year.setHelperText("Age");
+                    month.setHelperText("Age");
+                    month.setHint("Month");
+                    phone.setHint("Phone");
+                    occupation.setHint("Occupation");
+                    gender.setText("Gender");
+                    preferencesEditor.putString("lang","English");
+                    preferencesEditor.apply();
+
+                }
+            }
+        });
         builder.setPositiveButton(
                 "OK",
                 new DialogInterface.OnClickListener() {
@@ -132,27 +219,33 @@ public class AddMemberActivity extends AppCompatActivity {
                 selectedId = radioGroup.getCheckedRadioButtonId();
                 if (name.getEditText().getText().length()<=2){
                     name.setError("Please enter Name with at least 3 letters");
-                    Toast.makeText(AddMemberActivity.this,
-                            "Please Insert Name with at least 3 letters", Toast.LENGTH_SHORT).show();
+                    name.clearFocus();
+                    name.requestFocus();
                 }
 
-                else if (Integer.parseInt(year.getEditText().getText().toString()) > 120){
+                else if (year.getEditText().getText().length()<1||
+                        Integer.parseInt(year.getEditText().getText().toString()) > 120){
                     year.setError("Please enter valid age year");
-
+                    year.clearFocus();
+                    year.requestFocus();
                 }
-                else if (Integer.parseInt(month.getEditText().getText().toString()) < 1 ||
-                        Integer.parseInt(month.getEditText().getText().toString()) > 11){
+                else if (month.getEditText().getText().length()<1||
+                        Integer.parseInt(month.getEditText().getText().toString()) < 1 ||
+                        Integer.parseInt(month.getEditText().getText().toString()) > 11
+                                ){
                     month.setError("Please enter valid age month");
-
+                    month.clearFocus();
+                    month.requestFocus();
                 }
                 else if (phone.getEditText().getText().length() != 10){
-                    Toast.makeText(AddMemberActivity.this,
-                            "Phone number should be 10 digits", Toast.LENGTH_SHORT).show();
+                    phone.setError("Phone number should be 10 digits");
+                    phone.clearFocus();
+                    phone.requestFocus();
                 }
                 else if (occupation.getEditText().getText().length() < 2){
                     occupation.setError("Please enter occupation with at least 3 letters");
-                    Toast.makeText(AddMemberActivity.this,
-                            "Please enter occupation with at least 3 letters", Toast.LENGTH_SHORT).show();
+                    occupation.clearFocus();
+                    occupation.requestFocus();
                 }
 
                 else if (selectedId == -1 ){
@@ -163,6 +256,7 @@ public class AddMemberActivity extends AppCompatActivity {
                     addDataToDatabase();
                     setupRecyclerAm_DB();
                     addFamily_adapter.notifyDataSetChanged();
+                    constraintLayout.setVisibility(View.GONE);
                     dialog.dismiss();
                 }
                 Log.d("radioCheck", "onClick: "+selectedId);
@@ -192,6 +286,7 @@ public class AddMemberActivity extends AppCompatActivity {
 
         //Checking for the value stored in shared preference
         String userid = mPreferences.getString("user_id","NoValue");
+
         selectedId = radioGroup.getCheckedRadioButtonId();
         radioButton = (RadioButton) radioGroup.findViewById(selectedId);
         dBhandler = new DBhandler(getApplicationContext());
@@ -231,40 +326,45 @@ public class AddMemberActivity extends AppCompatActivity {
         Cursor cursor = dBhandler.getFamilyMemberListWithoutMember(getIntent().getStringExtra("id"));
 
         //Family_Head_Model dmodel = new Family_Head_Model();
+        if (cursor.getCount()>0){
+            if (cursor.moveToFirst()) {
+                do {
+                    familyModel = new AddFamilyModel();
+                    familyModel.setRegnum(cursor.getString(0));
+                    familyModel.setRegDt(cursor.getString(1));
+                    familyModel.setRegStatus(cursor.getString(2));
+                    familyModel.setPtName(cursor.getString(3));
+                    familyModel.setGender(cursor.getString(4));
+                    familyModel.setDob(cursor.getString(5));
+                    familyModel.setYear(cursor.getString(6));
+                    familyModel.setMonth(cursor.getString(7));
+                    familyModel.setDay(cursor.getString(8));
+                    familyModel.setContact(cursor.getString(9));
+                    familyModel.setAreaLocality(cursor.getString(10));
+                    familyModel.setDistCode(cursor.getString(11));
+                    familyModel.setBlockName(cursor.getString(12));
+                    familyModel.setPancName(cursor.getString(13));
+                    familyModel.setVillName(cursor.getString(14));
+                    familyModel.setCreateDate(cursor.getString(15));
+                    familyModel.setLoginId(cursor.getString(16));
+                    familyModel.setUpdDate(cursor.getString(17));
+                    familyModel.setF_id(cursor.getString(18));
 
-        if (cursor.moveToFirst()) {
-            do {
-                familyModel = new AddFamilyModel();
-                familyModel.setRegnum(cursor.getString(0));
-                familyModel.setRegDt(cursor.getString(1));
-                familyModel.setRegStatus(cursor.getString(2));
-                familyModel.setPtName(cursor.getString(3));
-                familyModel.setGender(cursor.getString(4));
-                familyModel.setDob(cursor.getString(5));
-                familyModel.setYear(cursor.getString(6));
-                familyModel.setMonth(cursor.getString(7));
-                familyModel.setDay(cursor.getString(8));
-                familyModel.setContact(cursor.getString(9));
-                familyModel.setAreaLocality(cursor.getString(10));
-                familyModel.setDistCode(cursor.getString(11));
-                familyModel.setBlockName(cursor.getString(12));
-                familyModel.setPancName(cursor.getString(13));
-                familyModel.setVillName(cursor.getString(14));
-                familyModel.setCreateDate(cursor.getString(15));
-                familyModel.setLoginId(cursor.getString(16));
-                familyModel.setUpdDate(cursor.getString(17));
-                familyModel.setF_id(cursor.getString(18));
+                    addFamilyArrayList.add(familyModel);
 
-                addFamilyArrayList.add(familyModel);
+                }while (cursor.moveToNext());
+                addFamily_adapter = new AddFamily_Adapter(this, addFamilyArrayList);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
+                recyclerView.setAdapter(addFamily_adapter);
 
-            }while (cursor.moveToNext());
-            addFamily_adapter = new AddFamily_Adapter(this, addFamilyArrayList);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL,false));
-            recyclerView.setAdapter(addFamily_adapter);
-
+            }
+        }else{
+            constraintLayout.setVisibility(View.VISIBLE);
         }
 
+
     }
+
     public void setupSharedPreference(){
         Cursor cursor = dBhandler.getFamilyMemberListWithoutMember(getIntent().getStringExtra("id"));
 
@@ -289,5 +389,28 @@ public class AddMemberActivity extends AppCompatActivity {
             preferencesEditor.putInt(familyId,finalCount);
             preferencesEditor.apply();
         }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 }

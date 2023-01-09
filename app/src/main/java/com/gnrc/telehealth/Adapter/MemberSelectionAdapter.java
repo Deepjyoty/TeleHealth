@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gnrc.telehealth.Model.AddFamilyModel;
@@ -20,6 +22,7 @@ import com.gnrc.telehealth.R;
 import com.gnrc.telehealth.SurveyActivity;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelectionAdapter.MyViewHolder>{
     private LayoutInflater inflater;
@@ -28,6 +31,8 @@ public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelection
     private AddFamilyModel addFamilyModel;
     private ArrayList<String> checkedID = new ArrayList<>();
     public userclicklistener userclicklistener;
+    private Context context;
+
     MemberDetailsForDialogModel memberDetailsForDialogModel;
 
     public interface userclicklistener{
@@ -41,6 +46,7 @@ public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelection
         inflater = LayoutInflater.from(ctx);
         this.addFamilyModelArrayList = addFamilyModelArrayList;
         this.userclicklistener = userclicklistener;
+        this.context = ctx;
 
     }
     @Override
@@ -48,6 +54,7 @@ public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelection
 
         View view = inflater.inflate(R.layout.cardview_member_selection, parent, false);
         MemberSelectionAdapter.MyViewHolder holder = new MemberSelectionAdapter.MyViewHolder(view);
+
 
         return holder;
     }
@@ -60,6 +67,9 @@ public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelection
         //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
 
         //familyHeadModelArrayList.get(position).getDescription();
+        int[] androidColors = context.getResources().getIntArray(R.array.androidcolors);
+        int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
+        holder.linearLayout.setBackgroundColor(randomAndroidColor);
 
         holder.selection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -104,6 +114,7 @@ public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelection
         TextView name, gender ,age;
         ImageView iv;
         CheckBox selection;
+        LinearLayout linearLayout;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -113,6 +124,7 @@ public class MemberSelectionAdapter extends RecyclerView.Adapter<MemberSelection
             gender = (TextView) itemView.findViewById(R.id.amGender);
             age = (TextView) itemView.findViewById(R.id.amAge);
             selection = (CheckBox) itemView.findViewById(R.id.amView);
+            linearLayout = itemView.findViewById(R.id.cnsLayout);
 
             //iv = (ImageView) itemView.findViewById(R.id.iv);
         }

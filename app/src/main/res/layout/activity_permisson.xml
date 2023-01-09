@@ -70,14 +70,12 @@ the app to work smoothly."
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageView7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
                 app:srcCompat="@drawable/location" />
 
             <TextView
-                android:id="@+id/textView10"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.7"
@@ -107,14 +105,12 @@ the app to work smoothly."
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageView8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
                 app:srcCompat="@drawable/cam" />
 
             <TextView
-                android:id="@+id/textView11"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.7"
@@ -143,14 +139,12 @@ the app to work smoothly."
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageView9"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.3"
                 app:srcCompat="@drawable/read" />
 
             <TextView
-                android:id="@+id/textView12"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.7"

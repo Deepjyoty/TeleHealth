@@ -11,20 +11,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Html;
@@ -39,6 +44,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +73,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
@@ -76,8 +83,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -87,6 +97,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -96,7 +107,8 @@ public class SurveyActivity extends AppCompatActivity
     RecyclerView  recyclerViewDialog, covidRecycler,generalRecycler, healthCardRecycler;
     Button genHab, testFin, heaCaIn, covFacIn, signsSymptoms, otherinfo,
     editGenHab, editTestFind, editHealthCard, editSignSymptoms, editOtherInfo;
-    String latitude, longitude,list1,familyid;
+    String list1,familyid, userid,language;
+    double latitude, longitude;
     CheckBox cb;
     RadioGroup radioGroup;
     RadioButton english,assamese,bengali;
@@ -105,9 +117,10 @@ public class SurveyActivity extends AppCompatActivity
     int finalCount;
     private static ProgressDialog mProgressDialog;
     private RequestQueue rQueue;
-
-    SharedPreferences mPreferences,mPreferences1;
-    SharedPreferences.Editor preferencesEditor;
+    File myDir;
+    Uri uri;
+    SharedPreferences mPreferences,mPreferences1,mPreferences2,mPreferences3;
+    SharedPreferences.Editor preferencesEditor,preferencesEditor2;
     private static final int REQUEST_LOCATION = 1;
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.CHINESE);
@@ -130,7 +143,7 @@ public class SurveyActivity extends AppCompatActivity
     Button  saveSurvey;
     TreeMap<String, ArrayList<String>> multiMap;
     SignsAndSymptomsModel ssModel;
-
+    TextView genHab2,testFind,healInfo,signsSymp,othInfo;
     public static ArrayList<Boolean> ssModelArraylist;
     private String URLstring = "https://www.gnrctelehealth.com/telehealth_api/index_dev.php";
     private TextView txtGeneralHabits,txtHealthCard,txtOtherInfo;
@@ -139,7 +152,6 @@ public class SurveyActivity extends AppCompatActivity
     private static int VIDEO_RECORD_CODE = 101;
     private Uri videoPath;
     private String familySurveyId, memberSurveyId;
-
     String r;
 
     DBhandler dBhandler;
@@ -150,13 +162,89 @@ public class SurveyActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
-        radioGroup = findViewById(R.id.rg_language);
-        english = findViewById(R.id.rb_english);
-        assamese = findViewById(R.id.rb_assamese);
-        bengali = findViewById(R.id.rb_bengali);
-        radioGroup.check(R.id.rb_english);
+        mPreferences2=getSharedPreferences("com.gnrc.telehealth",MODE_PRIVATE);
+        userid = mPreferences2.getString("user_id","NoValue");
+
+        mPreferences3=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor2 = mPreferences3.edit();
+        language = mPreferences3.getString("lang","no data");
+
+        genHab2 = findViewById(R.id.tvGh);
+        testFind = findViewById(R.id.tvTf);
+        healInfo = findViewById(R.id.tvHci);
+        signsSymp = findViewById(R.id.tvSaS);
+        othInfo = findViewById(R.id.tvOtherInfo);
+
+        //Checking for the value stored in shared preference
+
+        radioGroup = findViewById(R.id.rg_language3);
+        english = findViewById(R.id.rb_english3);
+        assamese = findViewById(R.id.rb_assamese3);
+        bengali = findViewById(R.id.rb_bengali3);
+        radioGroup.check(R.id.rb_english3);
+
+        if (language.equals("Assamese")){
+            assamese.setChecked(true);
+            genHab2.setText("সাধাৰণ অভ্যাস");
+            testFind.setText("পৰীক্ষাৰ তথ্য");
+            healInfo.setText("স্বাস্থ্য কাৰ্ডৰ তথ্য");
+            signsSymp.setText("লক্ষণ");
+            othInfo.setText("অন্যান্য তথ্য");
+        }else if (language.equals("Bengali")){
+            bengali.setChecked(true);
+            genHab2.setText("সাধারণ অভ্যাস");
+            testFind.setText("পরীক্ষার ফলাফল");
+            healInfo.setText("স্বাস্থ্য কার্ড তথ্য");
+            signsSymp.setText("লক্ষণ");
+            othInfo.setText("অন্যান্য তথ্য");
+        }else {
+            english.setChecked(true);
+            genHab2.setText("General Habits");
+            testFind.setText("Test Findings");
+            healInfo.setText("Health Card Information");
+            signsSymp.setText("Signs and Symptoms");
+            othInfo.setText("Other Info");
+        }
+
+        english.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                genHab2.setText("General Habits");
+                testFind.setText("Test Findings");
+                healInfo.setText("Health Card Information");
+                signsSymp.setText("Signs and Symptoms");
+                othInfo.setText("Other Info");
+                preferencesEditor2.putString("lang","English");
+                preferencesEditor2.apply();
+            }
+        });
+        assamese.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                genHab2.setText("সাধাৰণ অভ্যাস");
+                testFind.setText("পৰীক্ষাৰ তথ্য");
+                healInfo.setText("স্বাস্থ্য কাৰ্ডৰ তথ্য");
+                signsSymp.setText("লক্ষণ");
+                othInfo.setText("অন্যান্য তথ্য");
+                preferencesEditor2.putString("lang","Assamese");
+                preferencesEditor2.apply();
+            }
+        });
+        bengali.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                genHab2.setText("সাধারণ অভ্যাস");
+                testFind.setText("পরীক্ষার ফলাফল");
+                healInfo.setText("স্বাস্থ্য কার্ড তথ্য");
+                signsSymp.setText("লক্ষণ");
+                othInfo.setText("অন্যান্য তথ্য");
+                preferencesEditor2.putString("lang","Bengali");
+                preferencesEditor2.apply();
+            }
+        });
 
         memberList = new ArrayList<>();
+
         memberList = getIntent().getStringArrayListExtra("memberList");
         r = memberList.stream().collect(Collectors.joining("','", "'", "'"));
         editModel = new MemberDetailsForDialogModel();
@@ -181,7 +269,7 @@ public class SurveyActivity extends AppCompatActivity
 
         mPreferences1=getSharedPreferences(familySurveyId,MODE_PRIVATE);
 
-        familySurveyId = "F_SRV_" + familyid + format2;
+        familySurveyId = "SRV_" + familyid +"_"+ format2;
 
         format = simpleDateFormat.format(new Date());
 
@@ -199,28 +287,6 @@ public class SurveyActivity extends AppCompatActivity
         }
 
         checkFlag();
-        if (getIntent().getStringExtra("resurvey")!= null){
-            if (getIntent().getStringExtra("resurvey").equals("resurvey")){
-
-                db.execSQL("UPDATE tbl_general_habits_alcohol SET group_surveyid = '" + familySurveyId + "'" +
-                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
-                db.execSQL("UPDATE tbl_test_findings SET group_surveyid = '" + familySurveyId + "'" +
-                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
-                db.execSQL("UPDATE tbl_hci_atal_amrit SET group_surveyid = '" + familySurveyId + "'" +
-                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
-                db.execSQL("UPDATE tbl_symptoms_member SET group_surveyid = '" + familySurveyId + "'" +
-                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
-                db.execSQL("UPDATE tbl_other_info SET group_surveyid = '" + familySurveyId + "'" +
-                        "WHERE group_surveyid = '" + getIntent().getStringExtra("SurveyId") + "'");
-
-                /*showGeneralHabitsAlcohol(CallingTypeLoad,getIntent().getStringExtra("SurveyId"));
-                showTestFindingsBP(getIntent().getStringExtra("SurveyId"));
-                showTestFindingsBS(getIntent().getStringExtra("SurveyId"));
-                showHCIAtalAmrit(CallingTypeLoad,getIntent().getStringExtra("SurveyId"));
-                showOtherInfo(CallingTypeLoad,getIntent().getStringExtra("SurveyId"));
-                showSymptomsMembersResurvey();*/
-            }
-        }
 
         showGeneralHabitsAlcohol(CallingTypeLoad);
         showTestFindingsBP();
@@ -240,13 +306,12 @@ public class SurveyActivity extends AppCompatActivity
                 preferencesEditor = mPreferences1.edit();
                 preferencesEditor.putInt(familySurveyId, finalCount);
                 preferencesEditor.apply();
-
-                memberSurveyIdArrayList.add("M_SRV_" + familySurveyId + "_00" + finalCount);
+                memberSurveyIdArrayList.add(familySurveyId + "_00" + finalCount);
             }
         }
 
         dBhandler.addOverallFlag(familySurveyId,0,0,0,
-                0,0,0,0);
+                0,0,0,0,userid);
 
 
     }
@@ -360,8 +425,20 @@ public class SurveyActivity extends AppCompatActivity
     }
 
     public void showGeneralHabitDialog(View view)    {
+        mPreferences3=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor2 = mPreferences3.edit();
+        language = mPreferences3.getString("lang","no data");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("General Habits");
+
+        if (language.equals("Assamese")){
+            builder.setTitle("সাধাৰণ অভ্যাস");
+        }else if (language.equals("Bengali")){
+            builder.setTitle("সাধারণ অভ্যাস");
+        }else {
+            builder.setTitle("General Habits");
+        }
+
 
         View customLayout = getLayoutInflater().inflate(R.layout.general_habits_recycler,null);
         builder.setView(customLayout);
@@ -419,25 +496,9 @@ public class SurveyActivity extends AppCompatActivity
                 "OK",
                 new DialogInterface.OnClickListener() {
                     DBhandler dBhandler;
+
                     @Override
                     public void onClick(DialogInterface dialog,int which) {
-                        dBhandler = new DBhandler(getApplicationContext());
-                        SQLiteDatabase db = dBhandler.getWritableDatabase();
-
-                        db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
-                        for (int i = 0; i < memberList.size(); i++){
-                            String isSmoker = member.get(i).isSmoker() ? "Yes" : "No";
-                            String isAlcoholic = member.get(i).isAlcoholic() ? "Yes" : "No";
-                            dBhandler.addGeneralHabitsAlcohol(familySurveyId,member.get(i).getMember_id(),
-                                    getIntent().getStringExtra("familyId"),
-                                    member.get(i).getMemberName(), isSmoker,
-                                    isAlcoholic, memberSurveyIdArrayList.get(i), latitude,longitude,format);
-                        }
-
-                        showGeneralHabitsAlcohol(CallingTypeUpdate);
-
-                        db.execSQL("UPDATE tbl_overall_flag SET tbl_general_habits_alcohol = 1 " +
-                                "WHERE group_surveyid = '" + familySurveyId + "'");
 
                     }
 
@@ -445,18 +506,74 @@ public class SurveyActivity extends AppCompatActivity
         dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+        Button theButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        theButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gpsTracker();
+                if (latitude == 0 && longitude == 0){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SurveyActivity.this);
+                    builder.setTitle("LOCATION NOT RECEIVED");
+                    builder.setMessage("Please Move your phone a little and try again ");
+                    builder.setPositiveButton("Understood", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                        }
+                    });
+
+                    builder.create();
+                    builder.show();
+
+                }else {
+                    dBhandler = new DBhandler(getApplicationContext());
+                    SQLiteDatabase db = dBhandler.getWritableDatabase();
+                    db.execSQL("delete from tbl_general_habits_alcohol where family_id  = '" + familyid + "'" );
+                    for (int i = 0; i < memberList.size(); i++){
+                        String isSmoker = member.get(i).isSmoker() ? "Yes" : "No";
+                        String isAlcoholic = member.get(i).isAlcoholic() ? "Yes" : "No";
+                        dBhandler.addGeneralHabitsAlcohol(familySurveyId,member.get(i).getMember_id(),
+                                getIntent().getStringExtra("familyId"),
+                                member.get(i).getMemberName(), isSmoker,
+                                isAlcoholic, memberSurveyIdArrayList.get(i), String.valueOf(latitude),
+                                String.valueOf(longitude),format,userid);
+                    }
+
+                    showGeneralHabitsAlcohol(CallingTypeUpdate);
+
+                    db.execSQL("UPDATE tbl_overall_flag SET tbl_general_habits_alcohol = 1 " +
+                            "WHERE group_surveyid = '" + familySurveyId + "'");
+                    dialog.dismiss();
+                }
+
+            }
+        });
     }
 
     public void showTestFindingDialog(View view) {
         // Create an alert builder
+        mPreferences3=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor2 = mPreferences3.edit();
+        language = mPreferences3.getString("lang","no data");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Test Findings");
+        if (language.equals("Assamese")){
+            builder.setTitle("পৰীক্ষাৰ তথ্য");
+        }else if (language.equals("Bengali")){
+           builder.setTitle("পরীক্ষার ফলাফল");
+        }else {
+            builder.setTitle("Test Findings");
+        }
+
         // set the custom layout
         final View customLayout = getLayoutInflater().inflate(R.layout.testfindingsrecycler, null);
+        final View customLayout2 = getLayoutInflater().inflate(R.layout.test_findings, null);
         builder.setView(customLayout);
 
         recyclerViewDialog = (RecyclerView) customLayout.findViewById(R.id.testFindingsDialogRecycler);
         ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
+        TextInputLayout sys = customLayout2.findViewById(R.id.sys);
+        TextInputLayout dia = customLayout2.findViewById(R.id.dia);
+        TextInputLayout value = customLayout2.findViewById(R.id.typeValue);
+        Spinner spinner = customLayout2.findViewById(R.id.tFSpinner);
 
         DBhandler dBhandler = new DBhandler(getApplicationContext());
         Cursor cursor1 = dBhandler.getTestFindings(familySurveyId,r);
@@ -501,7 +618,6 @@ public class SurveyActivity extends AppCompatActivity
             }
         }
 
-
         builder.setPositiveButton(
                 "OK",
                 new DialogInterface.OnClickListener() {
@@ -521,7 +637,7 @@ public class SurveyActivity extends AppCompatActivity
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueDia(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getTypeSpinner(),
                                     TestFindingsAdapter.addMemberDialogArrayList.get(i).getEditTextValueValue(),
-                                    memberSurveyIdArrayList.get(i),format);
+                                    memberSurveyIdArrayList.get(i),format,userid);
                             //setupTestFindingsDialogRecycler();
                             showTestFindingsBP();
                             showTestFindingsBS();
@@ -537,6 +653,8 @@ public class SurveyActivity extends AppCompatActivity
         dialog.getWindow().clearFlags( WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 |WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+
     }
 
 /*
@@ -620,8 +738,17 @@ public class SurveyActivity extends AppCompatActivity
 
     public void showHealthCardInfoDialog(View view)    {
         // Create an alert builder
+        mPreferences3=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor2 = mPreferences3.edit();
+        language = mPreferences3.getString("lang","no data");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Health Card Information");
+        if (language.equals("Assamese")){
+            builder.setTitle("স্বাস্থ্য কাৰ্ডৰ তথ্য");
+        }else if (language.equals("Bengali")){
+            builder.setTitle("স্বাস্থ্য কার্ড তথ্য");
+        }else {
+            builder.setTitle("Health Card Information");
+        }
         // set the custom layout
         View customLayout = getLayoutInflater().inflate(R.layout.general_habits_recycler,null);
 
@@ -629,19 +756,19 @@ public class SurveyActivity extends AppCompatActivity
 
         healthCardRecycler = customLayout.findViewById(R.id.rvGeneralHabits);
         ArrayList<MemberDetailsForDialogModel> list = new ArrayList<>();
-        Cursor cursor1 = dBhandler.getHCIAtalAmritByMember(familySurveyId,r);
+        Cursor cursor1 = dBhandler.getHCIAtalAmrit(familySurveyId,r);
         list2 = new ArrayList<>();
         if (cursor1.moveToFirst()) {
             do {
                 MemberDetailsForDialogModel editModel = new MemberDetailsForDialogModel();
                 editModel.setMemberName(cursor1.getString(3));
-                if(cursor1.getString(0).equals("Yes")) { //atal amrit
+                if(cursor1.getString(4).equals("Yes")) { //atal amrit
                     editModel.setAtal(true);
                 } else {
                     editModel.setAtal(false);
                 }
 
-                if(cursor1.getString(1).equals("Yes")) { //ayushman
+                if(cursor1.getString(5).equals("Yes")) { //ayushman
                     editModel.setAyush(true);
                 } else {
                     editModel.setAyush(false);
@@ -654,6 +781,7 @@ public class SurveyActivity extends AppCompatActivity
         if (cursor1.getCount()>0){
             for (int i = 0; i < list2.size(); i++){
                 editModel2 = new MemberDetailsForDialogModel();
+                editModel2.setMemberName(list2.get(i).getMemberName());
                 editModel2.setAtal(list2.get(i).isAtal());
                 editModel2.setAyush(list2.get(i).isAyush());
 
@@ -694,7 +822,7 @@ public class SurveyActivity extends AppCompatActivity
                             dBhandler = new DBhandler(getApplicationContext());
                             dBhandler.addHCI(familySurveyId,member1.get(i).getMember_id(),
                                     getIntent().getStringExtra("familyId"), member1.get(i).getMemberName(),
-                                    isAtal,isAyush,memberSurveyIdArrayList.get(i),format);
+                                    isAtal,isAyush,memberSurveyIdArrayList.get(i),format,userid);
                         }
                         showHCIAtalAmrit(CallingTypeUpdate);
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_hci_atal_amrit = 1 " +
@@ -704,8 +832,8 @@ public class SurveyActivity extends AppCompatActivity
         dialog = builder.create();
         dialog.show();
     }
-/*
-    public void showCovidFIDialog(View view)    {
+
+/*    public void showCovidFIDialog(View view)    {
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Covid Facts and Information");
@@ -737,8 +865,8 @@ public class SurveyActivity extends AppCompatActivity
                         dBhandler = new DBhandler(getApplicationContext());
                         SQLiteDatabase db = dBhandler.getWritableDatabase();
                         db.execSQL("delete from tbl_covid_facts where family_id  = '" + familyid + "'" );
-                        */
-/*db.delete("tbl_covid_facts", null,null);*//*
+
+                        db.delete("tbl_covid_facts", null,null);
 
                         for (int i = 0; i < member.size(); i++){
                             dBhandler.addCovidFacts(member.get(i).getMember_id(),
@@ -755,13 +883,22 @@ public class SurveyActivity extends AppCompatActivity
         dialog.show();
 
 
-    }
-*/
+    }*/
+
 
     public void showOtherInfoDialog(View view)    {
+        mPreferences3=getSharedPreferences("language",MODE_PRIVATE);
+        preferencesEditor2 = mPreferences3.edit();
+        language = mPreferences3.getString("lang","no data");
         // Create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Other Info");
+        if (language.equals("Assamese")){
+            builder.setTitle("অন্যান্য তথ্য");
+        }else if (language.equals("Bengali")){
+            builder.setTitle("অন্যান্য তথ্য");
+        }else {
+            builder.setTitle("Other Info");
+        }
         // set the custom layout
         View customLayout = getLayoutInflater().inflate(R.layout.general_habits_recycler,null);
 
@@ -843,7 +980,7 @@ public class SurveyActivity extends AppCompatActivity
                             dBhandler = new DBhandler(getApplicationContext());
                             dBhandler.addOtherInfo(familySurveyId, member2.get(i).getMember_id(),
                                     getIntent().getStringExtra("familyId"), member2.get(i).getMemberName(),
-                                    isTelemed,isOpd,isAmbulance,memberSurveyIdArrayList.get(i),format);
+                                    isTelemed,isOpd,isAmbulance,memberSurveyIdArrayList.get(i),format,userid);
                         }
                         showOtherInfo(CallingTypeUpdate);
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_other_info = 1 " +
@@ -1140,13 +1277,19 @@ public class SurveyActivity extends AppCompatActivity
                 tvSignsSymptomsHeader.setTextSize(20);
                 tvSignsSymptomsHeader.setPadding(0,40,0,40);
                 tvSignsSymptomsHeader.setBackgroundColor(Color.parseColor("#046874"));
+
                 int checkedid = radioGroup.getCheckedRadioButtonId();
                 RadioButton radioButton = findViewById(checkedid);
                 if (radioButton.getText().equals("Assamese")){
                     byte[] data = Base64.decode(cursor.getString(3), Base64.DEFAULT);
                     String text = new String(data, StandardCharsets.UTF_8);
                     tvSignsSymptomsHeader.setText(text);
-                }else {
+                }else if (radioButton.getText().equals("Bengali")){
+                    byte[] data = Base64.decode(cursor.getString(7), Base64.DEFAULT);
+                    String text = new String(data, StandardCharsets.UTF_8);
+                    tvSignsSymptomsHeader.setText(text);
+                }
+                else {
                     tvSignsSymptomsHeader.setText(cursor.getString(2));
                 }
 
@@ -1223,16 +1366,19 @@ public class SurveyActivity extends AppCompatActivity
                                         String.valueOf(checkBoxesSymptoms.get(i).getTag(R.id.symptomHeader)),
                                         String.valueOf(checkBoxesSymptoms.get(i).getTag(R.id.symptomBody)),
                                         "true",
-                                        String.valueOf(checkBoxesSymptoms.get(i).getTag(R.id.surveymemberID)),format);
+                                        String.valueOf(checkBoxesSymptoms.get(i).getTag(R.id.surveymemberID)),format,
+                                        userid);
                                 checkBoxesSymptoms.get(i).setChecked(true);
                                 //ssModelArraylist.add(true);
                                 //Log.d("testingcheck", "onClick: "+ssModelArraylist.set(i,checkBoxesSymptoms.get(i).isChecked()));
-                                showSymptomsMembers();
 
                             }
                         }
+
                         db.execSQL("UPDATE tbl_overall_flag SET tbl_symptoms_member = 1 " +
                                 "WHERE group_surveyid = '" + familySurveyId + "'");
+
+                        showSymptomsMembers();
                     }
 
                 });
@@ -1245,13 +1391,15 @@ public class SurveyActivity extends AppCompatActivity
     }
 
     public void showSymptomsMembers(){
+
         DBhandler dBhandler = new DBhandler(getApplicationContext());
 
         TextView tvMemberName,tvSymptomName;
         LinearLayout displaySymptomsMember = findViewById(R.id.ll_signsAndSymptoms);
         displaySymptomsMember.removeAllViews();
-        for (int i = 0; i < member.size(); i++){
-            Cursor cursor = dBhandler.getSymptomsMember(member.get(i).getMember_id(),r);
+
+        for (int i = 0; i < memberList.size(); i++){
+            Cursor cursor = dBhandler.getSymptomsMember(memberList.get(i),r);
             if (cursor.moveToFirst()) {
                 tvMemberName = new TextView(SurveyActivity.this);
                 tvMemberName.setPadding(10,10,10,10);
@@ -1264,13 +1412,15 @@ public class SurveyActivity extends AppCompatActivity
                     tvSymptomName = new TextView(SurveyActivity.this);
                     tvSymptomName.setPadding(10,10,10,10);
                     tvSymptomName.setTextColor(Color.parseColor("#000000"));
-                    tvSymptomName.setGravity(Gravity.CENTER);
-                    String sourceString2 = "<b>" + " Symptoms : "+"</b>"+cursor.getString(6);
+                    String sourceString2 = "<b>" + " Symptom : "+"</b>"+cursor.getString(6);
                     tvSymptomName.setText(Html.fromHtml(sourceString2));
                     displaySymptomsMember.addView(tvSymptomName);
                 } while (cursor.moveToNext());
+
             }
+
         }
+
     }
 
 /*
@@ -1355,78 +1505,202 @@ public class SurveyActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == VIDEO_RECORD_CODE){
 
-            if (resultCode == RESULT_OK){
-                ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                        .getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
-                    // connected to the internet
-                    if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                        // connected to wifi
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (requestCode == VIDEO_RECORD_CODE){
+                if (resultCode == RESULT_OK && Objects.requireNonNull(data).getData()!=null){
+                    try {
+                        String root = Environment.getExternalStoragePublicDirectory
+                                (Environment.DIRECTORY_DOWNLOADS).toString();
+                        myDir = new File(root + "/.consent_video");
+                        if (!myDir.exists()) {
+                            myDir.mkdirs();
+                        }
+                        String name = ++num + ".mp4";
+                        myDir = new File(myDir, name);
+                        AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(data.getData(), "r");
+                        FileInputStream fis = videoAsset.createInputStream();
+                        FileOutputStream fos = new FileOutputStream(myDir);
 
-                        //send survey data to server
-                        saveDataToServer();
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = fis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, length);
+                        }
+                        fis.close();
+                        fos.close();
+                    } catch (IOException e) {
+                        // TODO: handle error
+                    }
+                    uri = Uri.fromFile(myDir);
 
-                        //send video consent to server
-                        videoPath = data.getData();
-                        Log.d("pathofvideo", "onActivityResult: "+videoPath);
-                        uploadPDF(familySurveyId+".mp4",videoPath);
+                    ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                        // connected to the internet
+                        if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                            // connected to wifi
+                            //send survey data to server
+                            saveDataToServer();
+                            //send video consent to server
+
+                            videoPath = uri;
+                            Log.d("pathofvideo", "onActivityResult: "+videoPath);
+                            uploadPDF(familySurveyId+".mp4",videoPath);
+                            Toast.makeText(SurveyActivity.this,
+                                    "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(SurveyActivity.this,FamilyHeadActivity.class);
+                            i.putExtra("surveyId",familySurveyId);
+                            startActivity(i);
+                            finish();
+
+                        } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                            // connected to mobile data
+                            //send survey data to server
+                            saveDataToServer();
+                            //send video consent to server
+                            videoPath = uri;
+                            Log.d("pathofvideo", "onActivityResult: "+videoPath);
+                            uploadPDF(familySurveyId+".mp4",videoPath);
+                            Toast.makeText(SurveyActivity.this,
+                                    "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(SurveyActivity.this,FamilyHeadActivity.class);
+                            i.putExtra("surveyId",familySurveyId);
+                            startActivity(i);
+                            finish();
+                        }
+                    } else {
+                        DBhandler dBhandler = new DBhandler(getApplicationContext());
+                        // saving data locally if no internet
+                        for (int i = 0; i < memberList.size(); i++){
+                            videoPath = uri;
+                            Log.d("pathofvideo", "onActivityResult: "+videoPath);
+
+                            dBhandler.addVideoPath(familySurveyId, familyid, videoPath,format,userid);
+                            SQLiteDatabase db = dBhandler.getWritableDatabase();
+
+                            db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
+                                    "WHERE group_surveyid = '" + familySurveyId + "'");
+                            db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
+                                    "WHERE group_surveyid = '" + familySurveyId + "'");
+
+                        }
+
                         Toast.makeText(SurveyActivity.this,
-                                "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
+                                "Data saved locally due to no Internet Connection", Toast.LENGTH_LONG).show();
+                        //clearTables();
                         Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
                         i.putExtra("surveyId",familySurveyId);
                         startActivity(i);
                         finish();
-
-                    } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                        // connected to mobile data
-                        //send survey data to server
-                        saveDataToServer();
-
-                        //send video consent to server
-                        videoPath = data.getData();
-                        Log.d("pathofvideo", "onActivityResult: "+videoPath);
-                        uploadPDF(familySurveyId+".mp4",videoPath);
-                        Toast.makeText(SurveyActivity.this,
-                                "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
-                        i.putExtra("surveyId",familySurveyId);
-                        startActivity(i);
-                        finish();
+                        // not connected to the internet
                     }
-                } else {
-                    DBhandler dBhandler = new DBhandler(getApplicationContext());
-                    // saving data locally if no internet
-                    for (int i = 0; i < memberList.size(); i++){
-                        videoPath = data.getData();
-                        Log.d("pathofvideo", "onActivityResult: "+videoPath);
-                        dBhandler.addVideoPath(familySurveyId, familyid, videoPath,format);
-                        SQLiteDatabase db = dBhandler.getWritableDatabase();
+                }
+                else if (resultCode == RESULT_CANCELED){
 
-                        db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
-                                "WHERE group_surveyid = '" + familySurveyId + "'");
-                        db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
-                                "WHERE group_surveyid = '" + familySurveyId + "'");
+                }else{
 
-                    }
-
-                    Toast.makeText(SurveyActivity.this,
-                            "Data saved locally due to no Internet Connection", Toast.LENGTH_LONG).show();
-                    //clearTables();
-                    Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
-                    i.putExtra("surveyId",familySurveyId);
-                    startActivity(i);
-                    finish();
-                    // not connected to the internet
                 }
             }
-            else if (resultCode == RESULT_CANCELED){
+            // upload your video file
+        }else{
+            if (requestCode == VIDEO_RECORD_CODE){
+                if (resultCode == RESULT_OK){
+                    try {
+                        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                        myDir = new File(root + "/.consent_video");
+                        if (!myDir.exists()) {
+                            myDir.mkdirs();
+                        }
+                        String name = ++num + ".mp4";
+                        myDir = new File(myDir, name);
+                        AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(data.getData(), "r");
+                        FileInputStream fis = videoAsset.createInputStream();
+                        FileOutputStream fos = new FileOutputStream(myDir);
 
-            }else{
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = fis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, length);
+                        }
+                        fis.close();
+                        fos.close();
+                    } catch (IOException e) {
+                        // TODO: handle error
+                    }
+                    uri = Uri.fromFile(myDir);
 
+                    ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                        // connected to the internet
+                        if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                            // connected to wifi
+                            //send survey data to server
+                            saveDataToServer();
+                            //send video consent to server
+                            videoPath = uri;
+                            Log.d("pathofvideo", "onActivityResult: "+videoPath);
+                            uploadPDF(familySurveyId+".mp4",videoPath);
+                            Toast.makeText(SurveyActivity.this,
+                                    "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
+                            i.putExtra("surveyId",familySurveyId);
+                            startActivity(i);
+                            finish();
+
+                        } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                            // connected to mobile data
+                            //send survey data to server
+                            saveDataToServer();
+
+                            //send video consent to server
+                            videoPath = uri;
+                            Log.d("pathofvideo", "onActivityResult: "+videoPath);
+                            uploadPDF(familySurveyId+".mp4",videoPath);
+                            Toast.makeText(SurveyActivity.this,
+                                    "Data successfully uploaded and saved", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
+                            i.putExtra("surveyId",familySurveyId);
+                            startActivity(i);
+                            finish();
+                        }
+                    } else {
+                        DBhandler dBhandler = new DBhandler(getApplicationContext());
+                        // saving data locally if no internet
+                        for (int i = 0; i < memberList.size(); i++){
+                            videoPath = uri;
+                            Log.d("pathofvideo", "onActivityResult: "+videoPath);
+
+                            dBhandler.addVideoPath(familySurveyId, familyid, videoPath,format,userid);
+                            SQLiteDatabase db = dBhandler.getWritableDatabase();
+
+                            db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
+                                    "WHERE group_surveyid = '" + familySurveyId + "'");
+                            db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
+                                    "WHERE group_surveyid = '" + familySurveyId + "'");
+
+                        }
+
+                        Toast.makeText(SurveyActivity.this,
+                                "Data saved locally due to no Internet Connection", Toast.LENGTH_LONG).show();
+                        //clearTables();
+                        Intent i = new Intent(SurveyActivity.this,ShowSurveyActivity.class);
+                        i.putExtra("surveyId",familySurveyId);
+                        startActivity(i);
+                        finish();
+                        // not connected to the internet
+                    }
+                }
+                else if (resultCode == RESULT_CANCELED){
+
+                }else{
+
+                }
             }
+            // in android version lower than M
         }
     }
 
@@ -1454,23 +1728,7 @@ public class SurveyActivity extends AppCompatActivity
 
     }
 
-    private void OnGPS() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes",
-                new  DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
+
     private void displayLocationSettingsRequest(Context context) {
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API).build();
@@ -1511,6 +1769,7 @@ public class SurveyActivity extends AppCompatActivity
             }
         });
     }
+
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(
                 SurveyActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -1521,8 +1780,8 @@ public class SurveyActivity extends AppCompatActivity
                     REQUEST_LOCATION);
         } else {
             GPSTracker abc = new GPSTracker(this);
-            latitude = String.valueOf(abc.getLatitude());
-            longitude = String.valueOf(abc.getLongitude());
+            latitude = abc.getLatitude();
+            longitude = abc.getLongitude();
 
         }
     }
@@ -1554,10 +1813,23 @@ public class SurveyActivity extends AppCompatActivity
         return myQuittingDialogBox;
 
     }
+    public void clearTablesAfterSurveyUploaded(){
+        SQLiteDatabase db = dBhandler.getWritableDatabase();
+        db.execSQL("delete from tbl_general_habits_alcohol where group_surveyid  = '" + familySurveyId + "'" );
+        db.execSQL("delete from tbl_test_findings where group_surveyid  = '" + familySurveyId + "'" );
+        db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + familySurveyId + "'" );
+        db.execSQL("delete from tbl_other_info where group_surveyid  = '" + familySurveyId + "'" );
+        db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + familySurveyId + "'" );
+        db.execSQL("delete from tbl_survey_type_flag where group_surveyid  = '" + familySurveyId + "'" );
+        db.execSQL("delete from tbl_overall_flag where group_surveyid  = '" + familySurveyId + "'");
+        db.execSQL("delete from tbl_video_store where group_surveyid  = '" + familySurveyId + "'");
+    }
+
     public void clearTables(){
         SQLiteDatabase db = dBhandler.getWritableDatabase();
 
-        Cursor cursor1 = db.rawQuery(" select group_surveyid from  tbl_survey_type_flag where group_surveyid = '" + familySurveyId +"'",null);
+        Cursor cursor1 = db.rawQuery(" select group_surveyid from  tbl_survey_type_flag where" +
+                " group_surveyid = '" + familySurveyId +"'",null);
         if (cursor1.getCount()>0){
             //do nothing
         }else{
@@ -1566,6 +1838,7 @@ public class SurveyActivity extends AppCompatActivity
             db.execSQL("delete from tbl_hci_atal_amrit where group_surveyid  = '" + familySurveyId + "'" );
             db.execSQL("delete from tbl_other_info where group_surveyid  = '" + familySurveyId + "'" );
             db.execSQL("delete from tbl_symptoms_member where group_surveyid  = '" + familySurveyId + "'" );
+
         }
 
 
@@ -1609,6 +1882,7 @@ public class SurveyActivity extends AppCompatActivity
             if (cursor.moveToFirst()){
                 do {
                     if (cursor.getString(0).equals(familyid)) {
+                        jsonobjectHeadDetails.put(cursor.getColumnName(0), cursor.getString(0));
                         jsonobjectHeadDetails.put(cursor.getColumnName(1), cursor.getString(1));
                         jsonobjectHeadDetails.put(cursor.getColumnName(2), cursor.getString(2));
                         jsonobjectHeadDetails.put(cursor.getColumnName(3), cursor.getString(3));
@@ -1619,7 +1893,8 @@ public class SurveyActivity extends AppCompatActivity
                         jsonobjectHeadDetails.put(cursor.getColumnName(8), cursor.getString(8));
                         jsonobjectHeadDetails.put(cursor.getColumnName(9), cursor.getString(9));
                         jsonobjectHeadDetails.put(cursor.getColumnName(10), cursor.getString(10));
-                        jsonobjectHeadDetails.put(cursor.getColumnName(0), cursor.getString(0));
+                        jsonobjectHeadDetails.put(cursor.getColumnName(11), cursor.getString(11));
+
 
                     }
                 }while (cursor.moveToNext());
@@ -1680,6 +1955,7 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor3.getColumnName(7), cursor3.getString(7));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(8), cursor3.getString(8));
                             jsonobjectSymptomsData.put(cursor3.getColumnName(9), cursor3.getString(9));
+                            jsonobjectSymptomsData.put(cursor3.getColumnName(10), cursor3.getString(10));
                         }
 
                     }while (cursor3.moveToNext());
@@ -1698,6 +1974,7 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor4.getColumnName(7), cursor4.getString(7));
                             jsonobjectSymptomsData.put(cursor4.getColumnName(8), cursor4.getString(8));
                             jsonobjectSymptomsData.put(cursor4.getColumnName(9), cursor4.getString(9));
+                            jsonobjectSymptomsData.put(cursor4.getColumnName(10), cursor4.getString(10));
 
                         }
 
@@ -1715,6 +1992,7 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor5.getColumnName(5), cursor5.getString(5));
                             jsonobjectSymptomsData.put(cursor5.getColumnName(6), cursor5.getString(6));
                             jsonobjectSymptomsData.put(cursor5.getColumnName(7), cursor5.getString(7));
+                            jsonobjectSymptomsData.put(cursor5.getColumnName(8), cursor5.getString(8));
                         }
 
                     }while (cursor5.moveToNext());
@@ -1733,6 +2011,7 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptomsData.put(cursor9.getColumnName(6), cursor9.getString(6));
                             jsonobjectSymptomsData.put(cursor9.getColumnName(7), cursor9.getString(7));
                             jsonobjectSymptomsData.put(cursor9.getColumnName(8), cursor9.getString(8));
+                            jsonobjectSymptomsData.put(cursor9.getColumnName(9), cursor9.getString(9));
 
                         }
 
@@ -1756,6 +2035,7 @@ public class SurveyActivity extends AppCompatActivity
                             jsonobjectSymptoms.put(cursor6.getColumnName(7), cursor6.getString(7));
                             jsonobjectSymptoms.put(cursor6.getColumnName(8), cursor6.getString(8));
                             jsonobjectSymptoms.put(cursor6.getColumnName(9), cursor6.getString(9));
+                            jsonobjectSymptoms.put(cursor6.getColumnName(10), cursor6.getString(10));
                         }
                         symptomArray1.put(jsonobjectSymptoms);
 
@@ -1770,9 +2050,9 @@ public class SurveyActivity extends AppCompatActivity
                 //jsonobjectSymptoms.put(memberID.get(i),jsonobjectSymptomsData);
             }
 
-            jsonobject.put("Head Data", jsonobjectHeadDetails);
-            jsonobject.put("Member Data", memberArray);
-            jsonobject.put("Symptoms Header", symptomsArray);
+            jsonobject.put("head_data", jsonobjectHeadDetails);
+            jsonobject.put("member_data", memberArray);
+            jsonobject.put("symptoms_header", symptomsArray);
          //   jsonobject.put("Symptoms Details", storingSymptoms);
             js.put("data", jsonobject);
 
@@ -1791,6 +2071,19 @@ public class SurveyActivity extends AppCompatActivity
 
                             JSONObject obj = new JSONObject(response);
                             Log.d("rajnikant2", ">>get result" + obj);
+                            String dataObj = obj.getString("status");
+                            if (dataObj.equals("1")){
+                                clearTablesAfterSurveyUploaded();
+                            }else{
+                                dBhandler.addVideoPath(familySurveyId, familyid, videoPath,format,userid);
+                                SQLiteDatabase db = dBhandler.getWritableDatabase();
+
+                                db.execSQL("UPDATE tbl_overall_flag SET tbl_video_store = 1 " +
+                                        "WHERE group_surveyid = '" + familySurveyId + "'");
+                                db.execSQL("UPDATE tbl_overall_flag SET final_save = 1 " +
+                                        "WHERE group_surveyid = '" + familySurveyId + "'");
+                                Toast.makeText(getApplicationContext(), "Failed to upload", Toast.LENGTH_SHORT).show();
+                            }
 
                             //String message = obj.getString("message");
                             Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
@@ -1798,15 +2091,16 @@ public class SurveyActivity extends AppCompatActivity
                             // }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            removeSimpleProgressDialog();
                             Log.d("rajnikant3", ">>exception" + e.getMessage());
                         }
 
                     }
-
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        removeSimpleProgressDialog();
                         //displaying the error in toast if occurrs
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         //Log.d("rajnikant", ">>get result" + error.getMessage());
@@ -2016,5 +2310,19 @@ public class SurveyActivity extends AppCompatActivity
         TypeToken<TreeMap<String, ArrayList<String>>> token = new TypeToken<TreeMap<String, ArrayList<String>>>() {};
         TreeMap<String, ArrayList<String>> retrievedMap=new Gson().fromJson(json,token.getType());
         return retrievedMap;
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

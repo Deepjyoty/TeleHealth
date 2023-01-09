@@ -1,26 +1,22 @@
 package com.gnrc.telehealth;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.gnrc.telehealth.Fragments.NewsFeedFragment;
 import com.gnrc.telehealth.Model.Model_newsfeed;
-import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -58,14 +54,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
         MediaController mediaController = new MediaController(this);
         if (intent!=null){
             dataModel = (Model_newsfeed) intent.getSerializableExtra("data");
-            if (Objects.equals(dataModel.getContent_type(), "video")){
-                Toast.makeText(this, "Its a video", Toast.LENGTH_SHORT).show();
-            }
-/*            videoUrl = dataModel.getVideo_url();
+
+            videoUrl = dataModel.getVideo_url();
             Uri uri = Uri.parse(videoUrl);
             videoView.setVideoURI(uri);
             String dat = dataModel.getContent_desc();
-            Log.d("deep2", "onCreate: " + dat);*/
+            Log.d("deep2", "onCreate: " + dat);
 
 
             mediaController.setAnchorView(videoView);
@@ -89,5 +83,28 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 }

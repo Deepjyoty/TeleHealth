@@ -3,20 +3,16 @@ package com.gnrc.telehealth;
 import static com.gnrc.telehealth.FamilyHeadActivity.removeSimpleProgressDialog;
 import static com.gnrc.telehealth.FamilyHeadActivity.showSimpleProgressDialog;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -25,14 +21,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -113,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
 
         }
         pdDialog= new ProgressDialog(LoginActivity.this);
-        pdDialog.setTitle("LoginActivity please wait...");
+        pdDialog.setTitle("Logging in please wait...");
         pdDialog.setCancelable(false);
 
         loginButton = (Button) findViewById(R.id.loginbtn);
@@ -142,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                         }else {
                             Loginrequest();
                         }
-                        Toast.makeText(LoginActivity.this, "logged in", Toast.LENGTH_SHORT).show();
+
 
                     } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                         // connected to mobile data
@@ -154,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                         }else {
                             Loginrequest();
                         }
-                        Toast.makeText(LoginActivity.this, "logged in", Toast.LENGTH_SHORT).show();
+
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Check your Internet connection", Toast.LENGTH_SHORT).show();
@@ -232,7 +224,6 @@ public class LoginActivity extends AppCompatActivity {
                             String message = jsonObject.getString("message");
                             String user_id = jsonObject.getString("user_id");
                             if(status.equals("1")){
-                                Toast.makeText(getApplicationContext(),"Logged In  Success",Toast.LENGTH_LONG).show();
                                 pdDialog.dismiss();
                                 preferencesEditor.putString("issignedin","true");
                                 preferencesEditor.putString("status",status);
@@ -250,14 +241,14 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(getApplicationContext(),"Registration Error !1"+e,Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(),"Registration Error "+e,Toast.LENGTH_LONG).show();
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 pdDialog.dismiss();
-                Toast.makeText(getApplicationContext(),"LoginActivity Error !2"+error,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Login Error" + error,Toast.LENGTH_LONG).show();
             }
         })
         {
@@ -397,6 +388,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        removeSimpleProgressDialog();
                         //displaying the error in toast if occurrs
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -437,8 +429,6 @@ public class LoginActivity extends AppCompatActivity {
 
                             Log.d("deep", ">>" + response);
 
-                            String message = obj.getString("status");
-                            Toast.makeText(LoginActivity.this, ""+ message, Toast.LENGTH_SHORT).show();
                             JSONArray jsonObject = obj.getJSONArray("data");
 
                             for (int i = 0; i < jsonObject.length(); i++) {
@@ -555,6 +545,29 @@ public class LoginActivity extends AppCompatActivity {
         Intent i = new Intent(this, ChoiceActivity.class);
         startActivity(i);
         finish();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
 }

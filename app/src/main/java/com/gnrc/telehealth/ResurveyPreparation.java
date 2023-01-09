@@ -3,15 +3,15 @@ package com.gnrc.telehealth;
 import static com.gnrc.telehealth.FamilyHeadActivity.removeSimpleProgressDialog;
 import static com.gnrc.telehealth.FamilyHeadActivity.showSimpleProgressDialog;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,14 +19,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.gnrc.telehealth.Adapter.Family_Head_Adapter;
 import com.gnrc.telehealth.Adapter.ResurveyAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
-import com.gnrc.telehealth.Model.AddFamilyModel;
-import com.gnrc.telehealth.Model.Family_Head_Model;
-import com.gnrc.telehealth.Model.ResurveyFamilyMemberModel;
 import com.gnrc.telehealth.Model.ResurveyModel;
-import com.gnrc.telehealth.Model.ResurveySymptomHeaderModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -237,5 +232,27 @@ public class ResurveyPreparation extends AppCompatActivity {
         requestQueue.add(stringRequest);
 
     }
+    @Override
+    public void onStart() {
+        super.onStart();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 }

@@ -30,33 +30,27 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="HEALTH CARD INFORMATION"
-                    android:textColor="#F5F5F5"
-                    android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/tvHciMemberName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
                     android:gravity="center"
+                    android:padding="10dp"
                     android:text="Member Name"
                     android:textColor="#F5F5F5"
                     android:textSize="16sp" />
                         <TextView
+                            android:id="@+id/tv_atalAmrit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:padding="5dp"
+                            android:textStyle="bold"
                             android:text="Are you a beneficiary of Atal Amrit Abhiyan?"
                             android:textColor="@color/black" />
                     <LinearLayout
-                        android:id="@+id/ll_AtalAmritAbhyan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
@@ -81,14 +75,15 @@
                         </RadioGroup>
                     </LinearLayout>
                         <TextView
+                            android:id="@+id/tv_ayushBharat"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:padding="5dp"
+                            android:textStyle="bold"
                             android:text="Are you a beneficiary of Ayushman Bharat Scheme?"
                             android:textColor="@color/black" />
                     <LinearLayout
-                        android:id="@+id/ll_AyushmanBharat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"

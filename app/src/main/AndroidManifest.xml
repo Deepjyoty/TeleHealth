@@ -8,6 +8,12 @@
         android:name="com.gnrc.testapp.permission.KUBI_MESSAGE"
         android:protectionLevel="signature" />
 
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!--
+ Required only if your app needs to access audio files
+         that other apps created.
+    -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -29,10 +35,27 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SmTrainingActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.gnrc.telehealth.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
             android:name=".PermissonActivity"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
-
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -60,7 +83,8 @@
         </activity>
         <activity
             android:name=".SurveyActivity"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -100,10 +124,11 @@
         <activity
             android:name=".ChoiceActivity"
             android:exported="true"
-            android:label="@string/title_activity_choice"
+            android:label="GNRC Tele Health"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -133,6 +158,7 @@
             android:noHistory="true" />
         <activity android:name=".Main2Activity" />
         <activity android:name=".MainActivity" />
+
         <activity android:name=".FamilyHeadActivity" />
         <activity
             android:name=".ui.InitAuthSDKActivity"
@@ -194,6 +220,10 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

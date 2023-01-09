@@ -1,7 +1,10 @@
 package com.gnrc.telehealth.Adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -84,7 +87,8 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                             resurveyModelArrayList.get(i).getSSFM_CITY_CODE(),
                             resurveyModelArrayList.get(i).getSSFM_DIST_CODE(),
                             resurveyModelArrayList.get(i).getSSFM_STATE_CODE(),
-                            resurveyModelArrayList.get(i).getSSFM_PIN());
+                            resurveyModelArrayList.get(i).getSSFM_PIN(),
+                            resurveyModelArrayList.get(i).getUserId());
                 /*for (int i = 0; i<resurveyModelArrayList.size(); i++){
 
                 }*/
@@ -126,7 +130,8 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                                 resurveyModelArrayList3.get(k).getMemberSurvey_id(),
                                 resurveyModelArrayList3.get(k).getLatitude(),
                                 resurveyModelArrayList3.get(k).getLongtitude(),
-                                resurveyModelArrayList3.get(k).getSSR_CRT_DT());
+                                resurveyModelArrayList3.get(k).getSSR_CRT_DT(),
+                                resurveyModelArrayList.get(i).getUserId());
                         memberId.add(resurveyModelArrayList3.get(k).getMemberId());
                         surveyID = resurveyModelArrayList3.get(k).getGroup_surveyid();
                         familyID = resurveyModelArrayList3.get(k).getFamily_id();
@@ -142,7 +147,8 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                                 resurveyModelArrayList3.get(k).getType(),
                                 resurveyModelArrayList3.get(k).getValue(),
                                 resurveyModelArrayList3.get(k).getMemberSurvey_id(),
-                                resurveyModelArrayList3.get(k).getSSR_CRT_DT());
+                                resurveyModelArrayList3.get(k).getSSR_CRT_DT(),
+                                resurveyModelArrayList.get(i).getUserId());
 
                         //Insert Health card Information to Sqlite
                         dBhandler.addHCI(resurveyModelArrayList3.get(k).getGroup_surveyid(),
@@ -152,7 +158,8 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                                 resurveyModelArrayList3.get(k).getAtal_amrit(),
                                 resurveyModelArrayList3.get(k).getAyushman_bharat(),
                                 resurveyModelArrayList3.get(k).getMemberSurvey_id(),
-                                resurveyModelArrayList3.get(k).getSSR_CRT_DT());
+                                resurveyModelArrayList3.get(k).getSSR_CRT_DT(),
+                                resurveyModelArrayList.get(i).getUserId());
 
                         dBhandler.addOtherInfo(resurveyModelArrayList3.get(k).getGroup_surveyid(),
                                 resurveyModelArrayList3.get(k).getMemberId(),
@@ -162,7 +169,8 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                                 resurveyModelArrayList3.get(k).getOpd_booked(),
                                 resurveyModelArrayList3.get(k).getAmbulance_booked(),
                                 resurveyModelArrayList3.get(k).getMemberSurvey_id(),
-                                resurveyModelArrayList3.get(k).getSSR_CRT_DT());
+                                resurveyModelArrayList3.get(k).getSSR_CRT_DT(),
+                                resurveyModelArrayList.get(i).getUserId());
 
 
                     }
@@ -177,13 +185,17 @@ public class ResurveyAdapter extends RecyclerView.Adapter<ResurveyAdapter.MyView
                                 resurveyModelArrayList4.get(l).getATR_DESC(),
                                 resurveyModelArrayList4.get(l).getCheckState(),
                                 resurveyModelArrayList4.get(l).getMemberSurvey_id(),
-                                resurveyModelArrayList4.get(l).getSSR_CRT_DT());
+                                resurveyModelArrayList4.get(l).getSSR_CRT_DT(),
+                                resurveyModelArrayList.get(i).getUserId());
                     }
 
                 }
+                SharedPreferences mPreferences= context.getSharedPreferences("com.gnrc.telehealth",MODE_PRIVATE);
 
+                //Checking for the value stored in shared preference
+                String userid = mPreferences.getString("user_id","NoValue");
                 for (int j = 0; j<memberId.size();j++){
-                    dBhandler.addSurveyTypeFlag(surveyID,familyID,memberId.get(j),"R");
+                    dBhandler.addSurveyTypeFlag(surveyID,familyID,memberId.get(j),"R",userid);
                 }
 
 

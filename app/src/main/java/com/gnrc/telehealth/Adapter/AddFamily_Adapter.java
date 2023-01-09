@@ -44,6 +44,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
         holder.name.setText(addFamilyModelArrayList.get(position).getPtName());
         holder.gender.setText(addFamilyModelArrayList.get(position).getGender());
         holder.age.setText(addFamilyModelArrayList.get(position).getYear());
+        /*holder.counter.setText("Member\n"+String.valueOf(++position));*/
         //holder.edit.setText(familyHeadModelArrayList.get(position).getEdittext());
 
         //familyHeadModelArrayList.get(position).getDescription();
@@ -58,7 +59,7 @@ public class AddFamily_Adapter extends RecyclerView.Adapter<AddFamily_Adapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView name, gender ,age,survey;
+        TextView name, gender ,age,survey,counter;
         ImageView iv;
 
         public MyViewHolder(View itemView) {

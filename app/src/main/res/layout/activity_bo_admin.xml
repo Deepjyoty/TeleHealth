@@ -51,7 +51,6 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/btn_batch_add_bo"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="3dp"

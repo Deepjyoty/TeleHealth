@@ -9,10 +9,18 @@ public class ResurveyModel {
             SSR_BLOCK_NAME,SSR_PANCHAYAT_NAME,SSR_VILLAGE_NAME,SSR_CRT_DT,SSR_CRT_USER_ID,SSR_LST_UPD_DT,family_id,
             smoking,alcohol,memberSurvey_id,latitude,longtitude,sys,dia,type,value,atal_amrit,ayushman_bharat,
             ATR_CODE,PRT_DESC,ATR_DESC,checkState,group_surveyid,member_name, telemedicine_booked, opd_booked,
-            ambulance_booked,memberId,timestamp;
+            ambulance_booked,memberId,timestamp,userId;
 
     ArrayList<ResurveyFamilyMemberModel> resurveyModelArrayList;
     ArrayList<ResurveySymptomHeaderModel> resurveySymptomHeaderModelArrayList;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getTimestamp() {
         return timestamp;

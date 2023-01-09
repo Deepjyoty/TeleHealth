@@ -8,7 +8,6 @@
 
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -47,7 +46,6 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/ll_covidMemberName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -71,7 +69,6 @@
                         android:textColor="@color/black" />
 
                     <LinearLayout
-                        android:id="@+id/ll_covidSymptom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -110,7 +107,6 @@
                         android:textColor="@color/black" />
 
                     <LinearLayout
-                        android:id="@+id/ll_vaccineDoses"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -157,7 +153,6 @@
                         android:textColor="@color/black" />
 
                     <LinearLayout
-                        android:id="@+id/ll_vaccineNotTaken"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"

@@ -9,21 +9,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
-//import android.support.v4.app.NotificationCompat;
-//import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
-
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.FileProvider;
 
 public class JavaScriptInterface {
     private Context context;

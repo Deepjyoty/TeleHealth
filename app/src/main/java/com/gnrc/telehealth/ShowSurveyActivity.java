@@ -1,31 +1,31 @@
 package com.gnrc.telehealth;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
-import com.gnrc.telehealth.Adapter.Family_Head_Adapter;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.gnrc.telehealth.Adapter.ShowSurveyAdapter;
 import com.gnrc.telehealth.DatabaseSqlite.DBhandler;
 import com.gnrc.telehealth.Model.AddFamilyModel;
 import com.gnrc.telehealth.Model.MemberDetailsForDialogModel;
 import com.gnrc.telehealth.Network.MyReceiver;
+import com.gnrc.telehealth.Network.NetworkListener;
 
 import java.util.ArrayList;
 
-public class ShowSurveyActivity extends AppCompatActivity {
+public class ShowSurveyActivity extends AppCompatActivity implements NetworkListener {
     Button newSurvey;
     DBhandler dBhandler;
     ArrayList<MemberDetailsForDialogModel> surveydetailsarraylist;
@@ -34,36 +34,25 @@ public class ShowSurveyActivity extends AppCompatActivity {
     ShowSurveyAdapter showSurveyAdapter;
     RecyclerView recyclerView;
     private BroadcastReceiver MyReceiver = null;
+    ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_survey);
-        MyReceiver = new MyReceiver();
+        setTitle("Pending Surveys To Be Synced");
+
+        constraintLayout = findViewById(R.id.cl_noDataToSync);
+        MyReceiver = new MyReceiver(this);
         MyReceiver.getResultData();
         Log.d("receiver", "onCreate: "+MyReceiver.getResultData());
 
         recyclerView = findViewById(R.id.rvShowSurvey);
-        /*newSurvey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ShowSurveyActivity.this, SurveyActivity.class);
-                i.putExtra("familyId",getIntent().getStringExtra("familyId"));
-                i.putExtra("headPhoneNo",getIntent().getStringExtra("headPhoneNo"));
-                startActivity(i);
-            }
-        });*/
-        populateRecycler();
-    }
-    public void syncSurvey(){
-        DBhandler dBhandler = new DBhandler(getApplicationContext());
-        Cursor cursor = dBhandler.getFamilyDbData();
-        if (cursor.moveToFirst()){
-            do {
 
-            }while(cursor.moveToNext());
-        }
+        populateRecycler();
+
     }
+
     /**
      * register bradcast receiver for network
      */
@@ -97,40 +86,44 @@ public class ShowSurveyActivity extends AppCompatActivity {
 
         if (cursor.getCount()>0){
             surveydetailsarraylist = new ArrayList<>();
-            if (cursor.moveToFirst()){
-                do {
-                    surveymodel =new MemberDetailsForDialogModel();
-                    surveymodel.setGroupSurveyID(cursor.getString(0));
-                    surveymodel.setFamilyID(cursor.getString(1));
-                    Cursor cursor1 = dBhandler.getFamilyMasterNameAddress(cursor.getString(1));
-                    if (cursor1.getCount()>0){
-                        if (cursor1.moveToFirst()){
-                            surveymodel.setHeadName(cursor1.getString(0));
-                            surveymodel.setHeadAddress(cursor1.getString(1));
+            if (cursor.getCount()>0){
+                if (cursor.moveToFirst()){
+                    do {
+                        surveymodel =new MemberDetailsForDialogModel();
+                        surveymodel.setGroupSurveyID(cursor.getString(0));
+                        surveymodel.setFamilyID(cursor.getString(1));
+                        Cursor cursor1 = dBhandler.getFamilyMasterNameAddress(cursor.getString(1));
+                        if (cursor1.getCount()>0){
+                            if (cursor1.moveToFirst()){
+                                surveymodel.setHeadName(cursor1.getString(0));
+                                surveymodel.setHeadAddress(cursor1.getString(1));
+                            }
                         }
-                    }
-                    surveymodel.setVideoPath(cursor.getString(2));
-                    surveymodel.setTimeStamp(cursor.getString(3));
-                    /*SQLiteDatabase db = dBhandler.getWritableDatabase();
-                    db.execSQL("select SSFM_HEAD_NAME, SSFM_ADDR from  tbl_family_master where family_id  = '" + familyid + "'" );*/
+                        surveymodel.setVideoPath(cursor.getString(2));
+                        surveymodel.setTimeStamp(cursor.getString(3));
 
-                    surveydetailsarraylist.add(surveymodel);
-                }while (cursor.moveToNext());
-                showSurveyAdapter = new ShowSurveyAdapter(this, surveydetailsarraylist);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
-                        LinearLayoutManager.VERTICAL,false));
-                recyclerView.setAdapter(showSurveyAdapter);
-                showSurveyAdapter.notifyDataSetChanged();
+                        surveydetailsarraylist.add(surveymodel);
+                    }while (cursor.moveToNext());
+                    showSurveyAdapter = new ShowSurveyAdapter(this, surveydetailsarraylist);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
+                            LinearLayoutManager.VERTICAL,false));
+                    recyclerView.setAdapter(showSurveyAdapter);
+                    showSurveyAdapter.notifyDataSetChanged();
+                }
+
+            }else{
+                constraintLayout.setVisibility(View.VISIBLE);
             }
         }
     }
+
 
     @Override
     public void onStart() {
         super.onStart();
         registerNetworkReceiver();
         populateRecycler();
-
+        showSurveyAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -138,7 +131,7 @@ public class ShowSurveyActivity extends AppCompatActivity {
         super.onResume();
         registerNetworkReceiver();
         populateRecycler();
-
+        showSurveyAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -151,5 +144,15 @@ public class ShowSurveyActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         unregisterNetworkReceiver();
+    }
+
+    @Override
+    public void onNetworkDisconnected() {
+        //Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNetworkConnected(String type) {
+        //Toast.makeText(this, "Internet", Toast.LENGTH_SHORT).show();
     }
 }
